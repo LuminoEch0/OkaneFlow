@@ -1,0 +1,49 @@
+﻿@page
+@model OkaneFlow.Pages.Transactions.TransactionsModel
+@{
+        ViewData["Title"] = "Transactions";
+
+}
+<div>
+    <div>
+        <h1>TRANSACTIONS</h1>
+    </div>
+    <div>
+        <div>
+            <span>Total: </span>
+            <span>Used: </span>
+            <span>Available: </span>
+        </div>
+
+        <form method="post">
+            <button type="submit" asp-page-handler="AddTransaction">
+                Add Transaction
+            </button>
+        </form>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>NAME</th>
+                    <th>CATEGORY</th>
+                    <th style="text-align: right;">INFLOW</th>
+                    <th style="text-align: right;">OUTFLOW</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 10; i++)
+                {
+                     <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

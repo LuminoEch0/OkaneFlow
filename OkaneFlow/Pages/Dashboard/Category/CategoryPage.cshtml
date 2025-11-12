@@ -1,0 +1,67 @@
+﻿@page "{id:guid}"
+@model OkaneFlow.Pages.Dashboard.Category.CategoryPageModel
+@{
+        ViewData["Title"] = "Category";
+
+}
+
+<div class="btn-group" role="group" aria-label="Basic example">
+    <button type="button" class="btn btn-secondary">Overview</button>
+    <button type="button" class="btn btn-secondary">Subscriptions</button>
+    <button type="button" class="btn btn-secondary">Debts</button>
+</div>
+<div>
+    <div>
+        <h1>Category Page</h1>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <form method="post">
+                <button type="submit" asp-page-handler="AddCategory">
+                    Add Category
+                </button>
+            </form>
+        </div>
+        <div>
+            <p>Total Amount:</p>
+            <div style="border: 1px solid black; padding: 10px; margin-top: 10px;">
+                <p>Ready to Assign</p>
+                <button>Assign</button>
+            </div>
+        </div>
+    </div>
+<a asp-page="/Dashboard/Category/create" asp-route-id="" class="btn btn-primary">Create</a>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col" hidden>CategoryID</th>
+            <th scope="col" hidden>AccountID</th>
+            <th scope="col">Allocated Amount</th>
+            <th scope="col">AmountUsed</th>
+            <th scope="col">Category Name</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model.Categories)
+        {
+            <tr>
+                <td hidden>@category.CategoryID</td>
+                <td hidden>@category.AccountID</td>
+                <td>@category.CategoryName</td>
+                <td>@category.AllocatedAmount.ToString("C")</td>
+                <td>@category.AmountUsed.ToString("C")</td>
+                <td>
+                    <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-page="/Dashboard/Category/edit" asp-route-id="@category.AccountID">Edit</a></li>
+                        <li><a class="dropdown-item" asp-page="/Dashboard/Category/delete" asp-route-id="@category.AccountID">Delete</a></li>
+                    </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DataAccessLayer/DataAccessLayer.csproj" />
+  <Project Path="OkaneFlow/OkaneFlow.csproj" />
+</Solution>

@@ -1,0 +1,25 @@
+﻿@page "{id:guid}"
+@model OkaneFlow.Pages.Dashboard.MainDashboard.editModel
+
+<h2>Edit Bank Account</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="AccountDetails.AccountID" />
+
+    <div>
+        <label>Account Name:</label>
+        <input asp-for="AccountDetails.AccountName" />
+    </div>
+
+    <div>
+        <label>Current Balance:</label>
+        <input value="@Model.AccountDetails.CurrentBalance" readonly />
+    </div>
+
+    <div>
+        <label>Amount to Add:</label>
+        <input asp-for="AmountToAdd" />
+    </div>
+
+    <button type="submit">Update</button>
+</form>

@@ -1,0 +1,28 @@
+﻿@page "{id:guid}"
+@model OkaneFlow.Pages.Dashboard.Category.deleteModel
+@{
+}
+<input type="hidden" asp-for="AccountDetails.AccountID" />
+<h3>Here you will find some delete buttons and stuff</h3>
+@if (Model.AccountDetails != null)
+{
+    <p>Are you sure you want to delete the following account?</p>
+
+    <dl>
+        <dt>Account Name</dt>
+        <dd>@Model.AccountDetails.AccountName</dd>
+
+        <dt>Current Balance</dt>
+        <dd>@Model.AccountDetails.CurrentBalance</dd>
+    </dl>
+
+    <form method="post">
+        <input type="hidden" asp-for="AccountDetails.AccountID" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-page="/Dashboard/MainDashboard/Dashboard" class="btn btn-secondary">Cancel</a>
+    </form>
+}
+else
+{
+    <p>Account not found.</p>
+}
