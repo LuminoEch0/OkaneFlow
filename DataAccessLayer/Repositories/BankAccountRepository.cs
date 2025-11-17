@@ -90,13 +90,14 @@ namespace DataAccessLayer.Repositories
         public void DeleteBankAccount(Guid id)
         {
             string sql = "DELETE FROM BankAccount WHERE AccountID = @id";
-
+            
             using (IDbConnection connection = _dbManager.GetOpenConnection())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     // Repository accepts the ID, not the DTO
                     cmd.Parameters.AddWithValue("@id", id);
+                    
                     cmd.ExecuteNonQuery();
                 }
             }

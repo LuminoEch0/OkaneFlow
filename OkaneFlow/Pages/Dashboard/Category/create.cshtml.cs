@@ -5,21 +5,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Mappers;
 
-namespace OkaneFlow.Pages.Dashboard.MainDashboard
+namespace OkaneFlow.Pages.Dashboard.Category
 {
     public class createModel : PageModel
     {
-        private readonly BankAccountService _accountService;
-        public createModel(BankAccountService accountService)
+        private readonly CategoryService _accountService;
+        public createModel(CategoryService accountService)
         {
             _accountService = accountService;
         }
+
+        [BindProperty(SupportsGet =true)]
+        public Guid id { get; set; }
 
         [BindProperty]
         public string InputName { get; set; } = string.Empty;
 
         [BindProperty]
-        public decimal InitialBalance { get; set; } = 0;
+        public decimal AmountToAllocate { get; set; } = 0;
+        private decimal AmountUsed = 0;
 
         public IActionResult OnGet()
         {
@@ -27,12 +31,13 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         }
         public IActionResult OnPost()
         {
-            var newAccount = new BankAccountModel(InputName, InitialBalance);
+            var newAccount = new CategoryModel(id, InputName, AmountToAllocate, AmountUsed);
 
-            var dto = BankAccountMapper.ToDTO(newAccount);
-            _accountService.CreateAccount(newAccount);
+            CategoryMapper.ToDTO(newAccount);
+            _accountService.CreateCategory(newAccount);
 
-            return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
+            return RedirectToPage($"/Dashboard/Category/CategoryPage", new { id });
         }
     }
 }
+

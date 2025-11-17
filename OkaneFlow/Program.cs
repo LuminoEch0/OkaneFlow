@@ -2,7 +2,7 @@ using DataAccessLayer.Repositories;
 using OkaneFlow.Helpers;
 using DataAccessLayer;
 
-namespace Individual_Project_2
+namespace OkaneFlow
 {
     public class Program
     {
@@ -22,8 +22,8 @@ namespace Individual_Project_2
             builder.Services.AddScoped<CategoryRepository>();
 
 
-            builder.Services.AddScoped<OkaneFlow.Services.Dashboard.BankAccountService>();
-            builder.Services.AddScoped<OkaneFlow.Services.Dashboard.CategoryService>();
+            builder.Services.AddScoped<Services.Dashboard.BankAccountService>();
+            builder.Services.AddScoped<Services.Dashboard.CategoryService>();
 
 
             var app = builder.Build();

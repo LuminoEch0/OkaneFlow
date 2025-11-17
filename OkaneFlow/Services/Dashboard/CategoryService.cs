@@ -22,7 +22,7 @@ namespace OkaneFlow.Services.Dashboard
 
         public CategoryModel? GetCategoryById(Guid categoryId)
         {
-            var dto = _repository.GetBankAccountById(categoryId);
+            var dto = _repository.GetCategoryById(categoryId);
             return dto == null ? null : CategoryMapper.ToModel(dto);
         }
 
@@ -35,9 +35,9 @@ namespace OkaneFlow.Services.Dashboard
         public void DeleteCategory(Guid categoryId)
         {
             var account = GetCategoryById(categoryId);
-            _repository.DeleteBankAccount(categoryId);
+            _repository.DeleteCategory(categoryId);
         }
-        public void CreateAccount(CategoryModel category)
+        public void CreateCategory(CategoryModel category)
         {
             if (category.AllocatedAmount < 0 || category.AmountUsed < 0)
             {
@@ -52,7 +52,7 @@ namespace OkaneFlow.Services.Dashboard
             //remeber to to pass teh account id somewhere
 
             var dto = CategoryMapper.ToDTO(category);
-            _repository.CreateBankAccount(dto);
+            _repository.CreateCategory(dto);
         }
     }
 }

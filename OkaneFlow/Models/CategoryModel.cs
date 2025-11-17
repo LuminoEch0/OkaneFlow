@@ -17,18 +17,18 @@ namespace OkaneFlow.Models
 
         public CategoryModel() { }
 
-        public CategoryModel(string? categoryName, decimal allocatedAmount, decimal amountUsed)
+        public CategoryModel(Guid accountId, string? categoryName, decimal allocatedAmount, decimal amountUsed)
         {
             CategoryID = Guid.NewGuid();
-            AccountID = Guid.NewGuid();
+            AccountID = accountId;
             CategoryName = categoryName;
             AllocatedAmount = allocatedAmount;
             AmountUsed = amountUsed;
         }
         public CategoryModel(Guid categoryId, Guid accountId, string? categoryName, decimal allocatedAmount, decimal amountUsed)
         {
-            CategoryID = Guid.NewGuid();
-            AccountID = Guid.NewGuid();
+            CategoryID = categoryId;
+            AccountID = accountId;
             CategoryName = categoryName;
             AllocatedAmount = allocatedAmount;
             AmountUsed = amountUsed;

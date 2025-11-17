@@ -13,6 +13,8 @@ namespace OkaneFlow.Pages.Dashboard.Category
         {
             _accountService = accountService;
         }
+        [BindProperty(SupportsGet = true)]
+        public Guid id { get; set; }
         public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
 
         public void OnGet(Guid id)

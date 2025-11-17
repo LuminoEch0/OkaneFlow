@@ -1,21 +1,20 @@
-﻿@page
+﻿@page "{id:guid}"
 @model OkaneFlow.Pages.Dashboard.Category.createModel
 @{
 }
 <h2>Create New Category</h2>
-<h2>Edit Bank Account</h2>
 
 <form method="post">
     <div>
-        <label>Account Name:</label>
+        <label>Category Name:</label>
         <input asp-for="InputName" class="form-control"/>
         <span asp-validation-for="InputName" class="text-danger"></span>
 
     </div>
 
     <div>
-        <label>Initial Balance:</label>
-        <input asp-for="InitialBalance" class="form-control" />
+        <label>Amount to Allocate:</label>
+        <input asp-for="AmountToAllocate" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-primary">Create</button>

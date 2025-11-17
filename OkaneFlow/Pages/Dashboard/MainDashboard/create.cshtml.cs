@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Mappers;
 
-namespace OkaneFlow.Pages.Dashboard.Category
+namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
     public class createModel : PageModel
     {

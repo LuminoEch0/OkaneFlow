@@ -8,16 +8,16 @@ namespace OkaneFlow.Pages.Dashboard.Category
 {
     public class deleteModel : PageModel
     {
-        private readonly BankAccountService _accountService;
+        private readonly CategoryService _accountService;
 
-        public deleteModel(BankAccountService accountService)
+        public deleteModel(CategoryService accountService)
         {
             _accountService = accountService;
         }
-        public BankAccountModel? AccountDetails { get; set; }
+        public CategoryModel? AccountDetails { get; set; }
         public IActionResult OnGet(Guid id)
         {
-            var account = _accountService.GetAccountById(id);
+            var account = _accountService.GetCategoryById(id);
             if (account == null)
 
             {
@@ -28,14 +28,14 @@ namespace OkaneFlow.Pages.Dashboard.Category
         }
         public IActionResult OnPost(Guid id)
         {
-            var account = _accountService.GetAccountById(id);
+            var account = _accountService.GetCategoryById(id);
             if (account == null)
             {
                 return NotFound();
             }
-            AccountDetails = account;
-            _accountService.DeleteAccount(id);
-            return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
+            var identity = account.AccountID;
+            _accountService.DeleteCategory(id);
+            return RedirectToPage($"/Dashboard/Category/CategoryPage", new { id = identity });
         }
     }
 }

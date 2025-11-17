@@ -45,7 +45,7 @@ namespace DataAccessLayer.Repositories
             return categories;
         }
 
-        public CategoryDTO? GetBankAccountById(Guid id)
+        public CategoryDTO? GetCategoryById(Guid id)
         {
             string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE CategoryID = @id";
 
@@ -62,7 +62,7 @@ namespace DataAccessLayer.Repositories
                             {
                                 CategoryID = reader.GetGuid(reader.GetOrdinal("CategoryID")),
                                 AccountID = reader.GetGuid(reader.GetOrdinal("AccountID")),
-                                CategoryName = reader.GetString(reader.GetOrdinal("CategoryName")),
+                                CategoryName = reader.GetString(reader.GetOrdinal("Name")),
                                 AllocatedAmount = reader.GetDecimal(reader.GetOrdinal("AllocatedAmount")),
                                 AmountUsed = reader.GetDecimal(reader.GetOrdinal("AmountUsed"))
                             };
@@ -91,7 +91,7 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public void DeleteBankAccount(Guid id)
+        public void DeleteCategory(Guid id)
         {
             string sql = "DELETE FROM Category WHERE CategoryID = @id";
 
@@ -105,7 +105,7 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public void CreateBankAccount(CategoryDTO dto)
+        public void CreateCategory(CategoryDTO dto)
         {
             //string sql = $"INSERT INTO Category ([CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed]) VALUES (@categoryId, @accountId, {"name"}, @allocatedAmount)";
             string sql = "INSERT INTO Category ([CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed]) VALUES (@categoryId, @accountId, @name, @allocatedAmount, @amountUsed)";

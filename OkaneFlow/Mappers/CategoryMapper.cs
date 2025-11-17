@@ -23,7 +23,7 @@ namespace OkaneFlow.Mappers
         {
             return new CategoryDTO
             {
-                CategoryID = model.AccountID,
+                CategoryID = model.CategoryID,
                 AccountID = model.AccountID,
                 CategoryName = model.CategoryName,
                 AllocatedAmount = model.AllocatedAmount,

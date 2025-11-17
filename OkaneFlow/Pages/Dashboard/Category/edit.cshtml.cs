@@ -23,6 +23,9 @@ namespace OkaneFlow.Pages.Dashboard.Category
         [BindProperty]
         public decimal AmountToAllocate { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public Guid id { get; set; }
+
         public IActionResult OnGet(Guid id)
         {
             var account = _accountService.GetCategoryById(id);
@@ -49,9 +52,10 @@ namespace OkaneFlow.Pages.Dashboard.Category
             {
                 account.UpdateAllocatedAmount(AmountToAllocate);
             }
+            var identity = account.AccountID;
             _accountService.UpdateCategoryDetails(account);
-            return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
+            return RedirectToPage("/Dashboard/Category/CategoryPage", new {id = identity });
 
         }
-    }
+    } 
 }

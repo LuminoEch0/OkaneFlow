@@ -9,17 +9,20 @@
     <p>Are you sure you want to delete the following account?</p>
 
     <dl>
-        <dt>Account Name</dt>
-        <dd>@Model.AccountDetails.AccountName</dd>
+        <dt>Account Name: </dt>
+        <dd>@Model.AccountDetails.CategoryName</dd>
 
-        <dt>Current Balance</dt>
-        <dd>@Model.AccountDetails.CurrentBalance</dd>
+        <dt>Allocated Amount: </dt>
+        <dd>@Model.AccountDetails.AllocatedAmount</dd>
+
+        <dt>Amount Used: </dt>
+        <dd>@Model.AccountDetails.AmountUsed</dd>
     </dl>
 
     <form method="post">
         <input type="hidden" asp-for="AccountDetails.AccountID" />
         <button type="submit" class="btn btn-danger">Delete</button>
-        <a asp-page="/Dashboard/MainDashboard/Dashboard" class="btn btn-secondary">Cancel</a>
+        <a asp-page="/Dashboard/Category/CategoryPage" asp-route-id="@Model.AccountDetails.AccountID" class="btn btn-secondary">Cancel</a>
     </form>
 }
 else
