@@ -1,6 +1,7 @@
+using DataAccessLayer;
 using DataAccessLayer.Repositories;
 using OkaneFlow.Helpers;
-using DataAccessLayer;
+using System.Globalization;
 
 namespace OkaneFlow
 {
@@ -25,6 +26,9 @@ namespace OkaneFlow
             builder.Services.AddScoped<Services.Dashboard.BankAccountService>();
             builder.Services.AddScoped<Services.Dashboard.CategoryService>();
 
+            var cultureInfo = new CultureInfo("nl-NL");
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
             var app = builder.Build();
 

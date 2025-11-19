@@ -3,6 +3,9 @@
 
 <h2>Edit Bank Account</h2>
 
+
+<button type="button" onclick="goBack()" class="btn btn-secondary">Back</button>
+
 <form method="post">
     <input type="hidden" asp-for="AccountDetails.AccountID" />
 
@@ -13,13 +16,16 @@
 
     <div>
         <label>Current Balance:</label>
-        <input value="@Model.AccountDetails.CurrentBalance" readonly />
+        <span>@Model.AccountDetails.CurrentBalance</span>
     </div>
 
     <div>
         <label>Amount to Add:</label>
-        <input asp-for="AmountToAdd" />
+        <input asp-for="AmountToAdd" value="" placeholder="0.00" />
     </div>
+
+    <input type="hidden" asp-for="AccountDetails.CurrentBalance" />
 
     <button type="submit">Update</button>
 </form>
+

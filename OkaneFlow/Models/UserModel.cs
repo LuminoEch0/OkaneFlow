@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OkaneFlow.Models.Account
+namespace OkaneFlow.Models
 {
-    public class User
+    public class UserModel
     {
         public Guid UserID { get; set; } //pk
 

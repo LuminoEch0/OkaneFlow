@@ -124,5 +124,19 @@ namespace DataAccessLayer.Repositories
                 }
             }
         }
+
+        public void AssignAmountAllocated(Guid categoryId, decimal amount)
+        {
+            string sql = "UPDATE Category SET AllocatedAmount = @allocatedamount WHERE CategoryID = @category";
+            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            {
+                using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
+                {
+                    cmd.Parameters.AddWithValue("@category", categoryId);
+                    cmd.Parameters.AddWithValue("@allocatedamount", amount);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

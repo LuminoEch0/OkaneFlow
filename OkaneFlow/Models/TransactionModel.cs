@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OkaneFlow.Models.Transaction
+namespace OkaneFlow.Models
 {
-    public class Transaction
+    public class TransactionModel
     {
         public Guid TransactionID { get; set; } // pk
 
@@ -21,5 +21,16 @@ namespace OkaneFlow.Models.Transaction
 
         public TransactionType Type { get; set; } // enum 0:expense, 1:income
 
+        public void ApplyTransaction(decimal amount, bool isExpense)
+        {
+            if (isExpense)
+            {
+                Amount -= amount;
+            }
+            else
+            {
+                Amount += amount;
+            }
+        }
     }
 }

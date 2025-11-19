@@ -15,12 +15,6 @@
     <Folder Include="Pages\Dashboard\Subscription\" />
     <Folder Include="Helpers\Utilities\" />
     <Folder Include="Helpers\ViewModels\" />
-    <Folder Include="Models\Dashboard\Debt\" />
-    <Folder Include="Models\Dashboard\MainDashboard\" />
-    <Folder Include="Models\Dashboard\Subscription\" />
-    <Folder Include="Models\People\Chats\" />
-    <Folder Include="Models\People\OtherDashboard\" />
-    <Folder Include="Models\People\Permissions\" />
     <Folder Include="Pages\People\Chats\" />
     <Folder Include="Pages\People\OtherDashboard\" />
     <Folder Include="Pages\People\Permissions\" />

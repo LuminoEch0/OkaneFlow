@@ -2,6 +2,8 @@
 @model OkaneFlow.Pages.Dashboard.Category.deleteModel
 @{
 }
+<button type="button" onclick="goBack()" class="btn btn-secondary">Back</button>
+
 <input type="hidden" asp-for="AccountDetails.AccountID" />
 <h3>Here you will find some delete buttons and stuff</h3>
 @if (Model.AccountDetails != null)

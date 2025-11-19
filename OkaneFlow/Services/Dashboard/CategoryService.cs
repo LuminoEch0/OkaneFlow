@@ -54,5 +54,25 @@ namespace OkaneFlow.Services.Dashboard
             var dto = CategoryMapper.ToDTO(category);
             _repository.CreateCategory(dto);
         }
+
+        public void AssignAmountToAllocate(Guid categoryId, decimal amount)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentException("Amount used cannot be negative.");
+            }
+            _repository.AssignAmountAllocated(categoryId, amount);
+        }
+
+        public decimal GetUnallocatedAmount(Guid accountId, BankAccountService bankAccountService)
+        {
+            var categories = GetAllCategories(accountId);
+            var totalAllocated = categories.Sum(c => c.AllocatedAmount);
+            var account = bankAccountService.GetAccountById(accountId);
+            if (account == null) return 0;
+            return account.CurrentBalance - totalAllocated;
+        }
+
+
     }
 }
