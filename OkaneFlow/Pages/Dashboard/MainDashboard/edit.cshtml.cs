@@ -15,23 +15,19 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
             _accountService = accountService;
         }
         [BindProperty]
-        required
         public BankAccountModel AccountDetails { get; set; }
-
-        [BindProperty]
-        public decimal AmountToAdd { get; set; }
 
         public IActionResult OnGet(Guid id)
         {
             var account = _accountService.GetAccountById(id);
-            if(account == null)
+            if (account == null)
             {
                 return NotFound();
             }
             AccountDetails = account;
             return Page();
         }
-       
+
         public IActionResult OnPost(Guid id)
         {
             var account = _accountService.GetAccountById(id);
@@ -40,13 +36,9 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
                 return NotFound();
             }
             account.AccountName = AccountDetails.AccountName;
-            //Console.WriteLine($"Loaded account: {AccountDetails.AccountName}, {AccountDetails.CurrentBalance}");
 
+            // Balance update via Edit is removed. Use Transactions instead.
 
-            if (AmountToAdd != 0)
-            {
-                account.UpdateBalance(AmountToAdd);
-            }
             _accountService.UpdateAccountDetails(account);
             return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
 

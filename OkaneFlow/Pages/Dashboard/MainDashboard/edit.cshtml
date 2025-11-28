@@ -1,31 +1,53 @@
 ﻿@page "{id:guid}"
 @model OkaneFlow.Pages.Dashboard.MainDashboard.editModel
+@{
+    ViewData["Title"] = "Edit Account";
+}
 
-<h2>Edit Bank Account</h2>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Edit Account</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <input type="hidden" asp-for="AccountDetails.AccountID" />
+                        <input type="hidden" asp-for="AccountDetails.CurrentBalance" />
 
+                        <div class="mb-3">
+                            <label asp-for="AccountDetails.AccountName"
+                                class="form-label text-secondary small fw-bold text-uppercase">Account Name</label>
+                            <input asp-for="AccountDetails.AccountName" class="form-control" />
+                        </div>
 
-<button type="button" onclick="goBack()" class="btn btn-secondary">Back</button>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold text-uppercase">Current
+                                Balance</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">$</span>
+                                <input value="@Model.AccountDetails.CurrentBalance"
+                                    class="form-control border-start-0 ps-0 bg-light" readonly />
+                            </div>
+                            <div class="form-text">Balances can only be updated via transactions.</div>
+                        </div>
 
-<form method="post">
-    <input type="hidden" asp-for="AccountDetails.AccountID" />
-
-    <div>
-        <label>Account Name:</label>
-        <input asp-for="AccountDetails.AccountName" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" onclick="goBack()"
+                                class="btn btn-light text-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div>
-        <label>Current Balance:</label>
-        <span>@Model.AccountDetails.CurrentBalance</span>
-    </div>
-
-    <div>
-        <label>Amount to Add:</label>
-        <input asp-for="AmountToAdd" value="" placeholder="0.00" />
-    </div>
-
-    <input type="hidden" asp-for="AccountDetails.CurrentBalance" />
-
-    <button type="submit">Update</button>
-</form>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 

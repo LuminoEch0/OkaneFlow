@@ -26,7 +26,7 @@ namespace OkaneFlow.Mappers
                 UserID = model.UserID,
                 AccountName = model.AccountName,
                 CurrentBalance = model.CurrentBalance
-            };
+            };  
         }
     }
 }

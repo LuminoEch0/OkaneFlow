@@ -19,7 +19,12 @@ namespace DataAccessLayer.Repositories
         public List<CategoryDTO> GetCategories(Guid id)
         {
             var categories = new List<CategoryDTO>();
-            string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @id";
+            // Sort by Name, but force 'Unassigned' to the bottom
+            string sql = @"
+                SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] 
+                FROM Category 
+                WHERE AccountID = @id
+                ORDER BY CASE WHEN Name = 'Unassigned' THEN 1 ELSE 0 END, Name";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
             {
@@ -43,6 +48,45 @@ namespace DataAccessLayer.Repositories
                 }
             }
             return categories;
+        }
+
+        public CategoryDTO GetUnassignedCategory(Guid accountId)
+        {
+            string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @accountId AND Name = 'Unassigned'";
+
+            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            {
+                using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
+                {
+                    cmd.Parameters.AddWithValue("@accountId", accountId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new CategoryDTO
+                            {
+                                CategoryID = reader.GetGuid(reader.GetOrdinal("CategoryID")),
+                                AccountID = reader.GetGuid(reader.GetOrdinal("AccountID")),
+                                CategoryName = reader.GetString(reader.GetOrdinal("Name")),
+                                AllocatedAmount = reader.GetDecimal(reader.GetOrdinal("AllocatedAmount")),
+                                AmountUsed = reader.GetDecimal(reader.GetOrdinal("AmountUsed"))
+                            };
+                        }
+                    }
+                }
+            }
+
+            // If not found, create it
+            var newCategory = new CategoryDTO
+            {
+                CategoryID = Guid.NewGuid(),
+                AccountID = accountId,
+                CategoryName = "Unassigned",
+                AllocatedAmount = 0,
+                AmountUsed = 0
+            };
+            CreateCategory(newCategory);
+            return newCategory;
         }
 
         public CategoryDTO? GetCategoryById(Guid id)

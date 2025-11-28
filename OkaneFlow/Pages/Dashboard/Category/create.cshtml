@@ -1,22 +1,50 @@
 ﻿@page "{id:guid}"
 @model OkaneFlow.Pages.Dashboard.Category.createModel
 @{
+    ViewData["Title"] = "Create Category";
 }
-<h2>Create New Category</h2>
-<button type="button" onclick="goBack()" class="btn btn-secondary">Back</button>
 
-<form method="post">
-    <div>
-        <label>Category Name:</label>
-        <input asp-for="InputName" class="form-control"/>
-        <span asp-validation-for="InputName" class="text-danger"></span>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Create New Category</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="InputName"
+                                class="form-label text-secondary small fw-bold text-uppercase">Category Name</label>
+                            <input asp-for="InputName" class="form-control" placeholder="e.g., Groceries, Rent" />
+                            <span asp-validation-for="InputName" class="text-danger small"></span>
+                        </div>
 
+                        <div class="mb-4">
+                            <label asp-for="AmountToAllocate"
+                                class="form-label text-secondary small fw-bold text-uppercase">Initial
+                                Allocation</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">$</span>
+                                <input asp-for="AmountToAllocate" class="form-control border-start-0 ps-0"
+                                    placeholder="0.00" />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Category</button>
+                            <button type="button" onclick="goBack()"
+                                class="btn btn-light text-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div>
-        <label>Amount to Allocate:</label>
-        <input asp-for="AmountToAllocate" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create</button>
-</form>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
