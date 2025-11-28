@@ -26,7 +26,7 @@ namespace OkaneFlow
             builder.Services.AddScoped<Services.Dashboard.BankAccountService>();
             builder.Services.AddScoped<Services.Dashboard.CategoryService>();
 
-            var cultureInfo = new CultureInfo("nl-NL");
+            var cultureInfo = new CultureInfo("ie-IE");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
