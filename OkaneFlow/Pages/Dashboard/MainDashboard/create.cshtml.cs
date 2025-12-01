@@ -1,9 +1,8 @@
-using OkaneFlow.Helpers;
-using OkaneFlow.Models;
-using OkaneFlow.Services.Dashboard;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Mappers;
+using OkaneFlow.ViewModels;
+using Service;
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
@@ -27,10 +26,10 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         }
         public IActionResult OnPost()
         {
-            var newAccount = new BankAccountModel(InputName, InitialBalance);
+            var newAccount = new BankAccountViewModel(InputName, InitialBalance);
 
-            var dto = BankAccountMapper.ToDTO(newAccount);
-            _accountService.CreateAccount(newAccount);
+            var dto = BankAccountMapper.ToModel(newAccount);
+            _accountService.CreateAccount(dto);
 
             return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
         }

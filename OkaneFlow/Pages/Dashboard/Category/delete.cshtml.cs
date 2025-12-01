@@ -1,8 +1,8 @@
-using OkaneFlow.Helpers;
-using OkaneFlow.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using OkaneFlow.Services.Dashboard;
+using OkaneFlow.ViewModels;
+using Service;
+using OkaneFlow.Mappers;
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
@@ -14,7 +14,7 @@ namespace OkaneFlow.Pages.Dashboard.Category
         {
             _accountService = accountService;
         }
-        public CategoryModel? AccountDetails { get; set; }
+        public CategoryViewModel? AccountDetails { get; set; }
         public IActionResult OnGet(Guid id)
         {
             var account = _accountService.GetCategoryById(id);
@@ -23,7 +23,8 @@ namespace OkaneFlow.Pages.Dashboard.Category
             {
                 return NotFound();
             }
-            AccountDetails = account;
+            
+            AccountDetails = CategoryMapper.ToViewModel(account);
             return Page();
         }
         public IActionResult OnPost(Guid id)

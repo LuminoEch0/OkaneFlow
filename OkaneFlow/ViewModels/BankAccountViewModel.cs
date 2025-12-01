@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OkaneFlow.Models
+namespace OkaneFlow.ViewModels
 {
-    public class BankAccountModel
+    public class BankAccountViewModel
     {
         public Guid AccountID { get; set; } //pk
 
@@ -14,32 +14,23 @@ namespace OkaneFlow.Models
         public string? AccountName { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal CurrentBalance { get; private set; } = 0.00m;
+        public decimal CurrentBalance { get; set; } = 0.00m;
 
-        public BankAccountModel() { }
+        public BankAccountViewModel() { }
 
-        public BankAccountModel(string? accountName, decimal currentBalance)
+        public BankAccountViewModel(string? accountName, decimal currentBalance)
         {
             AccountID = Guid.NewGuid();
             UserID = Guid.NewGuid();
             AccountName = accountName;
             CurrentBalance = currentBalance;
         }
-        public BankAccountModel(Guid accountId, Guid userId, string? accountName, decimal currentBalance)
+        public BankAccountViewModel(Guid accountId, Guid userId, string? accountName, decimal currentBalance)
         {
             AccountID = accountId;
             UserID = userId;
             AccountName = accountName;
             CurrentBalance = currentBalance;
-        }
-        public BankAccountModel(decimal currentBalance)
-        {
-            currentBalance = CurrentBalance;
-        }
-
-        public void UpdateBalance(decimal amount)
-        {
-            CurrentBalance += amount;
         }
     }
 }

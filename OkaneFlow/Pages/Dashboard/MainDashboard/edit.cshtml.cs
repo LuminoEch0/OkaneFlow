@@ -1,9 +1,9 @@
-using OkaneFlow.Helpers;
-using OkaneFlow.Models;
-using OkaneFlow.Services.Dashboard;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
+using OkaneFlow.ViewModels;
+using Service;
+using OkaneFlow.Mappers;
+
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
@@ -16,7 +16,8 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         }
         [BindProperty]
         required
-        public BankAccountModel AccountDetails { get; set; }
+        public BankAccountViewModel AccountDetails
+        { get; set; }
 
         [BindProperty]
         public decimal AmountToAdd { get; set; }
@@ -24,14 +25,14 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         public IActionResult OnGet(Guid id)
         {
             var account = _accountService.GetAccountById(id);
-            if(account == null)
+            if (account == null)
             {
                 return NotFound();
             }
-            AccountDetails = account;
+            AccountDetails = BankAccountMapper.ToViewModel(account);
             return Page();
         }
-       
+
         public IActionResult OnPost(Guid id)
         {
             var account = _accountService.GetAccountById(id);

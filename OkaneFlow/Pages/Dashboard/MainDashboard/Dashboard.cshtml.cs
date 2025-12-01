@@ -1,8 +1,7 @@
-using OkaneFlow.Helpers;
-using OkaneFlow.Models;
-using OkaneFlow.Services.Dashboard;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OkaneFlow.ViewModels;
+using Service;
+using OkaneFlow.Mappers;
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
@@ -13,11 +12,12 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         {
             _accountService = accountService;
         }
-        public List<BankAccountModel> BankAccounts { get; set; } = new List<BankAccountModel>();
+        public List<BankAccountViewModel> BankAccounts { get; set; } = new List<BankAccountViewModel>();
 
         public void OnGet()
         {
-            BankAccounts = _accountService.GetAllBankAccounts();
+            var accountModels = _accountService.GetAllBankAccounts();
+            BankAccounts = BankAccountMapper.ToViewModelList(accountModels);
         }
     }
 }

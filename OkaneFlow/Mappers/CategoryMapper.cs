@@ -1,27 +1,26 @@
-﻿using DataAccessLayer.DataTransferObjects;
-using OkaneFlow.Models;
-using System.Linq;
+﻿using OkaneFlow.ViewModels;
+using Service.Models;
 
 namespace OkaneFlow.Mappers
 {
-    public class CategoryMapper
+    public static class CategoryMapper
     {
-        public static CategoryModel ToModel(CategoryDTO dto)
+        public static CategoryModel ToModel(CategoryViewModel viewModel)
         {
             return new CategoryModel(
-                dto.CategoryID,
-                dto.AccountID,
-                dto.CategoryName,
-                dto.AllocatedAmount,
-                dto.AmountUsed);
+                viewModel.CategoryID,
+                viewModel.AccountID,
+                viewModel.CategoryName,
+                viewModel.AllocatedAmount,
+                viewModel.AmountUsed);
         }
-        public static List<CategoryModel> ToModelList(IEnumerable<CategoryDTO> dtos)
+        public static List<CategoryViewModel> ToViewModelList(this IEnumerable<CategoryModel> models)
         {
-            return dtos.Select(ToModel).ToList();
+            return models.Select(ToViewModel).ToList();
         }
-        public static CategoryDTO ToDTO(CategoryModel model)
+        public static CategoryViewModel ToViewModel(CategoryModel model)
         {
-            return new CategoryDTO
+            return new CategoryViewModel
             {
                 CategoryID = model.CategoryID,
                 AccountID = model.AccountID,

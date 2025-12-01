@@ -1,9 +1,8 @@
-using OkaneFlow.Helpers;
-using OkaneFlow.Models;
-using OkaneFlow.Services.Dashboard;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Mappers;
+using OkaneFlow.ViewModels;
+using Service;
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
@@ -15,7 +14,7 @@ namespace OkaneFlow.Pages.Dashboard.Category
             _accountService = accountService;
         }
 
-        [BindProperty(SupportsGet =true)]
+        [BindProperty(SupportsGet = true)]
         public Guid id { get; set; }
 
         [BindProperty]
@@ -31,10 +30,10 @@ namespace OkaneFlow.Pages.Dashboard.Category
         }
         public IActionResult OnPost()
         {
-            var newAccount = new CategoryModel(id, InputName, AmountToAllocate, AmountUsed);
+            var newAccount = new CategoryViewModel(id, InputName, AmountToAllocate, AmountUsed);
 
-            CategoryMapper.ToDTO(newAccount);
-            _accountService.CreateCategory(newAccount);
+            CategoryMapper.ToModel(newAccount);
+            _accountService.CreateCategory(CategoryMapper.ToModel(newAccount));
 
             return RedirectToPage($"/Dashboard/Category/CategoryPage", new { id });
         }

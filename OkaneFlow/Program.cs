@@ -1,7 +1,7 @@
 using DataAccessLayer;
 using DataAccessLayer.Repositories;
-using OkaneFlow.Helpers;
 using System.Globalization;
+using Service;
 
 namespace OkaneFlow
 {
@@ -23,10 +23,10 @@ namespace OkaneFlow
             builder.Services.AddScoped<CategoryRepository>();
 
 
-            builder.Services.AddScoped<Services.Dashboard.BankAccountService>();
-            builder.Services.AddScoped<Services.Dashboard.CategoryService>();
+            builder.Services.AddScoped<BankAccountService>();
+            builder.Services.AddScoped<CategoryService>();
 
-            var cultureInfo = new CultureInfo("ie-IE");
+            var cultureInfo = new CultureInfo("en-NL");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 

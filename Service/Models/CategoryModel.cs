@@ -1,6 +1,6 @@
 ﻿using Microsoft.Identity.Client;
 
-namespace OkaneFlow.Models
+namespace Service.Models
 {
     public class CategoryModel
     {

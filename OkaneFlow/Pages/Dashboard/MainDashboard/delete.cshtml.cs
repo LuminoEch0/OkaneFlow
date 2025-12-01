@@ -1,8 +1,8 @@
-using OkaneFlow.Helpers;
-using OkaneFlow.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using OkaneFlow.Services.Dashboard;
+using OkaneFlow.ViewModels;
+using Service;
+using OkaneFlow.Mappers;
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
@@ -14,7 +14,7 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         {
             _accountService = accountService;
         }
-        public BankAccountModel? AccountDetails { get; set; }
+        public BankAccountViewModel? AccountDetails { get; set; }
         public IActionResult OnGet(Guid id)
         {
             var account = _accountService.GetAccountById(id);
@@ -23,7 +23,7 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
             {
                 return NotFound();
             }
-            AccountDetails = account;
+            AccountDetails = BankAccountMapper.ToViewModel(account);
             return Page();
         }
         public IActionResult OnPost(Guid id)
@@ -33,7 +33,7 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
             {
                 return NotFound();
             }
-            AccountDetails = account;
+            AccountDetails = BankAccountMapper.ToViewModel(account);
             _accountService.DeleteAccount(id);
             return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
         }

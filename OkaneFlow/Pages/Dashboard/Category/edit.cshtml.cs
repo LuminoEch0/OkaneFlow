@@ -1,9 +1,10 @@
-using OkaneFlow.Helpers;
-using OkaneFlow.Models;
-using OkaneFlow.Services.Dashboard;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
+using OkaneFlow.ViewModels;
+using Service;
+using OkaneFlow.Mappers;
+
+
 namespace OkaneFlow.Pages.Dashboard.Category
 {
     public class editModel : PageModel
@@ -15,7 +16,8 @@ namespace OkaneFlow.Pages.Dashboard.Category
         }
         [BindProperty]
         required
-        public CategoryModel CategoryDetails { get; set; }
+        public CategoryViewModel CategoryDetails
+        { get; set; }
 
         //[BindProperty]
         //public decimal AmountAllocated { get; set; }
@@ -29,14 +31,14 @@ namespace OkaneFlow.Pages.Dashboard.Category
         public IActionResult OnGet(Guid id)
         {
             var account = _accountService.GetCategoryById(id);
-            if(account == null)
+            if (account == null)
             {
                 return NotFound();
             }
-            CategoryDetails = account;
+            CategoryDetails = CategoryMapper.ToViewModel(account);
             return Page();
         }
-       
+
         public IActionResult OnPost(Guid id)
         {
             var account = _accountService.GetCategoryById(id);
@@ -54,8 +56,8 @@ namespace OkaneFlow.Pages.Dashboard.Category
             }
             var identity = account.AccountID;
             _accountService.UpdateCategoryDetails(account);
-            return RedirectToPage("/Dashboard/Category/CategoryPage", new {id = identity });
+            return RedirectToPage("/Dashboard/Category/CategoryPage", new { id = identity });
 
         }
-    } 
+    }
 }

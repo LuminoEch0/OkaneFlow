@@ -1,4 +1,9 @@
 <Solution>
   <Project Path="DataAccessLayer/DataAccessLayer.csproj" />
-  <Project Path="OkaneFlow/OkaneFlow.csproj" />
+  <Project Path="OkaneFlow/OkaneFlow.csproj">
+    <BuildDependency Project="Service/Service.csproj" />
+  </Project>
+  <Project Path="Service/Service.csproj" Id="1a0cede9-5306-4291-85ad-99ecc15cf489">
+    <BuildDependency Project="DataAccessLayer/DataAccessLayer.csproj" />
+  </Project>
 </Solution>

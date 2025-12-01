@@ -1,11 +1,12 @@
-﻿using OkaneFlow.ViewModels;
+﻿using DataAccessLayer.DataTransferObjects;
 using Service.Models;
+using System.Linq;
 
-namespace OkaneFlow.Mappers
+namespace Service.Mappers
 {
     public static class BankAccountMapper
     {
-        public static BankAccountModel ToModel(BankAccountViewModel dto)
+        public static BankAccountModel ToModel(BankAccountDTO dto)
         {
             return new BankAccountModel(
                 dto.AccountID,
@@ -13,13 +14,13 @@ namespace OkaneFlow.Mappers
                 dto.AccountName,
                 dto.CurrentBalance);
         }
-        public static List<BankAccountViewModel> ToViewModelList(this IEnumerable<BankAccountModel> dtos)
+        public static List<BankAccountModel> ToModelList(IEnumerable<BankAccountDTO> dtos)
         {
-            return dtos.Select(ToViewModel).ToList();
+            return dtos.Select(ToModel).ToList();
         }
-        public static BankAccountViewModel ToViewModel(BankAccountModel model)
+        public static BankAccountDTO ToDTO(BankAccountModel model)
         {
-            return new BankAccountViewModel
+            return new BankAccountDTO
             {
                 AccountID = model.AccountID,
                 UserID = model.UserID,

@@ -1,8 +1,8 @@
 ﻿using DataAccessLayer.Repositories;
-using OkaneFlow.Mappers;
-using OkaneFlow.Models;
+using Service.Mappers;
+using Service.Models;
 
-namespace OkaneFlow.Services.Dashboard
+namespace Service
 {
 
     public class CategoryService

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -8,26 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Helpers\Utilities\" />
+    <Folder Include="Helpers\ViewModels\" />
+	<Folder Include="Helpers\Enums\" />
     <Folder Include="Pages\Account\EditAccount\" />
     <Folder Include="Pages\Account\Login\" />
     <Folder Include="Pages\Account\Register\" />
     <Folder Include="Pages\Dashboard\Debt\" />
     <Folder Include="Pages\Dashboard\Subscription\" />
-    <Folder Include="Helpers\Utilities\" />
-    <Folder Include="Helpers\ViewModels\" />
     <Folder Include="Pages\People\Chats\" />
     <Folder Include="Pages\People\OtherDashboard\" />
     <Folder Include="Pages\People\Permissions\" />
-    <Folder Include="Services\Account\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\People\Chats\" />
-    <Folder Include="Services\People\OtherDashboard\" />
-    <Folder Include="Services\People\Permissions\" />
-    <Folder Include="Services\Transaction\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
+    <ProjectReference Include="..\Service\Service.csproj" />
   </ItemGroup>
 
 </Project>

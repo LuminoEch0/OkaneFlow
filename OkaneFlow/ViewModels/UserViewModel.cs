@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OkaneFlow.Models
+namespace OkaneFlow.ViewModels
 {
-    public class UserModel
+    public class UserViewModel
     {
         public Guid UserID { get; set; } //pk
 

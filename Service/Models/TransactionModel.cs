@@ -1,8 +1,7 @@
-﻿using OkaneFlow.Helpers.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OkaneFlow.Models
+namespace Service.Models
 {
     public class TransactionModel
     {
@@ -19,7 +18,7 @@ namespace OkaneFlow.Models
 
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
-        public TransactionType Type { get; set; } // enum 0:expense, 1:income
+        public int Type { get; set; } // enum 0:expense, 1:income
 
         public void ApplyTransaction(decimal amount, bool isExpense)
         {
