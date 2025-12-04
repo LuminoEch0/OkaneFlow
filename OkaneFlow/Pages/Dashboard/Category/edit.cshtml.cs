@@ -16,7 +16,7 @@ namespace OkaneFlow.Pages.Dashboard.Category
         }
         [BindProperty]
         required
-        public CategoryViewModel CategoryDetails
+        public CategoryVM CategoryDetails
         { get; set; }
 
         //[BindProperty]

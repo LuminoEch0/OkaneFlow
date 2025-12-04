@@ -1,22 +1,28 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OkaneFlow.Helpers;
+using OkaneFlow.Mappers;
 using OkaneFlow.ViewModels;
 using Service;
-using OkaneFlow.Mappers;
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
+    [Authorize]
     public class DashboardModel : PageModel
     {
         private readonly BankAccountService _accountService;
-        public DashboardModel(BankAccountService accountService)
+        private readonly CurrentUserService _currentUser;
+        
+        public DashboardModel(BankAccountService accountService, CurrentUserService currentUser)
         {
             _accountService = accountService;
+            _currentUser = currentUser;
         }
-        public List<BankAccountViewModel> BankAccounts { get; set; } = new List<BankAccountViewModel>();
+        public List<BankAccountVM> BankAccounts { get; set; } = new List<BankAccountVM>();
 
         public void OnGet()
         {
-            var accountModels = _accountService.GetAllBankAccounts();
+            var accountModels = _accountService.GetAllBankAccounts(_currentUser.UserGuid);
             BankAccounts = BankAccountMapper.ToViewModelList(accountModels);
         }
     }

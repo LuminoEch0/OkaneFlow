@@ -2,7 +2,7 @@
 
 namespace OkaneFlow.ViewModels
 {
-    public class UserViewModel
+    public class UserVM
     {
         public Guid UserID { get; set; } //pk
 

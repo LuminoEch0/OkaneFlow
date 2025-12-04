@@ -1,6 +1,6 @@
 ﻿namespace OkaneFlow.ViewModels
 {
-    public class CategoryViewModel
+    public class CategoryVM
     {
 
         public Guid CategoryID { get; set; }
@@ -13,9 +13,9 @@
 
         public decimal AmountUsed { get; set; } //this is the amount used
 
-        public CategoryViewModel() { }
+        public CategoryVM() { }
 
-        public CategoryViewModel(Guid accountId, string? categoryName, decimal allocatedAmount, decimal amountUsed)
+        public CategoryVM(Guid accountId, string? categoryName, decimal allocatedAmount, decimal amountUsed)
         {
             CategoryID = Guid.NewGuid();
             AccountID = accountId;
@@ -23,7 +23,7 @@
             AllocatedAmount = allocatedAmount;
             AmountUsed = amountUsed;
         }
-        public CategoryViewModel(Guid categoryId, Guid accountId, string? categoryName, decimal allocatedAmount, decimal amountUsed)
+        public CategoryVM(Guid categoryId, Guid accountId, string? categoryName, decimal allocatedAmount, decimal amountUsed)
         {
             CategoryID = categoryId;
             AccountID = accountId;
@@ -31,7 +31,7 @@
             AllocatedAmount = allocatedAmount;
             AmountUsed = amountUsed;
         }
-        public CategoryViewModel(decimal allocatedAmount, decimal amountUsed)
+        public CategoryVM(decimal allocatedAmount, decimal amountUsed)
         {
             AllocatedAmount = allocatedAmount;
             AmountUsed = amountUsed;

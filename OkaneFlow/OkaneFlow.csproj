@@ -8,17 +8,36 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\Utilities\" />
-    <Folder Include="Helpers\ViewModels\" />
+    <Compile Remove="Helpers\Utilities\**" />
+    <Compile Remove="Helpers\ViewModels\**" />
+    <Compile Remove="Pages\Account\EditAccount\**" />
+    <Compile Remove="Pages\Account\Login\**" />
+    <Compile Remove="Pages\Account\Register\**" />
+    <Content Remove="Helpers\Utilities\**" />
+    <Content Remove="Helpers\ViewModels\**" />
+    <Content Remove="Pages\Account\EditAccount\**" />
+    <Content Remove="Pages\Account\Login\**" />
+    <Content Remove="Pages\Account\Register\**" />
+    <EmbeddedResource Remove="Helpers\Utilities\**" />
+    <EmbeddedResource Remove="Helpers\ViewModels\**" />
+    <EmbeddedResource Remove="Pages\Account\EditAccount\**" />
+    <EmbeddedResource Remove="Pages\Account\Login\**" />
+    <EmbeddedResource Remove="Pages\Account\Register\**" />
+    <None Remove="Helpers\Utilities\**" />
+    <None Remove="Helpers\ViewModels\**" />
+    <None Remove="Pages\Account\EditAccount\**" />
+    <None Remove="Pages\Account\Login\**" />
+    <None Remove="Pages\Account\Register\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<Folder Include="Helpers\Enums\" />
-    <Folder Include="Pages\Account\EditAccount\" />
-    <Folder Include="Pages\Account\Login\" />
-    <Folder Include="Pages\Account\Register\" />
     <Folder Include="Pages\Dashboard\Debt\" />
     <Folder Include="Pages\Dashboard\Subscription\" />
     <Folder Include="Pages\People\Chats\" />
     <Folder Include="Pages\People\OtherDashboard\" />
     <Folder Include="Pages\People\Permissions\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

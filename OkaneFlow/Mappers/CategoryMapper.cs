@@ -5,7 +5,7 @@ namespace OkaneFlow.Mappers
 {
     public static class CategoryMapper
     {
-        public static CategoryModel ToModel(CategoryViewModel viewModel)
+        public static CategoryModel ToModel(CategoryVM viewModel)
         {
             return new CategoryModel(
                 viewModel.CategoryID,
@@ -14,13 +14,13 @@ namespace OkaneFlow.Mappers
                 viewModel.AllocatedAmount,
                 viewModel.AmountUsed);
         }
-        public static List<CategoryViewModel> ToViewModelList(this IEnumerable<CategoryModel> models)
+        public static List<CategoryVM> ToViewModelList(this IEnumerable<CategoryModel> models)
         {
             return models.Select(ToViewModel).ToList();
         }
-        public static CategoryViewModel ToViewModel(CategoryModel model)
+        public static CategoryVM ToViewModel(CategoryModel model)
         {
-            return new CategoryViewModel
+            return new CategoryVM
             {
                 CategoryID = model.CategoryID,
                 AccountID = model.AccountID,

@@ -30,7 +30,7 @@ namespace OkaneFlow.Pages.Dashboard.Category
         }
         public IActionResult OnPost()
         {
-            var newAccount = new CategoryViewModel(id, InputName, AmountToAllocate, AmountUsed);
+            var newAccount = new CategoryVM(id, InputName, AmountToAllocate, AmountUsed);
 
             CategoryMapper.ToModel(newAccount);
             _accountService.CreateCategory(CategoryMapper.ToModel(newAccount));

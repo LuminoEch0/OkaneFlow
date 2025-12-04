@@ -14,7 +14,7 @@ namespace OkaneFlow.Pages.Dashboard.Category
         {
             _accountService = accountService;
         }
-        public CategoryViewModel? AccountDetails { get; set; }
+        public CategoryVM? AccountDetails { get; set; }
         public IActionResult OnGet(Guid id)
         {
             var account = _accountService.GetCategoryById(id);

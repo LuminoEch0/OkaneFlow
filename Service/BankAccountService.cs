@@ -6,16 +6,16 @@ namespace Service
 {
     public class BankAccountService
     {
-        private readonly BankAccountRepository _repository;
+        private readonly BankAccountRepo _repository;
 
-        public BankAccountService(BankAccountRepository repository)
+        public BankAccountService(BankAccountRepo repository)
         {
             _repository = repository;
         }
 
-        public List<BankAccountModel> GetAllBankAccounts()
+        public List<BankAccountModel> GetAllBankAccounts(Guid id)
         {
-            var dtos = _repository.GetBankAccounts();
+            var dtos = _repository.GetBankAccounts(id);
             return BankAccountMapper.ToModelList(dtos);
         }
 

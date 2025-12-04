@@ -1,0 +1,72 @@
+@page "{accountId:guid}"
+@model OkaneFlow.Pages.Transactions.CreateModel
+@{
+    ViewData["Title"] = "Add Transaction";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Add Transaction</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <input type="hidden" asp-for="AccountId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Description"
+                                class="form-label text-secondary small fw-bold text-uppercase">Description</label>
+                            <input asp-for="Transaction.Description" class="form-control"
+                                placeholder="e.g., Grocery Shopping" />
+                            <span asp-validation-for="Transaction.Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Amount"
+                                class="form-label text-secondary small fw-bold text-uppercase">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">$</span>
+                                <input asp-for="Transaction.Amount" class="form-control border-start-0 ps-0"
+                                    placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Transaction.Amount" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Type"
+                                class="form-label text-secondary small fw-bold text-uppercase">Type</label>
+                            <select asp-for="Transaction.Type" class="form-select"
+                                asp-items="Html.GetEnumSelectList<OkaneFlow.Helpers.Enums.TransactionType>()"></select>
+                            <span asp-validation-for="Transaction.Type" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.CategoryID"
+                                class="form-label text-secondary small fw-bold text-uppercase">Category</label>
+                            <select asp-for="Transaction.CategoryID" class="form-select"
+                                asp-items="Model.CategoryOptions">
+                                <option value="">Select a category...</option>
+                            </select>
+                            <div class="form-text">For Income, you can leave this empty to assign to 'Unassigned'.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Transaction.Date"
+                                class="form-label text-secondary small fw-bold text-uppercase">Date</label>
+                            <input asp-for="Transaction.Date" class="form-control" type="date" />
+                            <span asp-validation-for="Transaction.Date" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Add Transaction</button>
+                            <a asp-page="/Transactions/Transactions" asp-route-accountId="@Model.AccountId"
+                                class="btn btn-light text-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

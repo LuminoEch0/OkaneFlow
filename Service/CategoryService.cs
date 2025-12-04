@@ -7,9 +7,9 @@ namespace Service
 
     public class CategoryService
     {
-        private readonly CategoryRepository _repository;
+        private readonly CategoryRepo _repository;
 
-        public CategoryService(CategoryRepository repository)
+        public CategoryService(CategoryRepo repository)
         {
             _repository = repository;
         }

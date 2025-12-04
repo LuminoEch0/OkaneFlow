@@ -8,23 +8,24 @@ using System.Linq;
 
 namespace DataAccessLayer.Repositories
 {
-    public class BankAccountRepository
+    public class BankAccountRepo
     {
         private readonly ConnectionManager _dbManager;
 
-        public BankAccountRepository(ConnectionManager dbManager)
+        public BankAccountRepo(ConnectionManager dbManager)
         {
             _dbManager = dbManager;
         }
-        public List<BankAccountDTO> GetBankAccounts()
+        public List<BankAccountDTO> GetBankAccounts(Guid id)
         {
             var bankAccounts = new List<BankAccountDTO>();
-            string sql = "SELECT [AccountID],[UserID],[AccountName],[CurrentBalance] FROM BankAccount";
+            string sql = "SELECT [AccountID],[UserID],[AccountName],[CurrentBalance] FROM BankAccount WHERE [UserID] = @id";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
             {
                 using (SqlCommand command = new SqlCommand(sql, (SqlConnection)connection))
                 {
+                    command.Parameters.AddWithValue("@id", id);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.ViewModels;
@@ -7,6 +8,7 @@ using OkaneFlow.Mappers;
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
+    [Authorize]
     public class CategoryPageModel : PageModel
     {
         private readonly CategoryService _categoryService;
@@ -18,8 +20,8 @@ namespace OkaneFlow.Pages.Dashboard.Category
         }
         [BindProperty(SupportsGet = true)]
         public Guid id { get; set; }
-        public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
-        public BankAccountViewModel? Account { get; set; } = new BankAccountViewModel();
+        public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
+        public BankAccountModel? Account { get; set; } = new BankAccountModel();
         public decimal UnallocatedAmount { get; set; }
 
         [BindProperty]
@@ -33,21 +35,13 @@ namespace OkaneFlow.Pages.Dashboard.Category
 
         public void OnGet(Guid id)
         {
-            var categoryModels = _categoryService.GetAllCategories(id);
-            Categories = CategoryMapper.ToViewModelList(categoryModels);
-
+            Categories = _categoryService.GetAllCategories(id);
             UnallocatedAmount = _categoryService.GetUnallocatedAmount(id, _accountService);
-            var accountModel = _accountService.GetAccountById(id);
-
-            if (accountModel == null)
+            if (Account == null)
             {
-                Account = new BankAccountViewModel();
+                Account = new BankAccountModel();
             }
-            else
-            { 
-                Account = BankAccountMapper.ToViewModel(accountModel);
-            }
-                
+            Account = _accountService.GetAccountById(id);
 
         }
 
@@ -60,4 +54,5 @@ namespace OkaneFlow.Pages.Dashboard.Category
             return RedirectToPage(new { id });
         }
     }
+
 }

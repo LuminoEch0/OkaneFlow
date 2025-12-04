@@ -5,7 +5,7 @@ namespace OkaneFlow.Mappers
 {
     public static class BankAccountMapper
     {
-        public static BankAccountModel ToModel(BankAccountViewModel dto)
+        public static BankAccountModel ToModel(BankAccountVM dto)
         {
             return new BankAccountModel(
                 dto.AccountID,
@@ -13,13 +13,13 @@ namespace OkaneFlow.Mappers
                 dto.AccountName,
                 dto.CurrentBalance);
         }
-        public static List<BankAccountViewModel> ToViewModelList(this IEnumerable<BankAccountModel> dtos)
+        public static List<BankAccountVM> ToViewModelList(this IEnumerable<BankAccountModel> dtos)
         {
             return dtos.Select(ToViewModel).ToList();
         }
-        public static BankAccountViewModel ToViewModel(BankAccountModel model)
+        public static BankAccountVM ToViewModel(BankAccountModel model)
         {
-            return new BankAccountViewModel
+            return new BankAccountVM
             {
                 AccountID = model.AccountID,
                 UserID = model.UserID,

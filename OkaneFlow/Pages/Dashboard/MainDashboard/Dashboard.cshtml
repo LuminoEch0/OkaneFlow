@@ -28,6 +28,7 @@
                     <a asp-page="/Dashboard/MainDashboard/edit" asp-route-id="@account.AccountID" class="btn btn-primary">Edit</a>
                     <a asp-page="/Dashboard/MainDashboard/delete" asp-route-id="@account.AccountID" class="btn btn-danger">Delete</a>
                     <a asp-page="/Dashboard/Category/CategoryPage" asp-route-id="@account.AccountID" class="btn btn-success">View</a>
+                    <a asp-page="/Transactions/Transactions" asp-route-accountId="@account.AccountID" class="btn btn-sm btn-outline-primary position-relative z-2">Transactions</a>
                 </td>
             </tr>
         }

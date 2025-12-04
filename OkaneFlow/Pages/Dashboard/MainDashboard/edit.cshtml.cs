@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.ViewModels;
@@ -7,6 +8,7 @@ using OkaneFlow.Mappers;
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
+    [Authorize]
     public class editModel : PageModel
     {
         private readonly BankAccountService _accountService;
@@ -16,7 +18,7 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         }
         [BindProperty]
         required
-        public BankAccountViewModel AccountDetails
+        public BankAccountVM AccountDetails
         { get; set; }
 
         [BindProperty]

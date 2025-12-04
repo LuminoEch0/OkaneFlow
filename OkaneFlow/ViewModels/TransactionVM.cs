@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OkaneFlow.ViewModels
 {
-    public class TransactionViewModel
+    public class TransactionVM
     {
         public Guid TransactionID { get; set; } // pk
 

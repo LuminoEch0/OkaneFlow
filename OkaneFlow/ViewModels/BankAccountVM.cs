@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OkaneFlow.ViewModels
 {
-    public class BankAccountViewModel
+    public class BankAccountVM
     {
         public Guid AccountID { get; set; } //pk
 
@@ -16,16 +16,16 @@ namespace OkaneFlow.ViewModels
         [Column(TypeName = "decimal(18, 2)")]
         public decimal CurrentBalance { get; set; } = 0.00m;
 
-        public BankAccountViewModel() { }
+        public BankAccountVM() { }
 
-        public BankAccountViewModel(string? accountName, decimal currentBalance)
+        public BankAccountVM(string? accountName, decimal currentBalance)
         {
             AccountID = Guid.NewGuid();
             UserID = Guid.NewGuid();
             AccountName = accountName;
             CurrentBalance = currentBalance;
         }
-        public BankAccountViewModel(Guid accountId, Guid userId, string? accountName, decimal currentBalance)
+        public BankAccountVM(Guid accountId, Guid userId, string? accountName, decimal currentBalance)
         {
             AccountID = accountId;
             UserID = userId;

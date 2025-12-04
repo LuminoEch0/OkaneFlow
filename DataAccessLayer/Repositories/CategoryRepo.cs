@@ -7,12 +7,12 @@ using System.Text;
 
 namespace DataAccessLayer.Repositories
 {
-    public class CategoryRepository
+    public class CategoryRepo
     {
         //private string name = "@categoryName";
         private readonly ConnectionManager _dbManager;
 
-        public CategoryRepository(ConnectionManager dbManager)
+        public CategoryRepo(ConnectionManager dbManager)
         {
             _dbManager = dbManager;
         }
@@ -137,6 +137,45 @@ namespace DataAccessLayer.Repositories
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        public CategoryDTO GetUnassignedCategory(Guid accountId)
+        {
+            string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @accountId AND Name = 'Unassigned'";
+
+            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            {
+                using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
+                {
+                    cmd.Parameters.AddWithValue("@accountId", accountId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new CategoryDTO
+                            {
+                                CategoryID = reader.GetGuid(reader.GetOrdinal("CategoryID")),
+                                AccountID = reader.GetGuid(reader.GetOrdinal("AccountID")),
+                                CategoryName = reader.GetString(reader.GetOrdinal("Name")),
+                                AllocatedAmount = reader.GetDecimal(reader.GetOrdinal("AllocatedAmount")),
+                                AmountUsed = reader.GetDecimal(reader.GetOrdinal("AmountUsed"))
+                            };
+                        }
+                    }
+                }
+            }
+
+            // If not found, create it
+            var newCategory = new CategoryDTO
+            {
+                CategoryID = Guid.NewGuid(),
+                AccountID = accountId,
+                CategoryName = "Unassigned",
+                AllocatedAmount = 0,
+                AmountUsed = 0
+            };
+            CreateCategory(newCategory);
+            return newCategory;
         }
     }
 }

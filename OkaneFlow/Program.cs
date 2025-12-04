@@ -1,7 +1,9 @@
 using DataAccessLayer;
 using DataAccessLayer.Repositories;
-using System.Globalization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Service;
+using System.Globalization;
+using OkaneFlow.Helpers; // register CurrentUserService
 
 namespace OkaneFlow
 {
@@ -10,21 +12,46 @@ namespace OkaneFlow
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            // 1. Add services to the container.
+            builder.Services.AddRazorPages(options =>
+            {
+                // MANDATORY VALIDATION: Apply authorization to all pages by default
+                options.Conventions.AuthorizeFolder("/");
+                // Exclude the Login, Register and Logout pages
+                options.Conventions.AllowAnonymousToPage("/Account/Login");
+                options.Conventions.AllowAnonymousToPage("/Account/Register");
+                options.Conventions.AllowAnonymousToPage("/Account/Logout");
+            });
 
+            // 2. Configure Cookie Authentication (The secure session management system)
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Account/Login"; // The page to redirect to when unauthorized
+                    options.LogoutPath = "/Account/Logout";
+                    options.AccessDeniedPath = "/Account/AccessDenied";
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                });
 
-            builder.Services.AddRazorPages();//Registers Razor Pages services with the dependency injection container.
-
-            // 1. The Core: Manages the connection string and provides open connections. (Singleton or Scoped is fine here)
+            // The rest of the services
             builder.Services.AddSingleton<ConnectionManager>();
 
-            // 2. The Repository: Executes raw SQL (BankAccount) and depends on the ConnectionManager.
-            // Assuming you have implemented BankAccountRepository similar to CategoryRepository.
-            builder.Services.AddScoped<BankAccountRepository>();
-            builder.Services.AddScoped<CategoryRepository>();
-
+            // Repositories and services
+            builder.Services.AddScoped<BankAccountRepo>();
+            builder.Services.AddScoped<CategoryRepo>();
+            builder.Services.AddScoped<TransactionRepo>();
+            builder.Services.AddScoped<TransactionTypeLookupRepo>();
+            builder.Services.AddScoped<UserRepo>();
 
             builder.Services.AddScoped<BankAccountService>();
             builder.Services.AddScoped<CategoryService>();
+            builder.Services.AddScoped<TransactionService>();
+            builder.Services.AddScoped<TransactionTypeLookupService>();
+            builder.Services.AddScoped<UserService>();
+
+            // HttpContext accessor and current user helper (web project)
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<CurrentUserService>();
 
             var cultureInfo = new CultureInfo("en-NL");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -46,20 +73,13 @@ namespace OkaneFlow
 
             app.UseRouting();//Enables routing capabilities in the middleware pipeline
 
-            app.UseAuthorization();//Adds authorization middleware to enforce access control policies.
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapStaticAssets();//- Maps static assets (like CSS, JS, images) to be served from the wwwroot folder.
 
             app.MapRazorPages()
                .WithStaticAssets();//Maps Razor Pages endpoints and ensures static assets are available to them.
-
-            //app.MapFallback(context =>
-            //{
-            //    context.Response.Redirect("/Dashboard");
-            //    return Task.CompletedTask;
-            //});
-
-
 
             app.MapFallbackToPage("/Dashboard/MainDashboard/Dashboard");
 

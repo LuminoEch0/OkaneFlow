@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Mappers;
@@ -6,6 +7,7 @@ using Service;
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
+    [Authorize]
     public class createModel : PageModel
     {
         private readonly BankAccountService _accountService;
@@ -26,7 +28,7 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         }
         public IActionResult OnPost()
         {
-            var newAccount = new BankAccountViewModel(InputName, InitialBalance);
+            var newAccount = new BankAccountVM(InputName, InitialBalance);
 
             var dto = BankAccountMapper.ToModel(newAccount);
             _accountService.CreateAccount(dto);
