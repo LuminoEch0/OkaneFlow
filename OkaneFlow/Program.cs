@@ -1,9 +1,12 @@
 using DataAccessLayer;
-using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Service;
 using System.Globalization;
-using OkaneFlow.Helpers; // register CurrentUserService
+using OkaneFlow.Helpers;
+using DataAccessLayer.Repositories; // register CurrentUserService
+using DataAccessLayer.Repositories.Interface;
+using Service.Interface;
+
 
 namespace OkaneFlow
 {
@@ -37,21 +40,21 @@ namespace OkaneFlow
             builder.Services.AddSingleton<ConnectionManager>();
 
             // Repositories and services
-            builder.Services.AddScoped<BankAccountRepo>();
-            builder.Services.AddScoped<CategoryRepo>();
-            builder.Services.AddScoped<TransactionRepo>();
-            builder.Services.AddScoped<TransactionTypeLookupRepo>();
-            builder.Services.AddScoped<UserRepo>();
+            builder.Services.AddScoped<IBankAccountRepo, BankAccountRepo>();
+            builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+            builder.Services.AddScoped<ITransactionRepo, TransactionRepo>();
+            builder.Services.AddScoped<ITransactionTypeLookupRepo, TransactionTypeLookupRepo>();
+            builder.Services.AddScoped<IUserRepo, UserRepo>();
 
-            builder.Services.AddScoped<BankAccountService>();
-            builder.Services.AddScoped<CategoryService>();
-            builder.Services.AddScoped<TransactionService>();
-            builder.Services.AddScoped<TransactionTypeLookupService>();
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IBankAccountService, BankAccountService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ITransactionService, TransactionService>();
+            builder.Services.AddScoped<ITransactionTypeLookupService, TransactionTypeLookupService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             // HttpContext accessor and current user helper (web project)
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddScoped<CurrentUserService>();
+            builder.Services.AddScoped<ICurrentUserService>();
 
             var cultureInfo = new CultureInfo("en-NL");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;

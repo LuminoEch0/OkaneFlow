@@ -8,16 +8,17 @@ using Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Service.Interface;
 
 namespace OkaneFlow.Pages.Transactions
 {
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly TransactionService _transactionService;
-        private readonly CategoryService _categoryService;
+        private readonly ITransactionService _transactionService;
+        private readonly ICategoryService _categoryService;
 
-        public CreateModel(TransactionService transactionService, CategoryService categoryService)
+        public CreateModel(ITransactionService transactionService, ICategoryService categoryService)
         {
             _transactionService = transactionService;
             _categoryService = categoryService; // small temporary to satisfy tool; will be applied correctly by smart editor

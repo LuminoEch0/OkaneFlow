@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
+using DataAccessLayer.Repositories.Interface;
 
 namespace DataAccessLayer.Repositories
 {
-    public class TransactionRepo
+    public class TransactionRepo : ITransactionRepo
     {
         private readonly ConnectionManager _dbManager;
 

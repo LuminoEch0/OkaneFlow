@@ -1,17 +1,19 @@
 ﻿using DataAccessLayer.DataTransferObjects;
 using DataAccessLayer.Repositories;
+using DataAccessLayer.Repositories.Interface;
+using Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Service
 {
-    public class UserService
+    public class UserService : IUserService
     {
 
-        private readonly UserRepo _userRepository;
+        private readonly IUserRepo _userRepository;
 
-        public UserService(UserRepo userRepository)
+        public UserService(IUserRepo userRepository)
         {
             _userRepository = userRepository;
         }

@@ -5,15 +5,16 @@ using OkaneFlow.ViewModels;
 using Service;
 using Service.Models;
 using OkaneFlow.Mappers;
+using Service.Interface;
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
     [Authorize]
     public class CategoryPageModel : PageModel
     {
-        private readonly CategoryService _categoryService;
-        private readonly BankAccountService _accountService;
-        public CategoryPageModel(CategoryService categoryService, BankAccountService accountService)
+        private readonly ICategoryService _categoryService;
+        private readonly IBankAccountService _accountService;
+        public CategoryPageModel(ICategoryService categoryService, IBankAccountService accountService)
         {
             _categoryService = categoryService;
             _accountService = accountService;

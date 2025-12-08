@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Service;
+using Service.Interface;
 using OkaneFlow.Helpers;
 
 namespace OkaneFlow.Pages.Account
@@ -13,9 +14,9 @@ namespace OkaneFlow.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public LoginModel(UserService userService)
+        public LoginModel(IUserService userService)
         {
             _userService = userService;
         }

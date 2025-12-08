@@ -4,6 +4,7 @@
     ViewData["Title"] = "Log In";
     Layout = null; // Use no layout for a simple login page
 }
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
 <head>
     <meta charset="utf-8" />
@@ -16,7 +17,7 @@
     <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl space-y-6">
         <h1 class="text-3xl font-extrabold text-center text-indigo-700">Simple Login</h1>
         <p class="text-center text-sm text-gray-500">
-            Log in to access the protected content.
+            Log in to OkaneFlow budget manager.
         </p>
 
         <form method="post" class="space-y-4">
@@ -24,17 +25,18 @@
 
             <!-- Username Input -->
             <div>
-                <label for="Input_Username" class="block text-sm font-medium text-gray-700">Username (admin or user)</label>
+                <label for="Input_Username" class="block text-sm font-medium text-gray-700">Username</label>
                 <input asp-for="Input.Username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                 <span asp-validation-for="Input.Username" class="text-red-500 text-xs"></span>
             </div>
 
             <!-- Password Input -->
             <div>
-                <label for="Input_Password" class="block text-sm font-medium text-gray-700">Password (testpassword)</label>
+                <label for="Input_Password" class="block text-sm font-medium text-gray-700">Password</label>
                 <input asp-for="Input.Password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                 <span asp-validation-for="Input.Password" class="text-red-500 text-xs"></span>
             </div>
+            <p>Don't have an Account? <a asp-page="/Account/Register" class="text-primary link-underline">Sign Up</a></p>
 
             <!-- Submit Button -->
             <div>

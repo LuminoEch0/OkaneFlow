@@ -1,18 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using OkaneFlow.ViewModels;
 using OkaneFlow.Mappers;
+using OkaneFlow.ViewModels;
 using Service;
+using Service.Interface;
 using System;
 
 namespace OkaneFlow.Pages.Transactions
 {
     public class DeleteModel : PageModel
     {
-        private readonly TransactionService _transaction_service;
-        private readonly CategoryService _category_service;
+        private readonly ITransactionService _transaction_service;
+        private readonly ICategoryService _category_service;
 
-        public DeleteModel(TransactionService transactionService, CategoryService categoryService)
+        public DeleteModel(ITransactionService transactionService, ICategoryService categoryService)
         {
             _transaction_service = transactionService;
             _category_service = categoryService;

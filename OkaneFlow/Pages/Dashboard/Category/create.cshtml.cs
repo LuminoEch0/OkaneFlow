@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Mappers;
 using OkaneFlow.ViewModels;
 using Service;
+using Service.Interface;
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
     public class createModel : PageModel
     {
-        private readonly CategoryService _accountService;
-        public createModel(CategoryService accountService)
+        private readonly ICategoryService _accountService;
+        public createModel(ICategoryService accountService)
         {
             _accountService = accountService;
         }

@@ -3,14 +3,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.ViewModels;
 using Service;
 using OkaneFlow.Mappers;
+using Service.Interface;
 
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
     public class editModel : PageModel
     {
-        private readonly CategoryService _accountService;
-        public editModel(CategoryService accountService)
+        private readonly ICategoryService _accountService;
+        public editModel(ICategoryService accountService)
         {
             _accountService = accountService;
         }

@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Helpers;
 using Service;
+using Service.Interface;
 
 namespace OkaneFlow.Pages.Account
 {
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public RegisterModel(UserService userService)
+        public RegisterModel(IUserService userService)
         {
             _userService = userService;
         }

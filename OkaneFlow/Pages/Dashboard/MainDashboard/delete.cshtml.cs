@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.ViewModels;
 using Service;
 using OkaneFlow.Mappers;
+using Service.Interface;
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
 {
     [Authorize]
     public class deleteModel : PageModel
     {
-        private readonly BankAccountService _accountService;
+        private readonly IBankAccountService _accountService;
 
-        public deleteModel(BankAccountService accountService)
+        public deleteModel(IBankAccountService accountService)
         {
             _accountService = accountService;
         }

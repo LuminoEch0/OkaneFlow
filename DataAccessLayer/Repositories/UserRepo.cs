@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.DataTransferObjects;
+using DataAccessLayer.Repositories.Interface;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Repositories
 {
-    public class UserRepo
+    public class UserRepo : IUserRepo
     {
         private readonly ConnectionManager _dbManager;
 

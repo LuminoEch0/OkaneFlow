@@ -1,19 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OkaneFlow.ViewModels;
 using OkaneFlow.Mappers;
+using OkaneFlow.ViewModels;
 using Service;
+using Service.Interface;
 using System;
 
 namespace OkaneFlow.Pages.Transactions
 {
     public class EditModel : PageModel
     {
-        private readonly TransactionService _transactionService;
-        private readonly CategoryService _categoryService;
+        private readonly ITransactionService _transactionService;
+        private readonly ICategoryService _categoryService;
 
-        public EditModel(TransactionService transactionService, CategoryService categoryService)
+        public EditModel(ITransactionService transactionService, ICategoryService categoryService)
         {
             _transactionService = transactionService;
             _categoryService = categoryService;

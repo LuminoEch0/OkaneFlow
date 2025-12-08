@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.DataTransferObjects;
+using DataAccessLayer.Repositories.Interface;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace DataAccessLayer.Repositories
 {
-    public class CategoryRepo
+    public class CategoryRepo : ICategoryRepo
     {
         //private string name = "@categoryName";
         private readonly ConnectionManager _dbManager;

@@ -1,14 +1,16 @@
 ﻿using DataAccessLayer.Repositories;
 using Service.Mappers;
 using Service.Models;
+using Service.Interface;
+using DataAccessLayer.Repositories.Interface;
 
 namespace Service
 {
-    public class BankAccountService
+    public class BankAccountService : IBankAccountService
     {
-        private readonly BankAccountRepo _repository;
+        private readonly IBankAccountRepo _repository;
 
-        public BankAccountService(BankAccountRepo repository)
+        public BankAccountService(IBankAccountRepo repository)
         {
             _repository = repository;
         }
@@ -47,7 +49,7 @@ namespace Service
                 throw new ArgumentException("Account name cannot be empty.");
             }
 
-            account.UserID = Guid.Parse("0588CE68-E40A-402E-86E4-A902265B2A9B");
+            
             var dto = BankAccountMapper.ToDTO(account);
             _repository.CreateBankAccount(dto);
         }

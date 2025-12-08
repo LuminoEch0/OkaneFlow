@@ -55,7 +55,12 @@
             </div>
         </div>
     </div>
-
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+        <h5 class="mb-0 fw-bold">Budget Categories</h5>
+        <a asp-page="/Dashboard/Category/create" asp-route-id="@Model.id" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-lg"></i> New Category
+        </a>
+    </div>
 <table class="table table-hover mt-3">
     <thead>
         <tr>
@@ -64,18 +69,34 @@
             <th scope="col">Category Name</th>
             <th scope="col">Allocated Amount</th>
             <th scope="col">AmountUsed</th>
+            <th class="py-3" style="width: 30%;">Progress</th>
+
             <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var category in Model.Categories)
         {
+            var isUnassigned = category.CategoryName == "Unassigned";
+            var percent = category.AllocatedAmount > 0 ? (category.AmountUsed / category.AllocatedAmount) * 100 : 0;
+            var progressColor = percent < 75 ? "bg-success" : percent < 100 ? "bg-warning" : "bg-danger";
             <tr>
                 <td hidden>@category.CategoryID</td>
                 <td hidden>@category.AccountID</td>
                 <td>@category.CategoryName</td>
                 <td>@category.AllocatedAmount.ToString("C")</td>
                 <td>@category.AmountUsed.ToString("C")</td>
+                <td>
+                    @if (!isUnassigned)
+                    {
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar @progressColor" role="progressbar"
+                                style="width: @(Math.Min(percent, 100))%" aria-valuenow="@percent" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">@percent.ToString("0")% used</small>
+                    }
+                </td>
                 <td>
                     <div class="dropdown">
                         <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown"

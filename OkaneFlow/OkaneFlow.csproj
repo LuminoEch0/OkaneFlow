@@ -37,7 +37,6 @@
     <Folder Include="Pages\People\Chats\" />
     <Folder Include="Pages\People\OtherDashboard\" />
     <Folder Include="Pages\People\Permissions\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

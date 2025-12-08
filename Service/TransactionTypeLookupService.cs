@@ -1,14 +1,16 @@
 ﻿using DataAccessLayer.Repositories;
+using DataAccessLayer.Repositories.Interface;
+using Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Service
 {
-    public class TransactionTypeLookupService
+    public class TransactionTypeLookupService : ITransactionTypeLookupService
     {
-        private readonly TransactionTypeLookupRepo _lookupRepo;
-        public TransactionTypeLookupService(TransactionTypeLookupRepo lookupRepo)
+        private readonly ITransactionTypeLookupRepo _lookupRepo;
+        public TransactionTypeLookupService(ITransactionTypeLookupRepo lookupRepo)
         {
             _lookupRepo = lookupRepo;
         }

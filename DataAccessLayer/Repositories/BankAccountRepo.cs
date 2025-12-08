@@ -1,5 +1,5 @@
 ﻿using DataAccessLayer.DataTransferObjects;
-using DataAccessLayer;
+using DataAccessLayer.Repositories.Interface;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace DataAccessLayer.Repositories
 {
-    public class BankAccountRepo
+    public class BankAccountRepo : IBankAccountRepo
     {
         private readonly ConnectionManager _dbManager;
 

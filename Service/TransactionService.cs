@@ -1,20 +1,22 @@
 using DataAccessLayer.Repositories;
+using DataAccessLayer.Repositories.Interface;
+using Service.Interface;
 using Service.Mappers;
 using Service.Models;
 
 namespace Service
 {
-    public class TransactionService
+    public class TransactionService : ITransactionService
     {
-        private readonly TransactionRepo _transactionRepository;
-        private readonly BankAccountRepo _bankAccountRepository;
-        private readonly CategoryRepo _categoryRepository;
-        private readonly TransactionTypeLookupService _transactionTypeLookupService;
+        private readonly ITransactionRepo _transactionRepository;
+        private readonly IBankAccountRepo _bankAccountRepository;
+        private readonly ICategoryRepo _categoryRepository;
+        private readonly ITransactionTypeLookupService _transactionTypeLookupService;
 
         private readonly int _expenseTypeId;
         private readonly int _incomeTypeId;
 
-        public TransactionService(TransactionRepo transactionRepository, BankAccountRepo bankAccountRepository, CategoryRepo categoryRepository, TransactionTypeLookupService transactionTypeLookupService)
+        public TransactionService(ITransactionRepo transactionRepository, IBankAccountRepo bankAccountRepository, ICategoryRepo categoryRepository, ITransactionTypeLookupService transactionTypeLookupService)
         {
             _transactionRepository = transactionRepository;
             _bankAccountRepository = bankAccountRepository;
@@ -33,7 +35,10 @@ namespace Service
 
         public void CreateTransaction(TransactionModel transaction, Guid accountId)
         {
-            // 1. Handle Unassigned Category for Income if not specified
+            if (transaction.TransactionID == Guid.Empty)
+            {
+                transaction.TransactionID = Guid.NewGuid();
+            }
             if (transaction.Type == _incomeTypeId)
             {
                 var category = _categoryRepository.GetCategoryById(transaction.CategoryID);

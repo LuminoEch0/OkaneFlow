@@ -1,11 +1,12 @@
 ﻿using DataAccessLayer.DataTransferObjects;
+using DataAccessLayer.Repositories.Interface;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
 
 namespace DataAccessLayer.Repositories
 {
-    public class TransactionTypeLookupRepo
+    public class TransactionTypeLookupRepo : ITransactionTypeLookupRepo
     {
         private readonly ConnectionManager _dbManager;
 

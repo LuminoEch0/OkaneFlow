@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.ViewModels;
 using Service;
 using OkaneFlow.Mappers;
+using Service.Interface;
 
 
 namespace OkaneFlow.Pages.Dashboard.MainDashboard
@@ -11,8 +12,8 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
     [Authorize]
     public class editModel : PageModel
     {
-        private readonly BankAccountService _accountService;
-        public editModel(BankAccountService accountService)
+        private readonly IBankAccountService _accountService;
+        public editModel(IBankAccountService accountService)
         {
             _accountService = accountService;
         }

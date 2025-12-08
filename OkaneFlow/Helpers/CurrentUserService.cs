@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Http;
 namespace OkaneFlow.Helpers
 {
     // Lightweight helper to access authenticated user info throughout the web project.
-    public class CurrentUserService
+    public class ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+        public ICurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

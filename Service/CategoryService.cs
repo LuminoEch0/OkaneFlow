@@ -1,15 +1,17 @@
 ﻿using DataAccessLayer.Repositories;
+using DataAccessLayer.Repositories.Interface;
+using Service.Interface;
 using Service.Mappers;
 using Service.Models;
 
 namespace Service
 {
 
-    public class CategoryService
+    public class CategoryService : ICategoryService
     {
-        private readonly CategoryRepo _repository;
+        private readonly ICategoryRepo _repository;
 
-        public CategoryService(CategoryRepo repository)
+        public CategoryService(ICategoryRepo repository)
         {
             _repository = repository;
         }
@@ -64,7 +66,7 @@ namespace Service
             _repository.AssignAmountAllocated(categoryId, amount);
         }
 
-        public decimal GetUnallocatedAmount(Guid accountId, BankAccountService bankAccountService)
+        public decimal GetUnallocatedAmount(Guid accountId, IBankAccountService bankAccountService)
         {
             var categories = GetAllCategories(accountId);
             var totalAllocated = categories.Sum(c => c.AllocatedAmount);

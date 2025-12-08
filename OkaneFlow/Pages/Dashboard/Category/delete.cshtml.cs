@@ -3,14 +3,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.ViewModels;
 using Service;
 using OkaneFlow.Mappers;
+using Service.Interface;
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
     public class deleteModel : PageModel
     {
-        private readonly CategoryService _accountService;
+        private readonly ICategoryService _accountService;
 
-        public deleteModel(CategoryService accountService)
+        public deleteModel(ICategoryService accountService)
         {
             _accountService = accountService;
         }

@@ -18,10 +18,10 @@ namespace OkaneFlow.ViewModels
 
         public BankAccountVM() { }
 
-        public BankAccountVM(string? accountName, decimal currentBalance)
+        public BankAccountVM(Guid userId, string? accountName, decimal currentBalance)
         {
             AccountID = Guid.NewGuid();
-            UserID = Guid.NewGuid();
+            UserID = userId;
             AccountName = accountName;
             CurrentBalance = currentBalance;
         }
