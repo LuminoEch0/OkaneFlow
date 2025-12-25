@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.DataTransferObjects;
-using DataAccessLayer.Repositories.Interface;
+using Service.RepoInterface;
+using Service.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -14,9 +15,9 @@ namespace DataAccessLayer.Repositories
         {
             _dbManager = dbManager;
         }
-        public List<TransactionTypeLookupDTO> GetAllTransactionTypesAsync()
+        public List<TransactionTypeLookupModel> GetAllTransactionTypesAsync()
         {
-            var transactionTypes = new List<TransactionTypeLookupDTO>();
+            var transactionTypes = new List<TransactionTypeLookupModel>();
             string sql = "SELECT * FROM TransactionTypeLookup";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
@@ -27,7 +28,7 @@ namespace DataAccessLayer.Repositories
                     {
                         while (reader.Read())
                         {
-                            transactionTypes.Add(new TransactionTypeLookupDTO
+                            transactionTypes.Add(new TransactionTypeLookupModel
                             {
                                 TypeID = reader.GetInt32(reader.GetOrdinal("TypeID")),
                                 TypeName = reader.GetString(reader.GetOrdinal("TypeName")),

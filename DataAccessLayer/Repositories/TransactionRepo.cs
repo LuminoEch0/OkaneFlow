@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
-using DataAccessLayer.Repositories.Interface;
+using Service.RepoInterface;
+using Service.Models;
+using DataAccessLayer.Mappers;
 
 namespace DataAccessLayer.Repositories
 {
@@ -17,7 +19,7 @@ namespace DataAccessLayer.Repositories
             _dbManager = dbManager;
         }
 
-        public List<TransactionDTO> GetTransactionsByAccountId(Guid accountId)
+        public List<TransactionModel> GetTransactionsByAccountId(Guid accountId)
         {
             var transactions = new List<TransactionDTO>();
             // Join with Category to filter by AccountID
@@ -51,11 +53,12 @@ namespace DataAccessLayer.Repositories
                     }
                 }
             }
-            return transactions;
+            return transactions.Select(TransactionMapper.ToModel).ToList();
         }
 
-        public void AddTransaction(TransactionDTO transaction)
+        public void AddTransaction(TransactionModel transaction)
         {
+            var dto = TransactionMapper.ToDTO(transaction);
             string sql = @"
                 INSERT INTO [Transaction] (TransactionID, CategoryID, Amount, Description, Date, Type) 
                 VALUES (@transactionId, @categoryId, @amount, @description, @date, @type)";
@@ -64,19 +67,19 @@ namespace DataAccessLayer.Repositories
             {
                 using (var command = new SqlCommand(sql, (SqlConnection)connection))
                 {
-                    command.Parameters.AddWithValue("@transactionId", transaction.TransactionID);
-                    command.Parameters.AddWithValue("@categoryId", transaction.CategoryID);
-                    command.Parameters.AddWithValue("@amount", transaction.Amount);
-                    command.Parameters.AddWithValue("@description", (object)transaction.Description ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@date", transaction.Date);
-                    command.Parameters.AddWithValue("@type", transaction.Type);
+                    command.Parameters.AddWithValue("@transactionId", dto.TransactionID);
+                    command.Parameters.AddWithValue("@categoryId", dto.CategoryID);
+                    command.Parameters.AddWithValue("@amount", dto.Amount);
+                    command.Parameters.AddWithValue("@description", (object)dto.Description ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@date", dto.Date);
+                    command.Parameters.AddWithValue("@type", dto.Type);
 
                     command.ExecuteNonQuery();
                 }
             }
         }
 
-        public TransactionDTO? GetTransactionById(Guid id)
+        public TransactionModel? GetTransactionById(Guid id)
         {
             string sql = "SELECT TransactionID, CategoryID, Amount, Description, Date, Type FROM [Transaction] WHERE TransactionID = @id";
 
@@ -89,7 +92,7 @@ namespace DataAccessLayer.Repositories
                     {
                         if (reader.Read())
                         {
-                            return new TransactionDTO
+                            var dto = new TransactionDTO
                             {
                                 TransactionID = reader.GetGuid(reader.GetOrdinal("TransactionID")),
                                 CategoryID = reader.GetGuid(reader.GetOrdinal("CategoryID")),
@@ -98,6 +101,7 @@ namespace DataAccessLayer.Repositories
                                 Date = reader.GetDateTime(reader.GetOrdinal("Date")),
                                 Type = reader.GetInt32(reader.GetOrdinal("Type"))
                             };
+                            return TransactionMapper.ToModel(dto);
                         }
                     }
                 }
@@ -105,8 +109,9 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public void UpdateTransaction(TransactionDTO transaction)
+        public void UpdateTransaction(TransactionModel transaction)
         {
+            var dto = TransactionMapper.ToDTO(transaction);
             string sql = @"
                 UPDATE [Transaction] 
                 SET CategoryID = @categoryId, Amount = @amount, Description = @description, Date = @date, Type = @type 
@@ -116,12 +121,12 @@ namespace DataAccessLayer.Repositories
             {
                 using (var command = new SqlCommand(sql, (SqlConnection)connection))
                 {
-                    command.Parameters.AddWithValue("@transactionId", transaction.TransactionID);
-                    command.Parameters.AddWithValue("@categoryId", transaction.CategoryID);
-                    command.Parameters.AddWithValue("@amount", transaction.Amount);
-                    command.Parameters.AddWithValue("@description", (object)transaction.Description ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@date", transaction.Date);
-                    command.Parameters.AddWithValue("@type", transaction.Type);
+                    command.Parameters.AddWithValue("@transactionId", dto.TransactionID);
+                    command.Parameters.AddWithValue("@categoryId", dto.CategoryID);
+                    command.Parameters.AddWithValue("@amount", dto.Amount);
+                    command.Parameters.AddWithValue("@description", (object)dto.Description ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@date", dto.Date);
+                    command.Parameters.AddWithValue("@type", dto.Type);
 
                     command.ExecuteNonQuery();
                 }

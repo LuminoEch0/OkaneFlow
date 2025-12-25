@@ -14,7 +14,7 @@ namespace Service.Models
         public string? AccountName { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal CurrentBalance { get; private set; } = 0.00m;
+        public decimal CurrentBalance { get; set; } = 0.00m;
 
         public BankAccountModel() { }
 

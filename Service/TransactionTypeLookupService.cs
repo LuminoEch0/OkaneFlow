@@ -1,5 +1,4 @@
-﻿using DataAccessLayer.Repositories;
-using DataAccessLayer.Repositories.Interface;
+﻿using Service.RepoInterface;
 using Service.Interface;
 using System;
 using System.Collections.Generic;

@@ -63,9 +63,9 @@ namespace OkaneFlow.Pages.Account
             // 2. Create Claims (The user identity data)
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role) // Storing the role is crucial for authorization
+                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User") // Storing the role is crucial for authorization
             };
 
             var claimsIdentity = new ClaimsIdentity(

@@ -2,7 +2,7 @@
 using Service.Models;
 using System.Linq;
 
-namespace Service.Mappers
+namespace DataAccessLayer.Mappers
 {
     public static class BankAccountMapper
     {
@@ -17,6 +17,10 @@ namespace Service.Mappers
         public static List<BankAccountModel> ToModelList(IEnumerable<BankAccountDTO> dtos)
         {
             return dtos.Select(ToModel).ToList();
+        }
+        public static List<BankAccountDTO> ToDTOList(IEnumerable<BankAccountModel> model)
+        {
+            return model.Select(ToDTO).ToList();
         }
         public static BankAccountDTO ToDTO(BankAccountModel model)
         {

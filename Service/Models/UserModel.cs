@@ -19,7 +19,7 @@ namespace Service.Models
         [StringLength(256)]
         public required string PasswordHash { get; set; }
 
-        public DateTime CreationDate { get; private set; }
+        public DateTime CreationDate { get; set; }
 
         public DateTime? LastLoginDate { get; set; }
 

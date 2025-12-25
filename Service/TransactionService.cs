@@ -1,7 +1,5 @@
-using DataAccessLayer.Repositories;
-using DataAccessLayer.Repositories.Interface;
+using Service.RepoInterface;
 using Service.Interface;
-using Service.Mappers;
 using Service.Models;
 
 namespace Service
@@ -29,8 +27,7 @@ namespace Service
 
         public List<TransactionModel> GetTransactionsByAccountId(Guid accountId)
         {
-            var dtos = _transactionRepository.GetTransactionsByAccountId(accountId);
-            return dtos.Select(TransactionMapper.ToModel).ToList();
+            return _transactionRepository.GetTransactionsByAccountId(accountId);
         }
 
         public void CreateTransaction(TransactionModel transaction, Guid accountId)
@@ -50,7 +47,7 @@ namespace Service
             }
 
             // 2. Save Transaction
-            _transactionRepository.AddTransaction(TransactionMapper.ToDTO(transaction));
+            _transactionRepository.AddTransaction(transaction);
 
             // 3. Update Bank Account Balance
             var account = _bankAccountRepository.GetBankAccountById(accountId);
@@ -81,10 +78,8 @@ namespace Service
 
         public void DeleteTransaction(Guid id)
         {
-            var transactionDto = _transactionRepository.GetTransactionById(id);
-            if (transactionDto == null) return;
-
-            var transaction = TransactionMapper.ToModel(transactionDto);
+            var transaction = _transactionRepository.GetTransactionById(id);
+            if (transaction == null) return;
 
             // Reverse effects
             var category = _categoryRepository.GetCategoryById(transaction.CategoryID);
@@ -116,15 +111,13 @@ namespace Service
 
         public TransactionModel? GetTransactionById(Guid id)
         {
-            var dto = _transactionRepository.GetTransactionById(id);
-            return dto == null ? null : TransactionMapper.ToModel(dto);
+            return _transactionRepository.GetTransactionById(id);
         }
 
         public void UpdateTransaction(TransactionModel transaction)
         {
-            var oldTransactionDto = _transactionRepository.GetTransactionById(transaction.TransactionID);
-            if (oldTransactionDto == null) return;
-            var oldTransaction = TransactionMapper.ToModel(oldTransactionDto);
+            var oldTransaction = _transactionRepository.GetTransactionById(transaction.TransactionID);
+            if (oldTransaction == null) return;
 
             // 1. Revert Old
             var oldCategory = _categoryRepository.GetCategoryById(oldTransaction.CategoryID);
@@ -164,7 +157,7 @@ namespace Service
                 }
             }
 
-            _transactionRepository.UpdateTransaction(TransactionMapper.ToDTO(transaction));
+            _transactionRepository.UpdateTransaction(transaction);
 
             // Update Balance/Category for NEW transaction
             var newCategory = _categoryRepository.GetCategoryById(transaction.CategoryID);

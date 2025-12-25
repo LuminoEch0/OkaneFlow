@@ -1,6 +1,4 @@
-﻿using DataAccessLayer.Repositories;
-using Service.Mappers;
-using Service.Models;
+﻿using Service.Models;
 
 namespace Service.Interface
 {

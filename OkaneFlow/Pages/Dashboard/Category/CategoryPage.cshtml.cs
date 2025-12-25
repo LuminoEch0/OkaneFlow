@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.ViewModels;
 using Service;
-using Service.Models;
 using OkaneFlow.Mappers;
 using Service.Interface;
+
 
 namespace OkaneFlow.Pages.Dashboard.Category
 {
@@ -21,8 +21,8 @@ namespace OkaneFlow.Pages.Dashboard.Category
         }
         [BindProperty(SupportsGet = true)]
         public Guid id { get; set; }
-        public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
-        public BankAccountModel? Account { get; set; } = new BankAccountModel();
+        public List<CategoryVM> Categories { get; set; } = new();
+        public BankAccountVM? Account { get; set; } = new BankAccountVM();
         public decimal UnallocatedAmount { get; set; }
 
         [BindProperty]
@@ -36,13 +36,18 @@ namespace OkaneFlow.Pages.Dashboard.Category
 
         public void OnGet(Guid id)
         {
-            Categories = _categoryService.GetAllCategories(id);
+            Categories = CategoryMapper.ToViewModelList(_categoryService.GetAllCategories(id));
             UnallocatedAmount = _categoryService.GetUnallocatedAmount(id, _accountService);
-            if (Account == null)
+            var accountModel = _accountService.GetAccountById(id);
+            if (accountModel == null)
             {
-                Account = new BankAccountModel();
+                Account = new BankAccountVM();
             }
-            Account = _accountService.GetAccountById(id);
+            else
+            {
+                Account = BankAccountMapper.ToViewModel(accountModel);
+            }
+            
 
         }
 

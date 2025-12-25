@@ -1,6 +1,9 @@
 ﻿using DataAccessLayer.DataTransferObjects;
-using DataAccessLayer.Repositories.Interface;
+using DataAccessLayer.Mappers;
 using Microsoft.Data.SqlClient;
+using Microsoft.Identity.Client;
+using Service.Models;
+using Service.RepoInterface;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,7 +19,7 @@ namespace DataAccessLayer.Repositories
         {
             _dbManager = dbManager;
         }
-        public List<BankAccountDTO> GetBankAccounts(Guid id)
+        public List<BankAccountModel> GetBankAccounts(Guid id)
         {
             var bankAccounts = new List<BankAccountDTO>();
             string sql = "SELECT [AccountID],[UserID],[AccountName],[CurrentBalance] FROM BankAccount WHERE [UserID] = @id";
@@ -41,10 +44,10 @@ namespace DataAccessLayer.Repositories
                     }
                 }
             }
-            return bankAccounts;
+            return BankAccountMapper.ToModelList(bankAccounts);
         }
 
-        public BankAccountDTO? GetBankAccountById(Guid id)
+        public BankAccountModel? GetBankAccountById(Guid id)
         {
             string sql = "SELECT [AccountID],[UserID],[AccountName],[CurrentBalance] FROM BankAccount WHERE AccountID = @id";
 
@@ -57,21 +60,23 @@ namespace DataAccessLayer.Repositories
                     {
                         if (reader.Read())
                         {
-                            return new BankAccountDTO
-                            {
-                                AccountID = reader.GetGuid(reader.GetOrdinal("AccountID")),
-                                UserID = reader.GetGuid(reader.GetOrdinal("UserID")),
-                                AccountName = reader.GetString(reader.GetOrdinal("AccountName")),
-                                CurrentBalance = reader.GetDecimal(reader.GetOrdinal("CurrentBalance"))
-                            };
-                        }
+                            return new BankAccountModel
+                            (
+                                reader.GetGuid(reader.GetOrdinal("AccountID")),
+                                reader.GetGuid(reader.GetOrdinal("UserID")),
+                                reader.GetString(reader.GetOrdinal("AccountName")),
+                                reader.GetDecimal(reader.GetOrdinal("CurrentBalance"))
+                            );
+
+                        };
                     }
                 }
             }
             return null;
         }
+        
 
-        public void UpdateBankAccount(BankAccountDTO dto)
+        public void UpdateBankAccount(BankAccountModel model)
         {
             string sql = "UPDATE BankAccount SET AccountName = @name, CurrentBalance = @balance WHERE AccountID = @id";
 
@@ -79,9 +84,9 @@ namespace DataAccessLayer.Repositories
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
-                    cmd.Parameters.AddWithValue("@id", dto.AccountID);
-                    cmd.Parameters.AddWithValue("@balance", dto.CurrentBalance);
-                    cmd.Parameters.AddWithValue("@name", dto.AccountName);
+                    cmd.Parameters.AddWithValue("@id", model.AccountID);
+                    cmd.Parameters.AddWithValue("@balance", model.CurrentBalance);
+                    cmd.Parameters.AddWithValue("@name", model.AccountName);
 
                     cmd.ExecuteNonQuery();
                 }
@@ -104,7 +109,7 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public void CreateBankAccount(BankAccountDTO newAccount)
+        public void CreateBankAccount(BankAccountModel newAccount)
         {
             string sql = "INSERT INTO BankAccount ([AccountID],[UserID],[AccountName],[CurrentBalance]) VALUES (@id, @userId, @name, @balance)";
 

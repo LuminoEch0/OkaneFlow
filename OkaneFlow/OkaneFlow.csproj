@@ -32,15 +32,15 @@
 
   <ItemGroup>
 	<Folder Include="Helpers\Enums\" />
-    <Folder Include="Pages\Dashboard\Debt\" />
-    <Folder Include="Pages\Dashboard\Subscription\" />
     <Folder Include="Pages\People\Chats\" />
     <Folder Include="Pages\People\OtherDashboard\" />
     <Folder Include="Pages\People\Permissions\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
     <ProjectReference Include="..\Service\Service.csproj" />
+
   </ItemGroup>
 
 </Project>

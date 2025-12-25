@@ -2,8 +2,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OkaneFlow.Helpers;
-using DataAccessLayer.Repositories.Interface;
-using DataAccessLayer.DataTransferObjects;
+using Service.RepoInterface;
+using Service.Models;
 using Service.Interface;
 using Service; // for PassswordManager (used by UserService)
 using System.ComponentModel.DataAnnotations;
@@ -48,19 +48,19 @@ namespace OkaneFlow.Pages.Account
                 return;
             }
 
-            var dto = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
-            if (dto == null)
+            var model = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
+            if (model == null)
             {
                 return;
             }
 
-            UserName = dto.Username;
-            Role = dto.Role;
-            CreationDate = dto.CreationDate;
+            UserName = model.Username;
+            Role = model.IsAdmin ? "Admin" : "User";
+            CreationDate = model.CreationDate;
 
             // Populate the edit form with current values
-            Profile.Username = dto.Username;
-            Profile.Email = dto.Email;
+            Profile.Username = model.Username;
+            Profile.Email = model.Email;
         }
 
         public async Task<IActionResult> OnPostUpdateProfileAsync()
@@ -76,18 +76,18 @@ namespace OkaneFlow.Pages.Account
                 return Page();
             }
 
-            var dto = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
-            if (dto == null)
+            var model = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
+            if (model == null)
             {
                 ModelState.AddModelError(string.Empty, "User not found.");
                 return Page();
             }
 
             // Apply changes
-            dto.Username = Profile.Username?.Trim() ?? dto.Username;
-            dto.Email = Profile.Email?.Trim() ?? dto.Email;
+            model.Username = Profile.Username?.Trim() ?? model.Username;
+            model.Email = Profile.Email?.Trim() ?? model.Email;
 
-            var ok = await _userRepo.UpdateUserAsync(dto);
+            var ok = await _userRepo.UpdateUserAsync(model);
             if (!ok)
             {
                 ModelState.AddModelError(string.Empty, "Failed to update profile.");
@@ -126,16 +126,16 @@ namespace OkaneFlow.Pages.Account
                 return Page();
             }
 
-            var dto = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
-            if (dto == null)
+            var model = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
+            if (model == null)
             {
                 ModelState.AddModelError(string.Empty, "User not found.");
                 return Page();
             }
 
             // Hash new password and save
-            dto.HashedPassword = PassswordManager.HashPassword(PasswordChange.NewPassword);
-            var ok = await _userRepo.UpdateUserAsync(dto);
+            model.PasswordHash = PassswordManager.HashPassword(PasswordChange.NewPassword);
+            var ok = await _userRepo.UpdateUserAsync(model);
             if (!ok)
             {
                 ModelState.AddModelError(string.Empty, "Failed to change password.");

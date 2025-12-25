@@ -1,10 +1,7 @@
-﻿using DataAccessLayer.DataTransferObjects;
-using DataAccessLayer.Repositories;
-using DataAccessLayer.Repositories.Interface;
-using Service.Interface;
+﻿using Service.Interface;
+using Service.RepoInterface;
+using Service.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Service
 {
@@ -18,7 +15,7 @@ namespace Service
             _userRepository = userRepository;
         }
 
-        public async Task<UserDTO?> AuthenticateAsync(string username, string password)
+        public async Task<UserModel?> AuthenticateAsync(string username, string password)
         {
             var user = await _userRepository.GetByUsernameAsync(username);
 
@@ -27,10 +24,11 @@ namespace Service
                 return null;
             }
 
-            if (PassswordManager.VerifyPassword(password, user.HashedPassword))
+            if (PassswordManager.VerifyPassword(password, user.PasswordHash))
             {
-                return user; 
+                return user;
             }
+
             Console.WriteLine("Authentication Failed");
             return null;
         }
@@ -39,20 +37,17 @@ namespace Service
         {
             var hashed = PassswordManager.HashPassword(password);
 
-            // generate a pseudo-random positive int id for the demo (replace with proper identity in production)
-            var id = Guid.NewGuid();
-
-            var dto = new UserDTO
+            var user = new UserModel
             {
-                Id = id,
+                UserID = Guid.NewGuid(),
                 Username = username,
                 Email = email,
-                HashedPassword = hashed,
-                Role = role ?? "User",
-                CreationDate = DateTime.UtcNow
+                PasswordHash = hashed,
+                CreationDate = DateTime.UtcNow,
+                IsAdmin = string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase)
             };
 
-            return _userRepository.CreateUserAsync(dto);
+            return _userRepository.CreateUserAsync(user);
         }
     }
 }

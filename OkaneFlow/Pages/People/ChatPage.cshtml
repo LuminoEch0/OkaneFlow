@@ -1,0 +1,69 @@
+﻿@page
+@model OkaneFlow.Pages.People.ChatPageModel
+@{
+    ViewData["Title"] = "People - Chats";
+}
+
+<div class="container py-4">
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a asp-area="" asp-page="/People/ChatPage" class="nav-link active">Chats</a>
+        </li>
+        <li class="nav-item">
+            <a asp-area="" asp-page="/People/PermissionsPage" class="nav-link">Permissions</a>
+        </li>
+        <li class="nav-item">
+            <a asp-area="" asp-page="/People/OtherDashboardPage" class="nav-link">Other Dashboard</a>
+        </li>
+    </ul>
+
+    <div class="row">
+        <div class="col-md-4 border-end">
+            <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold">Financial Team</h6>
+                        <small>Now</small>
+                    </div>
+                    <small>Reviewing the Q4 budget...</small>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold">Support</h6>
+                        <small class="text-muted">3 days ago</small>
+                    </div>
+                    <small class="text-muted">Ticket #1234 resolved.</small>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold">Alice (Accountant)</h6>
+                        <small class="text-muted">1 week ago</small>
+                    </div>
+                    <small class="text-muted">Please send the receipts.</small>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="bg-light p-4 rounded-3 h-100 d-flex flex-column justify-content-between" style="min-height: 400px;">
+                <div>
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary text-white rounded-circle p-2 me-2">AD</div>
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <p class="mb-0">Hey, have you checked the dashboard updates?</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-3 flex-row-reverse">
+                        <div class="bg-secondary text-white rounded-circle p-2 ms-2">ME</div>
+                        <div class="bg-primary text-white p-3 rounded shadow-sm">
+                            <p class="mb-0">Yes, looks great! The new categories feature is working.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mt-3">
+                    <input type="text" class="form-control" placeholder="Type a message...">
+                    <button class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

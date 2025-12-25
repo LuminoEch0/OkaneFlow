@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.DataTransferObjects;
-using DataAccessLayer.Repositories.Interface;
+using Service.RepoInterface;
+using Service.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,11 @@ namespace DataAccessLayer.Repositories
         private readonly ConnectionManager _dbManager;
 
         public UserRepo(ConnectionManager dbManager)
-        {   
+        {
             _dbManager = dbManager;
         }
 
-        public Task<UserDTO?> GetByUsernameAsync(string username)
+        public Task<UserModel?> GetByUsernameAsync(string username)
         {
             string sql = "SELECT [UserID],[Username],[Email],[PasswordHash],[CreationDate],[Role] FROM [User] WHERE Username = @username";
 
@@ -30,25 +31,26 @@ namespace DataAccessLayer.Repositories
                     {
                         if (reader.Read())
                         {
-                            var dto = new UserDTO
+                            string role = reader.GetString(reader.GetOrdinal("Role"));
+                            var model = new UserModel
                             {
-                                Id = reader.GetGuid(reader.GetOrdinal("UserID")),
+                                UserID = reader.GetGuid(reader.GetOrdinal("UserID")),
                                 Username = reader.GetString(reader.GetOrdinal("Username")),
                                 Email = reader.GetString(reader.GetOrdinal("Email")),
-                                HashedPassword = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                                Role = reader.GetString(reader.GetOrdinal("Role")),
+                                PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
+                                IsAdmin = role == "Admin",
                                 CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate"))
                             };
-                            return Task.FromResult<UserDTO?>(dto);
+                            return Task.FromResult<UserModel?>(model);
                         }
                     }
                 }
             }
 
-            return Task.FromResult<UserDTO?>(null);
+            return Task.FromResult<UserModel?>(null);
         }
 
-        public Task<UserDTO?> GetByIdAsync(int id)
+        public Task<UserModel?> GetByIdAsync(Guid id)
         {
             string sql = "SELECT TOP (1) [UserID],[Username],[Email],[PasswordHash],[CreationDate],[Role] FROM [User] WHERE UserID = @id";
 
@@ -61,25 +63,26 @@ namespace DataAccessLayer.Repositories
                     {
                         if (reader.Read())
                         {
-                            var dto = new UserDTO
+                            string role = reader.GetString(reader.GetOrdinal("Role"));
+                            var model = new UserModel
                             {
-                                Id = reader.GetGuid(reader.GetOrdinal("UserID")),
+                                UserID = reader.GetGuid(reader.GetOrdinal("UserID")),
                                 Username = reader.GetString(reader.GetOrdinal("Username")),
                                 Email = reader.GetString(reader.GetOrdinal("Email")),
-                                HashedPassword = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                                Role = reader.GetString(reader.GetOrdinal("Role")),
+                                PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
+                                IsAdmin = role == "Admin",
                                 CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate"))
                             };
-                            return Task.FromResult<UserDTO?>(dto);
+                            return Task.FromResult<UserModel?>(model);
                         }
                     }
                 }
             }
 
-            return Task.FromResult<UserDTO?>(null);
+            return Task.FromResult<UserModel?>(null);
         }
 
-        public Task<bool> CreateUserAsync(UserDTO user)
+        public Task<bool> CreateUserAsync(UserModel user)
         {
             string sql = "INSERT INTO [User] ([Username],[Email],[PasswordHash],[CreationDate],[Role]) VALUES (@username, @email, @passwordHash, @creationDate, @role)";
 
@@ -87,11 +90,11 @@ namespace DataAccessLayer.Repositories
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
-                    cmd.Parameters.AddWithValue("@username", user.Username ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@email", user.Email ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@passwordHash", user.HashedPassword ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@username", user.Username);
+                    cmd.Parameters.AddWithValue("@email", user.Email);
+                    cmd.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
                     cmd.Parameters.AddWithValue("@creationDate", user.CreationDate);
-                    cmd.Parameters.AddWithValue("@role", user.Role ?? "User");
+                    cmd.Parameters.AddWithValue("@role", user.IsAdmin ? "Admin" : "User");
 
                     var rows = cmd.ExecuteNonQuery();
                     return Task.FromResult(rows > 0);
@@ -99,7 +102,7 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public Task<bool> UpdateUserAsync(UserDTO user)
+        public Task<bool> UpdateUserAsync(UserModel user)
         {
             string sql = "UPDATE [User] SET Username = @username, Email = @email, PasswordHash = @passwordHash, Role = @role WHERE UserID = @id";
 
@@ -107,11 +110,11 @@ namespace DataAccessLayer.Repositories
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
-                    cmd.Parameters.AddWithValue("@id", user.Id);
-                    cmd.Parameters.AddWithValue("@username", user.Username ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@email", user.Email ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@passwordHash", user.HashedPassword ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@role", user.Role ?? "User");
+                    cmd.Parameters.AddWithValue("@id", user.UserID);
+                    cmd.Parameters.AddWithValue("@username", user.Username);
+                    cmd.Parameters.AddWithValue("@email", user.Email);
+                    cmd.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
+                    cmd.Parameters.AddWithValue("@role", user.IsAdmin ? "Admin" : "User");
 
                     var rows = cmd.ExecuteNonQuery();
                     return Task.FromResult(rows > 0);
@@ -119,7 +122,7 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public Task<bool> DeleteUserAsync(int userId)
+        public Task<bool> DeleteUserAsync(Guid userId)
         {
             string sql = "DELETE FROM [User] WHERE UserID = @id";
 
@@ -134,10 +137,10 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public Task<List<UserDTO>> GetAllUsersAsync()
+        public Task<List<UserModel>> GetAllUsersAsync()
         {
             string sql = "SELECT [UserID],[Username],[Email],[PasswordHash],[CreationDate],[Role] FROM [User]";
-            var users = new List<UserDTO>();
+            var users = new List<UserModel>();
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
             {
@@ -147,13 +150,14 @@ namespace DataAccessLayer.Repositories
                     {
                         while (reader.Read())
                         {
-                            users.Add(new UserDTO
+                            string role = reader.GetString(reader.GetOrdinal("Role"));
+                            users.Add(new UserModel
                             {
-                                Id = reader.GetGuid(reader.GetOrdinal("UserID")),
+                                UserID = reader.GetGuid(reader.GetOrdinal("UserID")),
                                 Username = reader.GetString(reader.GetOrdinal("Username")),
                                 Email = reader.GetString(reader.GetOrdinal("Email")),
-                                HashedPassword = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                                Role = reader.GetString(reader.GetOrdinal("Role")),
+                                PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
+                                IsAdmin = role == "Admin",
                                 CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate"))
                             });
                         }

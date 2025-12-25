@@ -1,8 +1,7 @@
-﻿using DataAccessLayer.Repositories;
-using Service.Mappers;
+﻿
 using Service.Models;
 using Service.Interface;
-using DataAccessLayer.Repositories.Interface;
+using Service.RepoInterface;
 
 namespace Service
 {
@@ -17,20 +16,17 @@ namespace Service
 
         public List<BankAccountModel> GetAllBankAccounts(Guid id)
         {
-            var dtos = _repository.GetBankAccounts(id);
-            return BankAccountMapper.ToModelList(dtos);
+            return _repository.GetBankAccounts(id);
         }
 
         public BankAccountModel? GetAccountById(Guid accountId)
         {
-            var dto = _repository.GetBankAccountById(accountId);
-            return dto == null ? null : BankAccountMapper.ToModel(dto);
+            return _repository.GetBankAccountById(accountId);
         }
 
         public void UpdateAccountDetails(BankAccountModel account)
         {
-            var dto = BankAccountMapper.ToDTO(account);
-            _repository.UpdateBankAccount(dto);
+            _repository.UpdateBankAccount(account);
         }
 
         public void DeleteAccount(Guid accountId)
@@ -49,9 +45,8 @@ namespace Service
                 throw new ArgumentException("Account name cannot be empty.");
             }
 
-            
-            var dto = BankAccountMapper.ToDTO(account);
-            _repository.CreateBankAccount(dto);
+
+            _repository.CreateBankAccount(account);
         }
     }
 }

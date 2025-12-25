@@ -2,7 +2,7 @@
 using Service.Models;
 using System.Linq;
 
-namespace Service.Mappers
+namespace DataAccessLayer.Mappers
 {
     public class CategoryMapper
     {

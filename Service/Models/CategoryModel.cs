@@ -11,9 +11,9 @@ namespace Service.Models
 
         public string? CategoryName { get; set; }
 
-        public decimal AllocatedAmount { get; private set; }
+        public decimal AllocatedAmount { get; set; }
 
-        public decimal AmountUsed { get; private set; } //this is the amount used
+        public decimal AmountUsed { get; set; } //this is the amount used
 
         public CategoryModel() { }
 

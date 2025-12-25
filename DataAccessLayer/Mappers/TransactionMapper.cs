@@ -2,7 +2,7 @@ using DataAccessLayer.DataTransferObjects;
 using Service.Models;
 
 
-namespace Service.Mappers
+namespace DataAccessLayer.Mappers
 {
     public static class TransactionMapper
     {

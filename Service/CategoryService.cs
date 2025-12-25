@@ -1,7 +1,5 @@
-﻿using DataAccessLayer.Repositories;
-using DataAccessLayer.Repositories.Interface;
+﻿using Service.RepoInterface;
 using Service.Interface;
-using Service.Mappers;
 using Service.Models;
 
 namespace Service
@@ -18,20 +16,17 @@ namespace Service
 
         public List<CategoryModel> GetAllCategories(Guid id)
         {
-            var dtos = _repository.GetCategories(id);
-            return CategoryMapper.ToModelList(dtos);
+            return _repository.GetCategories(id);
         }
 
         public CategoryModel? GetCategoryById(Guid categoryId)
         {
-            var dto = _repository.GetCategoryById(categoryId);
-            return dto == null ? null : CategoryMapper.ToModel(dto);
+            return _repository.GetCategoryById(categoryId);
         }
 
         public void UpdateCategoryDetails(CategoryModel category)
         {
-            var dto = CategoryMapper.ToDTO(category);
-            _repository.UpdateCategory(dto);
+            _repository.UpdateCategory(category);
         }
 
         public void DeleteCategory(Guid categoryId)
@@ -53,8 +48,9 @@ namespace Service
 
             //remeber to to pass teh account id somewhere
 
-            var dto = CategoryMapper.ToDTO(category);
-            _repository.CreateCategory(dto);
+            //remeber to to pass teh account id somewhere
+
+            _repository.CreateCategory(category);
         }
 
         public void AssignAmountToAllocate(Guid categoryId, decimal amount)

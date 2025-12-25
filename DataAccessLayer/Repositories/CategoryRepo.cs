@@ -1,23 +1,24 @@
 ﻿using DataAccessLayer.DataTransferObjects;
-using DataAccessLayer.Repositories.Interface;
+using Service.RepoInterface;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using Service.Models;
+using DataAccessLayer.Mappers;
 
 namespace DataAccessLayer.Repositories
 {
     public class CategoryRepo : ICategoryRepo
     {
-        //private string name = "@categoryName";
         private readonly ConnectionManager _dbManager;
 
         public CategoryRepo(ConnectionManager dbManager)
         {
             _dbManager = dbManager;
         }
-        public List<CategoryDTO> GetCategories(Guid id)
+
+        public List<CategoryModel> GetCategories(Guid id)
         {
             var categories = new List<CategoryDTO>();
             string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @id";
@@ -43,11 +44,12 @@ namespace DataAccessLayer.Repositories
                     }
                 }
             }
-            return categories;
+            return CategoryMapper.ToModelList(categories);
         }
 
-        public CategoryDTO? GetCategoryById(Guid id)
+        public CategoryModel? GetCategoryById(Guid id)
         {
+            CategoryDTO? dto = null;
             string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE CategoryID = @id";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
@@ -59,7 +61,7 @@ namespace DataAccessLayer.Repositories
                     {
                         if (reader.Read())
                         {
-                            return new CategoryDTO
+                            dto = new CategoryDTO
                             {
                                 CategoryID = reader.GetGuid(reader.GetOrdinal("CategoryID")),
                                 AccountID = reader.GetGuid(reader.GetOrdinal("AccountID")),
@@ -67,6 +69,7 @@ namespace DataAccessLayer.Repositories
                                 AllocatedAmount = reader.GetDecimal(reader.GetOrdinal("AllocatedAmount")),
                                 AmountUsed = reader.GetDecimal(reader.GetOrdinal("AmountUsed"))
                             };
+                            return CategoryMapper.ToModel(dto);
                         }
                     }
                 }
@@ -74,8 +77,11 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public void UpdateCategory(CategoryDTO dto)
+        public void UpdateCategory(CategoryModel model)
         {
+            // Map model to DTO for DB operations
+            var dto = CategoryMapper.ToDTO(model);
+
             string sql = "UPDATE Category SET Name = @name, AllocatedAmount = @allocatedAmount, AmountUsed = @amountUsed WHERE CategoryID = @id";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
@@ -106,9 +112,16 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public void CreateCategory(CategoryDTO dto)
+        public void CreateCategory(CategoryModel model)
         {
-            //string sql = $"INSERT INTO Category ([CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed]) VALUES (@categoryId, @accountId, {"name"}, @allocatedAmount)";
+            // Ensure there is a CategoryID
+            if (model.CategoryID == Guid.Empty)
+            {
+                model.CategoryID = Guid.NewGuid();
+            }
+
+            var dto = CategoryMapper.ToDTO(model);
+
             string sql = "INSERT INTO Category ([CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed]) VALUES (@categoryId, @accountId, @name, @allocatedAmount, @amountUsed)";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
@@ -140,7 +153,7 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public CategoryDTO GetUnassignedCategory(Guid accountId)
+        public CategoryModel GetUnassignedCategory(Guid accountId)
         {
             string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @accountId AND Name = 'Unassigned'";
 
@@ -153,7 +166,7 @@ namespace DataAccessLayer.Repositories
                     {
                         if (reader.Read())
                         {
-                            return new CategoryDTO
+                            var dto = new CategoryDTO
                             {
                                 CategoryID = reader.GetGuid(reader.GetOrdinal("CategoryID")),
                                 AccountID = reader.GetGuid(reader.GetOrdinal("AccountID")),
@@ -161,22 +174,22 @@ namespace DataAccessLayer.Repositories
                                 AllocatedAmount = reader.GetDecimal(reader.GetOrdinal("AllocatedAmount")),
                                 AmountUsed = reader.GetDecimal(reader.GetOrdinal("AmountUsed"))
                             };
+                            return CategoryMapper.ToModel(dto);
                         }
                     }
                 }
             }
 
-            // If not found, create it
-            var newCategory = new CategoryDTO
-            {
-                CategoryID = Guid.NewGuid(),
-                AccountID = accountId,
-                CategoryName = "Unassigned",
-                AllocatedAmount = 0,
-                AmountUsed = 0
-            };
-            CreateCategory(newCategory);
-            return newCategory;
+            // If not found, create it as a model and persist
+            var newModel = new CategoryModel(
+                Guid.NewGuid(),
+                accountId,
+                "Unassigned",
+                0m,
+                0m);
+
+            CreateCategory(newModel);
+            return newModel;
         }
     }
 }
