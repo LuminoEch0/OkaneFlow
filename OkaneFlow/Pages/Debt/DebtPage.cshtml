@@ -1,0 +1,168 @@
+﻿@page
+@model OkaneFlow.Pages.Debt.DebtPageModel
+@using OkaneFlow.Helpers.Enums
+@{
+    ViewData["Title"] = "Debts";
+    var liabilities = Model.Debts.Where(d => d.Type == DebtType.OwedByMe).ToList();
+    var receivables = Model.Debts.Where(d => d.Type == DebtType.OwedToMe).ToList();
+}
+
+<div class="container py-4">
+    <!-- Header & Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Debts</h1>
+            <p class="text-secondary mb-0">Track liabilities and receivables</p>
+        </div>
+        <div>
+            <a asp-page="/Dashboard/MainDashboard/Dashboard" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+
+
+    <!-- Content -->
+    <div class="row g-4 d-flex flex-column-reverse flex-xl-row">
+        <!-- Liabilities Section -->
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-top-0 rounded-bottom h-100">
+                <div
+                    class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                    <h5 class="mb-0 fw-bold text-danger">Liabilities (I Owe)</h5>
+                    <a asp-page="/Debt/create" asp-route-type="0" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-plus-lg"></i> Add Liability
+                    </a>
+                </div>
+                <div class="table-responsive-md pb-2">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Title</th>
+                                <th>To Whom</th>
+                                <th>Remaining</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var debt in liabilities)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold">@debt.Name</td>
+                                    <td>@debt.AssociatedEntity</td>
+                                    <td class="text-danger fw-bold">@debt.RemainingAmount.ToString("C").Replace("$", "€")
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-secondary p-0" type="button"
+                                                data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical fs-5"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                                <li>
+                                                    <a class="dropdown-item" asp-page="/Debt/payment"
+                                                        asp-route-id="@debt.DebtID">
+                                                        <i class="bi bi-wallet2 me-2"></i> Record Payment
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" asp-page="/Debt/edit"
+                                                        asp-route-id="@debt.DebtID">
+                                                        <i class="bi bi-pencil me-2"></i> Edit Details
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" asp-page="/Debt/delete"
+                                                        asp-route-id="@debt.DebtID">
+                                                        <i class="bi bi-trash me-2"></i> Remove Debt
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (!liabilities.Any())
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-secondary">No liabilities found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receivables Section -->
+        <div class="col-12 col-xl-6">
+            <div class="card shadow-sm border-top-0 rounded-bottom h-100">
+                <div
+                    class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                    <h5 class="mb-0 fw-bold text-success">Receivables (Owed To Me)</h5>
+                    <a asp-page="/Debt/create" asp-route-type="1" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-plus-lg"></i> Add Receivable
+                    </a>
+                </div>
+                <div class="table-responsive-md pb-2">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Title</th>
+                                <th>From Whom</th>
+                                <th>Remaining</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var debt in receivables)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold">@debt.Name</td>
+                                    <td>@debt.AssociatedEntity</td>
+                                    <td class="text-success fw-bold">@debt.RemainingAmount.ToString("C").Replace("$", "€")
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical fs-5"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                                <li>
+                                                    <a class="dropdown-item" asp-page="/Debt/payment" asp-route-id="@debt.DebtID">
+                                                        <i class="bi bi-wallet2 me-2"></i> Record Payment
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" asp-page="/Debt/edit" asp-route-id="@debt.DebtID">
+                                                        <i class="bi bi-pencil me-2"></i> Edit Details
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" asp-page="/Debt/delete" asp-route-id="@debt.DebtID">
+                                                        <i class="bi bi-trash me-2"></i> Remove Debt
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (!receivables.Any())
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-secondary">No receivables found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

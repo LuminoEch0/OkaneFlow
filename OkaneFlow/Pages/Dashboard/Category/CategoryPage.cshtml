@@ -21,11 +21,9 @@
             <a class="nav-link active fw-bold" asp-page="/Dashboard/Category/CategoryPage" asp-route-id="@Model.id">Categories</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-secondary" asp-page="/Dashboard/Category/Subscriptions" asp-route-id="@Model.id">Subscriptions</a>
+            <a class="nav-link text-secondary" asp-page="/Dashboard/Subscription/SubscriptionPage" asp-route-id="@Model.id">Subscriptions</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-secondary" asp-page="/Dashboard/Category/Debts" asp-route-id="@Model.id">Debts</a>
-        </li>
+
     </ul>
 
     <!-- Overview Content -->
@@ -113,10 +111,18 @@
                                                 <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport">
                                                     <i class="bi bi-three-dots-vertical"></i>
                                                 </button>
-                                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
-                                                    <li><a class="dropdown-item" asp-page="/Dashboard/Category/edit" asp-route-id="@category.CategoryID">Edit</a></li>
+                                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                                    <li>
+                                                        <a class="dropdown-item" asp-page="/Dashboard/Category/edit" asp-route-id="@category.CategoryID">
+                                                            <i class="bi bi-pencil me-2"></i> Modify Category
+                                                        </a>
+                                                    </li>
                                                     <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item text-danger" asp-page="/Dashboard/Category/delete" asp-route-id="@category.CategoryID">Delete</a></li>
+                                                    <li>
+                                                        <a class="dropdown-item text-danger" asp-page="/Dashboard/Category/delete" asp-route-id="@category.CategoryID">
+                                                            <i class="bi bi-trash me-2"></i> Remove Category
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         }

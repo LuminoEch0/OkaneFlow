@@ -1,0 +1,30 @@
+@page "{id:guid}"
+@model OkaneFlow.Pages.Debt.deleteModel
+@{
+    ViewData["Title"] = "Delete Debt";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0 fw-bold">Delete Debt</h5>
+        </div>
+        <div class="card-body p-4">
+            <p class="lead">Are you sure you want to delete the debt <strong>@Model.Debt.Name</strong>?</p>
+            <p class="text-secondary">This action cannot be undone.</p>
+
+            <dl class="row">
+                <dt class="col-sm-4">Initial Amount</dt>
+                <dd class="col-sm-8">@Model.Debt.InitialAmount.ToString("C").Replace("$", "€")</dd>
+
+                <dt class="col-sm-4">Remaining</dt>
+                <dd class="col-sm-8">@Model.Debt.RemainingAmount.ToString("C").Replace("$", "€")</dd>
+            </dl>
+
+            <form method="post" class="mt-4 d-flex justify-content-between">
+                <a asp-page="/Debt/DebtPage" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            </form>
+        </div>
+    </div>
+</div>

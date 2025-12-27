@@ -1,0 +1,69 @@
+@page "{id:guid}"
+@model OkaneFlow.Pages.Dashboard.Subscription.editModel
+@{
+    ViewData["Title"] = "Edit Subscription";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">Edit Subscription</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                <input type="hidden" asp-for="Input.AccountID" />
+                <input type="hidden" asp-for="Input.SubscriptionID" />
+
+                <div class="mb-3">
+                    <label asp-for="Input.Name"
+                        class="form-label text-secondary small fw-bold text-uppercase">Name</label>
+                    <input asp-for="Input.Name" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Amount"
+                        class="form-label text-secondary small fw-bold text-uppercase">Amount</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">€</span>
+                        <input asp-for="Input.Amount" class="form-control" type="number" step="0.01" required />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Frequency"
+                        class="form-label text-secondary small fw-bold text-uppercase">Frequency</label>
+                    <select asp-for="Input.Frequency" class="form-select" required>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Yearly">Yearly</option>
+                        <option value="Weekly">Weekly</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.StartDate"
+                        class="form-label text-secondary small fw-bold text-uppercase">Start Date</label>
+                    <input asp-for="Input.StartDate" class="form-control" type="date" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.CategoryID"
+                        class="form-label text-secondary small fw-bold text-uppercase">Category</label>
+                    <select asp-for="Input.CategoryID" asp-items="Model.CategoryList" class="form-select" required>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Input.Description"
+                        class="form-label text-secondary small fw-bold text-uppercase">Description</label>
+                    <textarea asp-for="Input.Description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-page="/Dashboard/Subscription/SubscriptionPage" asp-route-id="@Model.Input.AccountID"
+                        class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

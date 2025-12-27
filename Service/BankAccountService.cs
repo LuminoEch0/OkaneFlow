@@ -48,5 +48,10 @@ namespace Service
 
             _repository.CreateBankAccount(account);
         }
+
+        public List<BankAccountModel> GetAccountsByUserId(Guid userId)
+        {
+            return _repository.GetBankAccounts(userId);
+        }
     }
 }

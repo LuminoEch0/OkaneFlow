@@ -1,0 +1,32 @@
+@page "{id:guid}"
+@model OkaneFlow.Pages.Dashboard.Subscription.deleteModel
+@{
+    ViewData["Title"] = "Delete Subscription";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0 fw-bold">Delete Subscription</h5>
+        </div>
+        <div class="card-body p-4">
+            <p class="lead">Are you sure you want to delete the subscription for
+                <strong>@Model.Subscription.Name</strong>?</p>
+            <p class="text-secondary">This action cannot be undone.</p>
+
+            <dl class="row">
+                <dt class="col-sm-4">Amount</dt>
+                <dd class="col-sm-8">@Model.Subscription.Amount.ToString("C").Replace("$", "€")</dd>
+
+                <dt class="col-sm-4">Frequency</dt>
+                <dd class="col-sm-8">@Model.Subscription.Frequency</dd>
+            </dl>
+
+            <form method="post" class="mt-4 d-flex justify-content-between">
+                <a asp-page="/Dashboard/Subscription/SubscriptionPage" asp-route-id="@Model.Subscription.AccountID"
+                    class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            </form>
+        </div>
+    </div>
+</div>

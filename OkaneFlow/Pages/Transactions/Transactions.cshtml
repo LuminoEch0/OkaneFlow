@@ -26,18 +26,26 @@
                             <i class="bi bi-bank2 fs-5"></i>
                         </div>
                         <div>
-                            <label for="accountSelect" class="form-label mb-0 text-secondary small fw-bold text-uppercase">Current Account</label>
-                            <select id="accountSelect" class="form-select border-0 bg-transparent fw-bold fs-5 py-0 ps-0 shadow-none" onchange="window.location.href='?accountId=' + this.value" style="cursor: pointer; width: auto; min-width: 200px;">
+                            <label for="accountSelect"
+                                class="form-label mb-0 text-secondary small fw-bold text-uppercase">Current
+                                Account</label>
+                            <select id="accountSelect"
+                                class="form-select border-0 bg-transparent fw-bold fs-5 py-0 ps-0 shadow-none"
+                                onchange="window.location.href='?accountId=' + this.value"
+                                style="cursor: pointer; width: auto; min-width: 200px;">
                                 @foreach (var account in Model.BankAccounts)
                                 {
-                                    <!option value="@account.AccountID" @(account.AccountID == Model.AccountId ? "selected" : "")>@account.AccountName - @account.CurrentBalance.ToString("C").Replace("$", "€")</!option>
+                                    <!option value="@account.AccountID" @(account.AccountID == Model.AccountId ? "selected"
+                                    : "")>@account.AccountName - @account.CurrentBalance.ToString("C").Replace("$", "€")
+                                    </!option>
                                 }
                             </select>
                         </div>
                     </div>
                     @if (Model.AccountId != Guid.Empty)
                     {
-                        <a asp-page="/Transactions/Create" asp-route-accountId="@Model.AccountId" class="btn btn-primary shadow-sm">
+                        <a asp-page="/Transactions/Create" asp-route-accountId="@Model.AccountId"
+                            class="btn btn-primary shadow-sm">
                             <i class="bi bi-plus-lg"></i> Add Transaction
                         </a>
                     }
@@ -68,7 +76,8 @@
                                         var isExpense = transaction.Type == OkaneFlow.Helpers.Enums.TransactionType.Expense;
                                         var amountColor = isExpense ? "text-danger" : "text-success";
                                         var amountSign = isExpense ? "-" : "+";
-                                        var categoryName = Model.CategoryNames.ContainsKey(transaction.CategoryID) ? Model.CategoryNames[transaction.CategoryID] : "Unassigned";
+                                        var categoryName = Model.CategoryNames.ContainsKey(transaction.CategoryID) ?
+                                        Model.CategoryNames[transaction.CategoryID] : "Unassigned";
 
                                         <tr>
                                             <td class="ps-4 text-secondary">
@@ -86,20 +95,24 @@
                                             <td class="pe-4 text-end">
                                                 <div class="dropdown">
                                                     <button class="btn btn-link text-secondary p-0" type="button"
-                                                            data-bs-toggle="dropdown" data-bs-boundary="viewport">
+                                                        data-bs-toggle="dropdown" data-bs-boundary="viewport">
                                                         <i class="bi bi-three-dots-vertical"></i>
                                                     </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
                                                         <li>
                                                             <a class="dropdown-item" asp-page="/Transactions/Edit"
-                                                               asp-route-id="@transaction.TransactionID">Edit</a>
+                                                                asp-route-id="@transaction.TransactionID">
+                                                                <i class="bi bi-pencil me-2"></i> Edit Transaction
+                                                            </a>
                                                         </li>
                                                         <li>
                                                             <hr class="dropdown-divider">
                                                         </li>
                                                         <li>
                                                             <a class="dropdown-item text-danger" asp-page="/Transactions/Delete"
-                                                               asp-route-id="@transaction.TransactionID">Delete</a>
+                                                                asp-route-id="@transaction.TransactionID">
+                                                                <i class="bi bi-x-square me-2"></i> Void Transaction
+                                                            </a>
                                                         </li>
                                                     </ul>
                                                 </div>

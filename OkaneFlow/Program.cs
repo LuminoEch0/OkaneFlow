@@ -45,12 +45,16 @@ namespace OkaneFlow
             builder.Services.AddScoped<ITransactionRepo, TransactionRepo>();
             builder.Services.AddScoped<ITransactionTypeLookupRepo, TransactionTypeLookupRepo>();
             builder.Services.AddScoped<IUserRepo, UserRepo>();
+            builder.Services.AddScoped<ISubscriptionRepo, SubscriptionRepo>();
+            builder.Services.AddScoped<IDebtRepo, DebtRepo>();
 
             builder.Services.AddScoped<IBankAccountService, BankAccountService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ITransactionService, TransactionService>();
             builder.Services.AddScoped<ITransactionTypeLookupService, TransactionTypeLookupService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+            builder.Services.AddScoped<IDebtService, DebtService>();
 
             // HttpContext accessor and current user helper (web project)
             builder.Services.AddHttpContextAccessor();

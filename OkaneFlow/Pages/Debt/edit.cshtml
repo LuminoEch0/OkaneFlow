@@ -1,0 +1,143 @@
+@page "{id:guid}"
+@model OkaneFlow.Pages.Debt.editModel
+@using OkaneFlow.Helpers.Enums
+@{
+    ViewData["Title"] = "Edit Debt";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <!-- ... -->
+    <!-- Replacing top block and button block with full content manually because replace_file_content is full range?
+         No, replace_file_content replaces range. I'll split it or read file first? 
+         I will use START/END line to replace safely.
+         Actually, I need to know where the button is.
+         I'll read file first to be safe. -->
+         
+    <!-- Just read file first. -->
+@using OkaneFlow.Helpers.Enums
+@{
+    ViewData["Title"] = "Edit Debt";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">Edit Debt</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                <input type="hidden" asp-for="Input.DebtID" />
+
+                <!-- Type Selection -->
+                <div class="mb-4 text-center">
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="Input.Type" id="type-liability"
+                            value="@DebtType.OwedByMe" @(Model.Input.Type == DebtType.OwedByMe ? "checked" : "")
+                            autocomplete="off" onchange="updateLabels()">
+                        <label class="btn btn-outline-danger" for="type-liability">I Owe Money (Liability)</label>
+
+                        <input type="radio" class="btn-check" name="Input.Type" id="type-receivable"
+                            value="@DebtType.OwedToMe" @(Model.Input.Type == DebtType.OwedToMe ? "checked" : "")
+                            autocomplete="off" onchange="updateLabels()">
+                        <label class="btn btn-outline-success" for="type-receivable">Owed To Me (Receivable)</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Name"
+                        class="form-label text-secondary small fw-bold text-uppercase">Title</label>
+                    <input asp-for="Input.Name" class="form-control" required />
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.AssociatedEntity" id="entity-label"
+                        class="form-label text-secondary small fw-bold text-uppercase">Lender (Who do you owe?)</label>
+                    <input asp-for="Input.AssociatedEntity" class="form-control"
+                        placeholder="Name of person or business" />
+                    <span asp-validation-for="Input.AssociatedEntity" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Input.InitialAmount"
+                            class="form-label text-secondary small fw-bold text-uppercase">Initial Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">€</span>
+                            <input asp-for="Input.InitialAmount" class="form-control" type="number" step="0.01"
+                                required />
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Input.RemainingAmount"
+                            class="form-label text-secondary small fw-bold text-uppercase">Current Balance</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">€</span>
+                            <input asp-for="Input.RemainingAmount" class="form-control" type="number" step="0.01"
+                                required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Linking -->
+                <div class="mb-3">
+                    <label asp-for="Input.AccountID"
+                        class="form-label text-secondary small fw-bold text-uppercase">Linked Bank Account
+                        (Optional)</label>
+                    <select asp-for="Input.AccountID" asp-items="Model.Accounts" class="form-select">
+                        <option value="">-- Standalone (No Link) --</option>
+                    </select>
+                    <div class="form-text">Link to an account to automate payments via transactions.</div>
+                </div>
+
+                <!-- Interest Section -->
+                <div class="mb-3 bg-light p-3 rounded">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" asp-for="Input.IsInterestEnabled"
+                            id="interest-toggle" onchange="toggleInterest()">
+                        <label class="form-check-label fw-bold" for="interest-toggle">Enable Interest</label>
+                    </div>
+                    <div id="interest-field" style="display:none;">
+                        <label asp-for="Input.InterestRate"
+                            class="form-label text-secondary small fw-bold text-uppercase">Interest Rate (%)</label>
+                        <input asp-for="Input.InterestRate" class="form-control" type="number" step="0.1" />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Input.DueDate" class="form-label text-secondary small fw-bold text-uppercase">Due
+                        Date</label>
+                    <input asp-for="Input.DueDate" class="form-control" type="date" required />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-page="/Debt/DebtPage" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateLabels() {
+        const isLiability = document.getElementById('type-liability').checked;
+        const entityLabel = document.getElementById('entity-label');
+        if (isLiability) {
+            entityLabel.textContent = 'Lender (Who do you owe?)';
+        } else {
+            entityLabel.textContent = 'Borrower (Who owes you?)';
+        }
+    }
+
+    function toggleInterest() {
+        const isEnabled = document.getElementById('interest-toggle').checked;
+        document.getElementById('interest-field').style.display = isEnabled ? 'block' : 'none';
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function () {
+        updateLabels();
+        toggleInterest();
+    });
+</script>

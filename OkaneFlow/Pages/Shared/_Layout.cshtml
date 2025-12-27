@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,12 +10,15 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/OkaneFlow.styles.css" asp-append-version="true" />
 </head>
+
 <body>
     <div class="d-flex min-vh-100">
         <nav class="sidebar bg-white border-end shadow-sm" style="width: 240px;">
             <div class="sidebar-header p-4 border-bottom">
-                <a class="navbar-brand fw-bold fs-4 text-primary" asp-area="" asp-page="/Dashboard/MainDashboard/Dashboard">
-                    @* <img src="~/images/logo.png" alt="OkaneFlow Logo" style="height:32px;vertical-align:middle;margin-right:8px;" /> *@
+                <a class="navbar-brand fw-bold fs-4 text-primary" asp-area=""
+                    asp-page="/Dashboard/MainDashboard/Dashboard">
+                    @* <img src="~/images/logo.png" alt="OkaneFlow Logo"
+                    style="height:32px;vertical-align:middle;margin-right:8px;" /> *@
                     OkaneFlow
                 </a>
             </div>
@@ -25,13 +29,20 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Dashboard/MainDashboard/Dashboard">
+                    <a class="nav-link d-flex align-items-center text-dark" asp-area=""
+                        asp-page="/Dashboard/MainDashboard/Dashboard">
                         <span class="me-2"><i class="bi bi-speedometer2"></i></span> Dashboard
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Transactions/Transactions">
+                    <a class="nav-link d-flex align-items-center text-dark" asp-area=""
+                        asp-page="/Transactions/Transactions">
                         <span class="me-2"><i class="bi bi-cash-stack"></i></span> Transactions
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Debt/DebtPage">
+                        <span class="me-2"><i class="bi bi-credit-card-2-front"></i></span> Debts
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -67,4 +78,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

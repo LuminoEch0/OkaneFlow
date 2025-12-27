@@ -12,5 +12,6 @@ namespace Service.Interface
 
         public void DeleteAccount(Guid accountId);
         public void CreateAccount(BankAccountModel account);
+        public List<BankAccountModel> GetAccountsByUserId(Guid userId);
     }
 }
