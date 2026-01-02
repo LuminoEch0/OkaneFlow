@@ -47,6 +47,7 @@ namespace OkaneFlow
             builder.Services.AddScoped<IUserRepo, UserRepo>();
             builder.Services.AddScoped<ISubscriptionRepo, SubscriptionRepo>();
             builder.Services.AddScoped<IDebtRepo, DebtRepo>();
+            builder.Services.AddScoped<IUserPreferenceRepo, UserPreferenceRepo>();
 
             builder.Services.AddScoped<IBankAccountService, BankAccountService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -55,6 +56,7 @@ namespace OkaneFlow
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             builder.Services.AddScoped<IDebtService, DebtService>();
+            builder.Services.AddScoped<IUserPreferenceService, UserPreferenceService>();
 
             // HttpContext accessor and current user helper (web project)
             builder.Services.AddHttpContextAccessor();
@@ -82,6 +84,9 @@ namespace OkaneFlow
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            // Load user preferences for all pages
+            app.UseUserPreferences();
 
             app.MapStaticAssets();//- Maps static assets (like CSS, JS, images) to be served from the wwwroot folder.
 

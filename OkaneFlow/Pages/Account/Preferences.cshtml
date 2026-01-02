@@ -18,27 +18,108 @@
         </li>
     </ul>
 
-    <!-- Preferences Content -->
-    <div class="card shadow-sm border-top-0 rounded-bottom">
-        <div class="card-body p-5 text-center">
-            <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-secondary">
-                <i class="bi bi-sliders fs-1"></i>
-            </div>
-            <h3 class="fw-bold text-secondary">Preferences</h3>
-            <p class="text-muted">Customize your application experience.</p>
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-6 text-start">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="darkModeSwitch">
-                        <label class="form-check-label" for="darkModeSwitch">Dark Mode</label>
+    <!-- Status Message -->
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@Model.StatusMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <form method="post">
+        <div class="row">
+            <!-- Appearance Settings -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-palette me-2"></i>Appearance</h5>
                     </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="emailNotifSwitch" checked>
-                        <label class="form-check-label" for="emailNotifSwitch">Email Notifications</label>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-4">
+                            <input asp-for="Preferences.DarkMode" class="form-check-input" type="checkbox" role="switch"
+                                id="darkModeSwitch">
+                            <label class="form-check-label" for="darkModeSwitch">
+                                <i class="bi bi-moon-stars me-2"></i>Dark Mode
+                            </label>
+                            <p class="text-muted small mb-0 mt-1">Enable dark theme for the application</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-4">
+                            <input asp-for="Preferences.EmailNotifications" class="form-check-input" type="checkbox"
+                                role="switch" id="emailNotifSwitch">
+                            <label class="form-check-label" for="emailNotifSwitch">
+                                <i class="bi bi-envelope me-2"></i>Email Notifications
+                            </label>
+                            <p class="text-muted small mb-0 mt-1">Receive email alerts for important updates</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
+        <div class="row">
+            <!-- Regional Settings -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="bi bi-globe me-2"></i>Regional Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Preferences.Currency" class="form-label">
+                                <i class="bi bi-currency-exchange me-2"></i>Currency
+                            </label>
+                            <select asp-for="Preferences.Currency" class="form-select">
+                                <option value="EUR">EUR (€) - Euro</option>
+                                <option value="USD">USD ($) - US Dollar</option>
+                                <option value="GBP">GBP (£) - British Pound</option>
+                                <option value="JPY">JPY (¥) - Japanese Yen</option>
+                                <option value="CHF">CHF (Fr) - Swiss Franc</option>
+                                <option value="CAD">CAD ($) - Canadian Dollar</option>
+                                <option value="AUD">AUD ($) - Australian Dollar</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Preferences.DateFormat" class="form-label">
+                                <i class="bi bi-calendar3 me-2"></i>Date Format
+                            </label>
+                            <select asp-for="Preferences.DateFormat" class="form-select">
+                                <option value="dd/MM/yyyy">DD/MM/YYYY (31/12/2024)</option>
+                                <option value="MM/dd/yyyy">MM/DD/YYYY (12/31/2024)</option>
+                                <option value="yyyy-MM-dd">YYYY-MM-DD (2024-12-31)</option>
+                                <option value="dd-MM-yyyy">DD-MM-YYYY (31-12-2024)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100 border-primary">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-primary">
+                            <i class="bi bi-gear fs-1"></i>
+                        </div>
+                        <h5 class="text-center mb-3">Save Your Preferences</h5>
+                        <p class="text-muted text-center">Your preferences will be applied immediately after saving.</p>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-save me-2"></i>Save Preferences
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

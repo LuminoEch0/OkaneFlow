@@ -5,7 +5,6 @@ using OkaneFlow.Helpers;
 using Service.RepoInterface;
 using Service.Models;
 using Service.Interface;
-using Service; // for PassswordManager (used by UserService)
 using System.ComponentModel.DataAnnotations;
 
 namespace OkaneFlow.Pages.Account
@@ -14,27 +13,20 @@ namespace OkaneFlow.Pages.Account
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IUserRepo _userRepo;
-        private readonly IUserService _userService;
 
-        public AccountModel(IConfiguration configuration, ICurrentUserService userService, IUserRepo userRepo, IUserService userServiceLayer)
+        public AccountModel(ICurrentUserService userService, IUserRepo userRepo)
         {
             _currentUser = userService;
             _userRepo = userRepo;
-            _userService = userServiceLayer;
         }
 
         // Display-only fields
-        public string UserName { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
 
         // Profile editing bind model
         [BindProperty]
         public ProfileInputModel Profile { get; set; } = new ProfileInputModel();
-
-        // Password change bind model
-        [BindProperty]
-        public PasswordInputModel PasswordChange { get; set; } = new PasswordInputModel();
 
         // Small status message for user feedback
         [TempData]
@@ -44,7 +36,6 @@ namespace OkaneFlow.Pages.Account
         {
             if (string.IsNullOrEmpty(_currentUser.UserName))
             {
-                // not authenticated or username unavailable
                 return;
             }
 
@@ -54,7 +45,6 @@ namespace OkaneFlow.Pages.Account
                 return;
             }
 
-            UserName = model.Username;
             Role = model.IsAdmin ? "Admin" : "User";
             CreationDate = model.CreationDate;
 
@@ -67,12 +57,15 @@ namespace OkaneFlow.Pages.Account
         {
             if (!ModelState.IsValid)
             {
+                // Re-populate display fields on validation failure
+                await PopulateDisplayFieldsAsync();
                 return Page();
             }
 
             if (string.IsNullOrEmpty(_currentUser.UserName))
             {
                 ModelState.AddModelError(string.Empty, "Unable to determine current user.");
+                await PopulateDisplayFieldsAsync();
                 return Page();
             }
 
@@ -80,6 +73,7 @@ namespace OkaneFlow.Pages.Account
             if (model == null)
             {
                 ModelState.AddModelError(string.Empty, "User not found.");
+                await PopulateDisplayFieldsAsync();
                 return Page();
             }
 
@@ -91,62 +85,28 @@ namespace OkaneFlow.Pages.Account
             if (!ok)
             {
                 ModelState.AddModelError(string.Empty, "Failed to update profile.");
+                await PopulateDisplayFieldsAsync();
                 return Page();
             }
 
-            // If username changed we don't automatically re-issue cookie here; user will still be authenticated with old claims.
             StatusMessage = "Profile updated successfully.";
-            return RedirectToPage(); // reload to refresh displayed values
-        }
-
-        public async Task<IActionResult> OnPostChangePasswordAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            if (string.IsNullOrEmpty(_currentUser.UserName))
-            {
-                ModelState.AddModelError(string.Empty, "Unable to determine current user.");
-                return Page();
-            }
-
-            // Verify current password
-            var verified = await _userService.AuthenticateAsync(_currentUser.UserName, PasswordChange.CurrentPassword);
-            if (verified == null)
-            {
-                ModelState.AddModelError(string.Empty, "Current password is incorrect.");
-                return Page();
-            }
-
-            if (PasswordChange.NewPassword != PasswordChange.ConfirmPassword)
-            {
-                ModelState.AddModelError(string.Empty, "New password and confirmation do not match.");
-                return Page();
-            }
-
-            var model = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
-            if (model == null)
-            {
-                ModelState.AddModelError(string.Empty, "User not found.");
-                return Page();
-            }
-
-            // Hash new password and save
-            model.PasswordHash = PassswordManager.HashPassword(PasswordChange.NewPassword);
-            var ok = await _userRepo.UpdateUserAsync(model);
-            if (!ok)
-            {
-                ModelState.AddModelError(string.Empty, "Failed to change password.");
-                return Page();
-            }
-
-            StatusMessage = "Password changed successfully.";
             return RedirectToPage();
         }
 
-        // Input models used only for binding on the page
+        private async Task PopulateDisplayFieldsAsync()
+        {
+            if (!string.IsNullOrEmpty(_currentUser.UserName))
+            {
+                var model = await _userRepo.GetByUsernameAsync(_currentUser.UserName);
+                if (model != null)
+                {
+                    Role = model.IsAdmin ? "Admin" : "User";
+                    CreationDate = model.CreationDate;
+                }
+            }
+        }
+
+        // Input model for profile editing only
         public class ProfileInputModel
         {
             [Required]
@@ -159,26 +119,6 @@ namespace OkaneFlow.Pages.Account
             [StringLength(100)]
             [Display(Name = "Email")]
             public string Email { get; set; } = string.Empty;
-        }
-
-        public class PasswordInputModel
-        {
-            [Required]
-            [DataType(DataType.Password)]
-            [Display(Name = "Current password")]
-            public string CurrentPassword { get; set; } = string.Empty;
-
-            [Required]
-            [DataType(DataType.Password)]
-            [Display(Name = "New password")]
-            [StringLength(100, MinimumLength = 6)]
-            public string NewPassword { get; set; } = string.Empty;
-
-            [Required]
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare(nameof(NewPassword), ErrorMessage = "The new password and confirmation do not match.")]
-            public string ConfirmPassword { get; set; } = string.Empty;
         }
     }
 }

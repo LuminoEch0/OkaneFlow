@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 using OkaneFlow.Helpers;
 using Service;
 using Service.Interface;
@@ -18,7 +19,7 @@ namespace OkaneFlow.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; } = new InputModel();
+        public RegisterInputModel Input { get; set; } = new RegisterInputModel();
 
         public void OnGet()
         {
@@ -42,6 +43,25 @@ namespace OkaneFlow.Pages.Account
 
             // After successful registration redirect to login page
             return RedirectToPage("/Account/Login");
+        }
+
+        public class RegisterInputModel
+        {
+            [Required]
+            [Display(Name = "Username")]
+            public string Username { get; set; } = string.Empty;
+
+            [Required]
+            [EmailAddress]
+            [Display(Name = "Email")]
+            public string Email { get; set; } = string.Empty;
+
+            [Required]
+            [DataType(DataType.Password)]
+            [Display(Name = "Password")]
+            [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters.")]
+            [StrongPassword]
+            public string Password { get; set; } = string.Empty;
         }
     }
 }

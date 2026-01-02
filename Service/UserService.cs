@@ -49,5 +49,17 @@ namespace Service
 
             return _userRepository.CreateUserAsync(user);
         }
+
+        public async Task<bool> UpdateLastLoginAsync(Guid userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.LastLoginDate = DateTime.UtcNow;
+            return await _userRepository.UpdateUserAsync(user);
+        }
     }
 }

@@ -2,6 +2,8 @@
 @model OkaneFlow.Pages.Transactions.CreateModel
 @{
     ViewData["Title"] = "Add Transaction";
+    var prefs = ViewContext.HttpContext.Items["UserPreferences"] as UserPreferenceModel;
+    var currencySymbol = FormatHelper.FormatCurrency(0, prefs?.Currency ?? "EUR").Substring(0, 1);
 }
 
 <div class="container py-4">
@@ -27,7 +29,7 @@
                             <label asp-for="Transaction.Amount"
                                 class="form-label text-secondary small fw-bold text-uppercase">Amount</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">$</span>
+                                <span class="input-group-text bg-light border-end-0">@currencySymbol</span>
                                 <input asp-for="Transaction.Amount" class="form-control border-start-0 ps-0"
                                     placeholder="0.00" />
                             </div>

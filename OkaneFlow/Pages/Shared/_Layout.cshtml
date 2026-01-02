@@ -1,5 +1,10 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+@using Service.Models
+@{
+    var prefs = ViewContext.HttpContext.Items["UserPreferences"] as UserPreferenceModel;
+    var isDarkMode = prefs?.DarkMode ?? false;
+}
+<html lang="en" class="@(isDarkMode ? "dark" : "")">
 
 <head>
     <meta charset="utf-8" />
@@ -11,7 +16,7 @@
     <link rel="stylesheet" href="~/OkaneFlow.styles.css" asp-append-version="true" />
 </head>
 
-<body>
+<body class="@(isDarkMode ? "dark-mode" : "")">
     <div class="d-flex min-vh-100">
         <nav class="sidebar bg-white border-end shadow-sm" style="width: 240px;">
             <div class="sidebar-header p-4 border-bottom">

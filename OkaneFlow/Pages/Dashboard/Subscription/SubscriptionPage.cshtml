@@ -2,6 +2,9 @@
 @model OkaneFlow.Pages.Dashboard.Subscription.SubscriptionPageModel
 @{
     ViewData["Title"] = "Subscriptions";
+    var prefs = ViewContext.HttpContext.Items["UserPreferences"] as UserPreferenceModel;
+    var currency = prefs?.Currency ?? "EUR";
+    var dateFormat = prefs?.DateFormat ?? "dd/MM/yyyy";
 }
 
 <div class="container py-4">
@@ -26,7 +29,6 @@
             <a class="nav-link active fw-bold" asp-page="/Dashboard/Subscription/SubscriptionPage"
                 asp-route-id="@Model.id">Subscriptions</a>
         </li>
-
     </ul>
 
     <!-- Overview Content -->
@@ -42,7 +44,7 @@
                     <ul class="mb-0">
                         @foreach (var alert in Model.UpcomingAlerts)
                         {
-                            <li><strong>@alert.Name</strong> - @alert.Amount.ToString("C").Replace("$", "€") (Due:
+                            <li><strong>@alert.Name</strong> - @FormatHelper.FormatCurrency(alert.Amount, currency) (Due:
                                 @alert.StartDate.DayOfWeek)</li>
                         }
                     </ul>
@@ -75,23 +77,29 @@
                             {
                                 <tr>
                                     <td class="ps-4 fw-bold">@sub.Name</td>
-                                    <td>@sub.Amount.ToString("C").Replace("$", "€")</td>
+                                    <td>@FormatHelper.FormatCurrency(sub.Amount, currency)</td>
                                     <td>@sub.Frequency</td>
-                                    <td>@sub.StartDate.ToString("d")</td>
+                                    <td>@FormatHelper.FormatDate(sub.StartDate, dateFormat)</td>
                                     <td class="pe-4 text-end">
                                         <div class="dropdown">
-                                            <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown">
+                                            <button class="btn btn-link text-secondary p-0" type="button"
+                                                data-bs-toggle="dropdown">
                                                 <i class="bi bi-three-dots-vertical fs-5"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
                                                 <li>
-                                                    <a class="dropdown-item" asp-page="/Dashboard/Subscription/edit" asp-route-id="@sub.SubscriptionID">
+                                                    <a class="dropdown-item" asp-page="/Dashboard/Subscription/edit"
+                                                        asp-route-id="@sub.SubscriptionID">
                                                         <i class="bi bi-pencil me-2"></i> Edit Subscription
                                                     </a>
                                                 </li>
-                                                <li><hr class="dropdown-divider"></li>
                                                 <li>
-                                                    <a class="dropdown-item text-danger" asp-page="/Dashboard/Subscription/delete" asp-route-id="@sub.SubscriptionID">
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger"
+                                                        asp-page="/Dashboard/Subscription/delete"
+                                                        asp-route-id="@sub.SubscriptionID">
                                                         <i class="bi bi-x-circle me-2"></i> Cancel Subscription
                                                     </a>
                                                 </li>

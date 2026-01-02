@@ -230,3 +230,257 @@ header h1 {
     font-weight: 700;
     color: var(--text-primary);
 }
+
+/* ========================================
+   DARK MODE STYLES
+   ======================================== */
+body.dark-mode {
+    --background-color: #1a1a2e;
+    --card-bg: #16213e;
+    --text-primary: #eaeaea;
+    --text-secondary: #a0a0a0;
+    --border-color: #2a2a4a;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+}
+
+body.dark-mode .sidebar {
+    background-color: #16213e !important;
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode .sidebar .sidebar-header {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode .sidebar .nav-link {
+    color: #a0a0a0 !important;
+}
+
+body.dark-mode .sidebar .nav-link:hover {
+    background-color: #0f3460;
+    color: #fff !important;
+}
+
+body.dark-mode .card {
+    background-color: #16213e;
+    border-color: #2a2a4a;
+    color: #eaeaea;
+}
+
+body.dark-mode .card-header {
+    border-color: #2a2a4a;
+}
+
+body.dark-mode header.bg-light {
+    background-color: #16213e !important;
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode header h1 {
+    color: #eaeaea;
+}
+
+body.dark-mode .footer {
+    background-color: #16213e !important;
+    border-color: #2a2a4a !important;
+    color: #a0a0a0;
+}
+
+body.dark-mode .table {
+    --bs-table-bg: transparent;
+    color: #eaeaea;
+}
+
+body.dark-mode .table thead th {
+    border-color: #2a2a4a;
+    color: #a0a0a0;
+}
+
+body.dark-mode .table td {
+    border-color: #2a2a4a;
+    color: #eaeaea;
+}
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #0f3460;
+    border-color: #2a2a4a;
+    color: #eaeaea;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background-color: #0f3460;
+    border-color: var(--primary-color);
+    color: #eaeaea;
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #6c757d;
+}
+
+body.dark-mode .form-control:disabled,
+body.dark-mode .form-control[readonly] {
+    background-color: #1a1a2e;
+    color: #a0a0a0;
+}
+
+body.dark-mode .modal-content {
+    background-color: #16213e;
+    color: #eaeaea;
+}
+
+body.dark-mode .modal-header {
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .modal-footer {
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .alert {
+    background-color: #0f3460;
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .nav-tabs {
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .nav-tabs .nav-link {
+    color: #a0a0a0;
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+    background-color: #16213e;
+    border-color: #2a2a4a #2a2a4a #16213e;
+    color: #eaeaea;
+}
+
+body.dark-mode .text-muted {
+    color: #a0a0a0 !important;
+}
+
+body.dark-mode .text-secondary {
+    color: #a0a0a0 !important;
+}
+
+body.dark-mode .bg-light {
+    background-color: #1a1a2e !important;
+}
+
+body.dark-mode .border {
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode .border-bottom {
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode .border-top {
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode .bank-card {
+    background-color: #16213e;
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode .bank-card:hover {
+    border-color: var(--primary-color) !important;
+}
+
+body.dark-mode .bank-card .card-footer {
+    border-top: 1px solid #2a2a4a !important;
+}
+
+body.dark-mode .add-account-card {
+    border-color: #2a2a4a !important;
+}
+
+body.dark-mode .add-account-card:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Comprehensive Utility Overrides */
+body.dark-mode .bg-white {
+    background-color: #16213e !important;
+}
+
+body.dark-mode .bg-light {
+    background-color: #1a1a2e !important;
+}
+
+body.dark-mode .table-light {
+    --bs-table-bg: #1a1a2e;
+    --bs-table-color: #eaeaea;
+}
+
+body.dark-mode .text-dark {
+    color: #eaeaea !important;
+}
+
+/* Badge and Small Element Contrast Improvement */
+body.dark-mode .badge.bg-light.text-dark {
+    background-color: #2a2a4a !important;
+    color: #eaeaea !important;
+    border: 1px solid #3a3a5a;
+}
+
+/* Alert Contrast Improvements for Dark Mode */
+body.dark-mode .alert {
+    border-width: 1px;
+    background-color: #1a1a2e;
+    /* Slightly darker than card bg for depth */
+}
+
+body.dark-mode .alert-success {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+}
+
+body.dark-mode .alert-danger {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    border-color: #ef4444 !important;
+    color: #f87171 !important;
+}
+
+body.dark-mode .alert-warning {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+    border-color: #f59e0b !important;
+    color: #fbbf24 !important;
+}
+
+body.dark-mode .alert-info {
+    background-color: rgba(6, 182, 212, 0.1) !important;
+    border-color: #06b6d4 !important;
+    color: #22d3ee !important;
+}
+
+body.dark-mode .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Dropdown Menu Dark Theme Overrides */
+body.dark-mode .dropdown-menu {
+    background-color: #16213e !important;
+    border: 1px solid #2a2a4a !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-mode .dropdown-item {
+    color: #eaeaea !important;
+}
+
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .dropdown-item:focus {
+    background-color: #0f3460 !important;
+    color: #fff !important;
+}
+
+body.dark-mode .dropdown-divider {
+    border-top: 1px solid #2a2a4a !important;
+}

@@ -3,20 +3,8 @@
 @using OkaneFlow.Helpers.Enums
 @{
     ViewData["Title"] = "Edit Debt";
-}
-
-<div class="container py-4" style="max-width: 600px;">
-    <!-- ... -->
-    <!-- Replacing top block and button block with full content manually because replace_file_content is full range?
-         No, replace_file_content replaces range. I'll split it or read file first? 
-         I will use START/END line to replace safely.
-         Actually, I need to know where the button is.
-         I'll read file first to be safe. -->
-         
-    <!-- Just read file first. -->
-@using OkaneFlow.Helpers.Enums
-@{
-    ViewData["Title"] = "Edit Debt";
+    var prefs = ViewContext.HttpContext.Items["UserPreferences"] as UserPreferenceModel;
+    var currencySymbol = FormatHelper.FormatCurrency(0, prefs?.Currency ?? "EUR").Substring(0, 1);
 }
 
 <div class="container py-4" style="max-width: 600px;">
@@ -63,7 +51,7 @@
                         <label asp-for="Input.InitialAmount"
                             class="form-label text-secondary small fw-bold text-uppercase">Initial Amount</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light">€</span>
+                            <span class="input-group-text bg-light">@currencySymbol</span>
                             <input asp-for="Input.InitialAmount" class="form-control" type="number" step="0.01"
                                 required />
                         </div>
@@ -72,7 +60,7 @@
                         <label asp-for="Input.RemainingAmount"
                             class="form-label text-secondary small fw-bold text-uppercase">Current Balance</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light">€</span>
+                            <span class="input-group-text bg-light">@currencySymbol</span>
                             <input asp-for="Input.RemainingAmount" class="form-control" type="number" step="0.01"
                                 required />
                         </div>

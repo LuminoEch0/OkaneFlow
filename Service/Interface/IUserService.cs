@@ -7,5 +7,7 @@ namespace Service.Interface
         Task<UserModel?> AuthenticateAsync(string username, string password);
 
         Task<bool> CreateUserAsync(string username, string email, string password, string role = "User");
+
+        Task<bool> UpdateLastLoginAsync(Guid userId);
     }
 }

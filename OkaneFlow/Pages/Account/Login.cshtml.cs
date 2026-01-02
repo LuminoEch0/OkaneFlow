@@ -23,7 +23,7 @@ namespace OkaneFlow.Pages.Account
 
         // Input Model for the Login Form
         [BindProperty]
-        public InputModel Input { get; set; } = new InputModel();
+        public LoginInputModel Input { get; set; } = new LoginInputModel();
 
 
         public async Task OnGetAsync()
@@ -36,18 +36,6 @@ namespace OkaneFlow.Pages.Account
         {
             if (!ModelState.IsValid)
             {
-                // debug: show validation errors
-                var errors = ModelState
-                    .Where(kvp => kvp.Value.Errors.Count > 0)
-                    .Select(kvp => new { Key = kvp.Key, Errors = kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray() })
-                    .ToList();
-
-                // Add them as model-level errors so they surface on the page while debugging
-                foreach (var e in errors)
-                {
-                    ModelState.AddModelError(string.Empty, $"{e.Key}: {string.Join(", ", e.Errors)}");
-                }
-
                 return Page();
             }
 
@@ -84,6 +72,9 @@ namespace OkaneFlow.Pages.Account
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
+            // 4. Update last login date
+            await _userService.UpdateLastLoginAsync(user.UserID);
+
             // Redirect user to the requested page or the home page
             return LocalRedirect(returnUrl ?? "/");
         }
@@ -92,6 +83,18 @@ namespace OkaneFlow.Pages.Account
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToPage("/Account/Login");
+        }
+
+        public class LoginInputModel
+        {
+            [Required]
+            [Display(Name = "Username")]
+            public string Username { get; set; } = string.Empty;
+
+            [Required]
+            [DataType(DataType.Password)]
+            [Display(Name = "Password")]
+            public string Password { get; set; } = string.Empty;
         }
     }
 }

@@ -2,6 +2,9 @@
 @model OkaneFlow.Pages.Transactions.TransactionsModel
 @{
     ViewData["Title"] = "Transactions";
+    var prefs = ViewContext.HttpContext.Items["UserPreferences"] as UserPreferenceModel;
+    var currency = prefs?.Currency ?? "EUR";
+    var dateFormat = prefs?.DateFormat ?? "dd/MM/yyyy";
 }
 
 <div class="container py-4">
@@ -35,9 +38,10 @@
                                 style="cursor: pointer; width: auto; min-width: 200px;">
                                 @foreach (var account in Model.BankAccounts)
                                 {
-                                    <!option value="@account.AccountID" @(account.AccountID == Model.AccountId ? "selected"
-                                    : "")>@account.AccountName - @account.CurrentBalance.ToString("C").Replace("$", "€")
-                                    </!option>
+                                    <option value="@account.AccountID" selected="@(account.AccountID == Model.AccountId)">
+                                        @account.AccountName - @FormatHelper.FormatCurrency(account.CurrentBalance,
+                                    currency)
+                                    </option>
                                 }
                             </select>
                         </div>
@@ -81,7 +85,7 @@
 
                                         <tr>
                                             <td class="ps-4 text-secondary">
-                                                @transaction.Date.ToLocalTime().ToString("MMM dd, yyyy")
+                                                @FormatHelper.FormatDate(transaction.Date.ToLocalTime(), dateFormat)
                                             </td>
                                             <td class="fw-bold">@transaction.Description</td>
                                             <td>
@@ -90,7 +94,7 @@
                                                 </span>
                                             </td>
                                             <td class="text-end fw-bold @amountColor">
-                                                @amountSign@transaction.Amount.ToString("C").Replace("$", "€")
+                                                @amountSign@FormatHelper.FormatCurrency(transaction.Amount, currency)
                                             </td>
                                             <td class="pe-4 text-end">
                                                 <div class="dropdown">

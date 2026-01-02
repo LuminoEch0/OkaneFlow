@@ -2,6 +2,8 @@
 @model OkaneFlow.Pages.Dashboard.MainDashboard.DashboardModel
 @{
     ViewData["Title"] = "Dashboard";
+    var prefs = ViewContext.HttpContext.Items["UserPreferences"] as UserPreferenceModel;
+    var currency = prefs?.Currency ?? "EUR";
 }
 
 <div class="container py-4">
@@ -49,8 +51,8 @@
 
                         <div class="mt-auto">
                             <p class="text-secondary small fw-bold text-uppercase mb-1">Current Balance</p>
-                            <h3 class="fw-bold text-primary mb-0">@account.CurrentBalance.ToString("C").Replace("$", "€")
-                            </h3>
+                            <h3 class="fw-bold text-primary mb-0">@FormatHelper.FormatCurrency(account.CurrentBalance,
+                            currency)</h3>
                         </div>
                     </div>
                     <div class="card-footer bg-transparent border-0 p-4 pt-0">

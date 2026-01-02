@@ -3,6 +3,8 @@
 @using OkaneFlow.Helpers.Enums
 @{
     ViewData["Title"] = "Debts";
+    var prefs = ViewContext.HttpContext.Items["UserPreferences"] as UserPreferenceModel;
+    var currency = prefs?.Currency ?? "EUR";
     var liabilities = Model.Debts.Where(d => d.Type == DebtType.OwedByMe).ToList();
     var receivables = Model.Debts.Where(d => d.Type == DebtType.OwedToMe).ToList();
 }
@@ -20,8 +22,6 @@
             </a>
         </div>
     </div>
-
-
 
     <!-- Content -->
     <div class="row g-4 d-flex flex-column-reverse flex-xl-row">
@@ -51,8 +51,8 @@
                                 <tr>
                                     <td class="ps-4 fw-bold">@debt.Name</td>
                                     <td>@debt.AssociatedEntity</td>
-                                    <td class="text-danger fw-bold">@debt.RemainingAmount.ToString("C").Replace("$", "€")
-                                    </td>
+                                    <td class="text-danger fw-bold">@FormatHelper.FormatCurrency(debt.RemainingAmount,
+                                    currency)</td>
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn btn-link text-secondary p-0" type="button"
@@ -124,27 +124,33 @@
                                 <tr>
                                     <td class="ps-4 fw-bold">@debt.Name</td>
                                     <td>@debt.AssociatedEntity</td>
-                                    <td class="text-success fw-bold">@debt.RemainingAmount.ToString("C").Replace("$", "€")
-                                    </td>
+                                    <td class="text-success fw-bold">@FormatHelper.FormatCurrency(debt.RemainingAmount,
+                                    currency)</td>
                                     <td>
                                         <div class="dropdown">
-                                            <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown">
+                                            <button class="btn btn-link text-secondary p-0" type="button"
+                                                data-bs-toggle="dropdown">
                                                 <i class="bi bi-three-dots-vertical fs-5"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
                                                 <li>
-                                                    <a class="dropdown-item" asp-page="/Debt/payment" asp-route-id="@debt.DebtID">
+                                                    <a class="dropdown-item" asp-page="/Debt/payment"
+                                                        asp-route-id="@debt.DebtID">
                                                         <i class="bi bi-wallet2 me-2"></i> Record Payment
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a class="dropdown-item" asp-page="/Debt/edit" asp-route-id="@debt.DebtID">
+                                                    <a class="dropdown-item" asp-page="/Debt/edit"
+                                                        asp-route-id="@debt.DebtID">
                                                         <i class="bi bi-pencil me-2"></i> Edit Details
                                                     </a>
                                                 </li>
-                                                <li><hr class="dropdown-divider"></li>
                                                 <li>
-                                                    <a class="dropdown-item text-danger" asp-page="/Debt/delete" asp-route-id="@debt.DebtID">
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" asp-page="/Debt/delete"
+                                                        asp-route-id="@debt.DebtID">
                                                         <i class="bi bi-trash me-2"></i> Remove Debt
                                                     </a>
                                                 </li>

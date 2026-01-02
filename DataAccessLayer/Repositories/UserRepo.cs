@@ -20,7 +20,7 @@ namespace DataAccessLayer.Repositories
 
         public Task<UserModel?> GetByUsernameAsync(string username)
         {
-            string sql = "SELECT [UserID],[Username],[Email],[PasswordHash],[CreationDate],[Role] FROM [User] WHERE Username = @username";
+            string sql = "SELECT [UserID],[Username],[Email],[PasswordHash],[CreationDate],[LastLoginDate],[Role] FROM [User] WHERE Username = @username";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
             {
@@ -32,6 +32,7 @@ namespace DataAccessLayer.Repositories
                         if (reader.Read())
                         {
                             string role = reader.GetString(reader.GetOrdinal("Role"));
+                            int lastLoginOrdinal = reader.GetOrdinal("LastLoginDate");
                             var model = new UserModel
                             {
                                 UserID = reader.GetGuid(reader.GetOrdinal("UserID")),
@@ -39,7 +40,8 @@ namespace DataAccessLayer.Repositories
                                 Email = reader.GetString(reader.GetOrdinal("Email")),
                                 PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
                                 IsAdmin = role == "Admin",
-                                CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate"))
+                                CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate")),
+                                LastLoginDate = reader.IsDBNull(lastLoginOrdinal) ? null : reader.GetDateTime(lastLoginOrdinal)
                             };
                             return Task.FromResult<UserModel?>(model);
                         }
@@ -52,7 +54,7 @@ namespace DataAccessLayer.Repositories
 
         public Task<UserModel?> GetByIdAsync(Guid id)
         {
-            string sql = "SELECT TOP (1) [UserID],[Username],[Email],[PasswordHash],[CreationDate],[Role] FROM [User] WHERE UserID = @id";
+            string sql = "SELECT TOP (1) [UserID],[Username],[Email],[PasswordHash],[CreationDate],[LastLoginDate],[Role] FROM [User] WHERE UserID = @id";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
             {
@@ -64,6 +66,7 @@ namespace DataAccessLayer.Repositories
                         if (reader.Read())
                         {
                             string role = reader.GetString(reader.GetOrdinal("Role"));
+                            int lastLoginOrdinal = reader.GetOrdinal("LastLoginDate");
                             var model = new UserModel
                             {
                                 UserID = reader.GetGuid(reader.GetOrdinal("UserID")),
@@ -71,7 +74,8 @@ namespace DataAccessLayer.Repositories
                                 Email = reader.GetString(reader.GetOrdinal("Email")),
                                 PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
                                 IsAdmin = role == "Admin",
-                                CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate"))
+                                CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate")),
+                                LastLoginDate = reader.IsDBNull(lastLoginOrdinal) ? null : reader.GetDateTime(lastLoginOrdinal)
                             };
                             return Task.FromResult<UserModel?>(model);
                         }
@@ -104,7 +108,7 @@ namespace DataAccessLayer.Repositories
 
         public Task<bool> UpdateUserAsync(UserModel user)
         {
-            string sql = "UPDATE [User] SET Username = @username, Email = @email, PasswordHash = @passwordHash, Role = @role WHERE UserID = @id";
+            string sql = "UPDATE [User] SET Username = @username, Email = @email, PasswordHash = @passwordHash, Role = @role, LastLoginDate = @lastLoginDate WHERE UserID = @id";
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
             {
@@ -115,6 +119,7 @@ namespace DataAccessLayer.Repositories
                     cmd.Parameters.AddWithValue("@email", user.Email);
                     cmd.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
                     cmd.Parameters.AddWithValue("@role", user.IsAdmin ? "Admin" : "User");
+                    cmd.Parameters.AddWithValue("@lastLoginDate", user.LastLoginDate.HasValue ? (object)user.LastLoginDate.Value : DBNull.Value);
 
                     var rows = cmd.ExecuteNonQuery();
                     return Task.FromResult(rows > 0);

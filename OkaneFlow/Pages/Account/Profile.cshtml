@@ -18,27 +18,93 @@
         </li>
     </ul>
 
-    <!-- Profile Content -->
-    <div class="card shadow-sm border-top-0 rounded-bottom">
-        <div class="card-body p-5 text-center">
-            <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-secondary">
-                <i class="bi bi-person-circle fs-1"></i>
+    <!-- Status Message -->
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@Model.StatusMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Validation Summary -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <div class="row">
+        <!-- Profile Information Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-page-handler="UpdateProfile">
+                        <div class="mb-3">
+                            <label asp-for="Profile.Username" class="form-label">Username</label>
+                            <input asp-for="Profile.Username" class="form-control" />
+                            <span asp-validation-for="Profile.Username" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Profile.Email" class="form-label">Email</label>
+                            <input asp-for="Profile.Email" class="form-control" />
+                            <span asp-validation-for="Profile.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" value="@Model.Role" readonly disabled />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Member Since</label>
+                            <input type="text" class="form-control"
+                                value="@Model.CreationDate.ToString("MMMM dd, yyyy")" readonly disabled />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save me-2"></i>Save Changes
+                        </button>
+                    </form>
+                </div>
             </div>
-            <h3 class="fw-bold text-secondary">Profile Settings</h3>
-            <p class="text-muted">Update your personal information.</p>
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-6 text-start">
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" class="form-control" value="John Doe" readonly>
+        </div>
+
+        <!-- Account Summary Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Account Summary</h5>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="text-center mb-4">
+                        <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-primary">
+                            <i class="bi bi-person-circle fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold">@Model.Profile.Username</h4>
+                        <p class="text-muted mb-0">@Model.Profile.Email</p>
+                        <span class="badge bg-primary mt-2">@Model.Role</span>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" value="john.doe@example.com" readonly>
+                    <hr />
+                    <div class="d-grid gap-2">
+                        <a asp-page="/Account/Security" class="btn btn-outline-primary">
+                            <i class="bi bi-shield-lock me-2"></i>Change Password
+                        </a>
+                        <a asp-page="/Account/Preferences" class="btn btn-outline-secondary">
+                            <i class="bi bi-gear me-2"></i>Manage Preferences
+                        </a>
                     </div>
-                    <button class="btn btn-primary w-100" disabled>Save Changes (Coming Soon)</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
