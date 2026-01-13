@@ -1,31 +1,51 @@
 ﻿@page "{id:guid}"
 @model OkaneFlow.Pages.Dashboard.MainDashboard.editModel
 
-<h2>Edit Bank Account</h2>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6" style="max-width: 600px;">
+            <h2 class="text-primary fw-bold mb-4">Edit Bank Account</h2>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post">
+                        <input type="hidden" asp-for="AccountDetails.AccountID" />
+                        <input type="hidden" asp-for="AccountDetails.CurrentBalance" />
 
+                        <div class="mb-3">
+                            <label asp-for="AccountDetails.AccountName"
+                                class="form-label text-secondary small fw-bold text-uppercase">Account Name</label>
+                            <input asp-for="AccountDetails.AccountName" class="form-control" />
+                        </div>
 
-<button type="button" onclick="goBack()" class="btn btn-secondary">Back</button>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold text-uppercase">Current
+                                Balance</label>
+                            <div class="form-control bg-light text-muted">
+                                €@Model.AccountDetails.CurrentBalance.ToString("N2")
+                            </div>
+                        </div>
 
-<form method="post">
-    <input type="hidden" asp-for="AccountDetails.AccountID" />
+                        <div class="mb-4">
+                            <label asp-for="AmountToAdd"
+                                class="form-label text-secondary small fw-bold text-uppercase">Add/Subtract
+                                Funds</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">€</span>
+                                <input asp-for="AmountToAdd" class="form-control border-start-0 ps-0" placeholder="0.00"
+                                    type="number" step="0.01" />
+                            </div>
+                            <div class="form-text">Use negative values to subtract.</div>
+                        </div>
 
-    <div>
-        <label>Account Name:</label>
-        <input asp-for="AccountDetails.AccountName" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Update Account</button>
+                            <button type="button" onclick="history.back()"
+                                class="btn btn-light text-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div>
-        <label>Current Balance:</label>
-        <span>@Model.AccountDetails.CurrentBalance</span>
-    </div>
-
-    <div>
-        <label>Amount to Add:</label>
-        <input asp-for="AmountToAdd" value="" placeholder="0.00" />
-    </div>
-
-    <input type="hidden" asp-for="AccountDetails.CurrentBalance" />
-
-    <button type="submit">Update</button>
-</form>
+</div>
 

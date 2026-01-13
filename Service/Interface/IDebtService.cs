@@ -6,10 +6,10 @@ namespace Service.Interface
 {
     public interface IDebtService
     {
-        List<DebtModel> GetDebtsByUser(Guid userId);
-        DebtModel? GetDebtById(Guid id);
-        void CreateDebt(DebtModel debt);
-        void UpdateDebt(DebtModel debt);
-        void DeleteDebt(Guid id);
+        Task<List<DebtModel>> GetDebtsByUserAsync(Guid userId);
+        Task<DebtModel?> GetDebtByIdAsync(Guid id);
+        Task CreateDebtAsync(DebtModel debt);
+        Task UpdateDebtAsync(DebtModel debt);
+        Task DeleteDebtAsync(Guid id);
     }
 }

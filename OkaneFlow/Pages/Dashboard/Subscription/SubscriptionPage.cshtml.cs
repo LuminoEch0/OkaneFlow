@@ -27,12 +27,12 @@ namespace OkaneFlow.Pages.Dashboard.Subscription
         public List<SubscriptionVM> UpcomingAlerts { get; set; } = new();
         public BankAccountVM? Account { get; set; } = new BankAccountVM();
 
-        public void OnGet(Guid id)
+        public async Task OnGetAsync(Guid id)
         {
-            Subscriptions = SubscriptionMapper.ToViewModelList(_subscriptionService.GetSubscriptionsByAccount(id));
-            UpcomingAlerts = SubscriptionMapper.ToViewModelList(_subscriptionService.GetUpcomingInsufficientSubscriptions(id));
+            Subscriptions = SubscriptionMapper.ToViewModelList(await _subscriptionService.GetSubscriptionsByAccountAsync(id));
+            UpcomingAlerts = SubscriptionMapper.ToViewModelList(await _subscriptionService.GetUpcomingInsufficientSubscriptionsAsync(id));
 
-            var accountModel = _accountService.GetAccountById(id);
+            var accountModel = await _accountService.GetAccountByIdAsync(id);
             if (accountModel != null)
             {
                 Account = BankAccountMapper.ToViewModel(accountModel);

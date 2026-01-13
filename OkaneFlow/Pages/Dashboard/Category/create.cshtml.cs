@@ -29,12 +29,12 @@ namespace OkaneFlow.Pages.Dashboard.Category
         {
             return Page();
         }
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             var newAccount = new CategoryVM(id, InputName, AmountToAllocate, AmountUsed);
 
             CategoryMapper.ToModel(newAccount);
-            _accountService.CreateCategory(CategoryMapper.ToModel(newAccount));
+            await _accountService.CreateCategoryAsync(CategoryMapper.ToModel(newAccount));
 
             return RedirectToPage($"/Dashboard/Category/CategoryPage", new { id });
         }

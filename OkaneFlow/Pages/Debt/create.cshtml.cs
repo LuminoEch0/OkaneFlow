@@ -11,9 +11,9 @@ namespace OkaneFlow.Pages.Debt
     {
         private readonly IDebtService _debtService;
         private readonly IBankAccountService _accountService;
-        private readonly OkaneFlow.Helpers.ICurrentUserService _currentUser;
+        private readonly ICurrentUserService _currentUser;
 
-        public createModel(IDebtService debtService, IBankAccountService accountService, OkaneFlow.Helpers.ICurrentUserService currentUser)
+        public createModel(IDebtService debtService, IBankAccountService accountService, ICurrentUserService currentUser)
         {
             _debtService = debtService;
             _accountService = accountService;
@@ -30,9 +30,9 @@ namespace OkaneFlow.Pages.Debt
 
         public List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> Accounts { get; set; } = new();
 
-        public void OnGet(int? type)
+        public async Task OnGetAsync(int? type)
         {
-            var userAccounts = _accountService.GetAccountsByUserId(_currentUser.UserGuid);
+            var userAccounts = await _accountService.GetAccountsByUserIdAsync(_currentUser.UserGuid);
             Accounts = userAccounts.Select(a => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
             {
                 Value = a.AccountID.ToString(),
@@ -45,12 +45,12 @@ namespace OkaneFlow.Pages.Debt
             }
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 // Republish accounts if failed
-                var userAccounts = _accountService.GetAccountsByUserId(_currentUser.UserGuid);
+                var userAccounts = await _accountService.GetAccountsByUserIdAsync(_currentUser.UserGuid);
                 Accounts = userAccounts.Select(a => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
                 {
                     Value = a.AccountID.ToString(),
@@ -61,10 +61,7 @@ namespace OkaneFlow.Pages.Debt
 
             Input.UserID = _currentUser.UserGuid;
 
-            // Should I force AccountID to null if some checkbox says "standalone"? 
-            // For now, if Input.AccountID is null (not selected), it works as standalone.
-
-            _debtService.CreateDebt(DebtMapper.ToModel(Input));
+            await _debtService.CreateDebtAsync(DebtMapper.ToModel(Input));
 
             return RedirectToPage("/Debt/DebtPage");
         }

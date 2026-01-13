@@ -25,5 +25,17 @@ namespace Service.Models
 
         public bool IsAdmin { get; set; } = false;
 
+        public UserModel() { }
+
+        public UserModel(string username, string email, string passwordHash, bool isAdmin = false)
+        {
+            UserID = Guid.NewGuid();
+            Username = username;
+            Email = email;
+            PasswordHash = passwordHash;
+            CreationDate = DateTime.UtcNow;
+            IsAdmin = isAdmin;
+        }
+
     }
 }

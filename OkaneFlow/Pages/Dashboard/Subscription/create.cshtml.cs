@@ -29,21 +29,21 @@ namespace OkaneFlow.Pages.Dashboard.Subscription
 
         public SelectList CategoryList { get; set; }
 
-        public void OnGet(Guid id)
+        public async Task OnGetAsync(Guid id)
         {
-            var categories = _categoryService.GetAllCategories(id);
-            // Default "Unassigned" shouldn't probably be selectable for Subscription? Or yes?
+            var categories = await _categoryService.GetAllCategoriesAsync(id);
+            // Default "Unallocated" shouldn't probably be selectable for Subscription? Or yes?
             // User said: "when ... they don't select the category ... a new category is created called subscriptions"
             // So we show all existing categories.
             CategoryList = new SelectList(categories.Select(c => new { c.CategoryID, c.CategoryName }), "CategoryID", "CategoryName");
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 // Reload categories if invalid (though minimal validation here)
-                var categories = _categoryService.GetAllCategories(id);
+                var categories = await _categoryService.GetAllCategoriesAsync(id);
                 CategoryList = new SelectList(categories.Select(c => new { c.CategoryID, c.CategoryName }), "CategoryID", "CategoryName");
                 return Page();
             }
@@ -53,13 +53,13 @@ namespace OkaneFlow.Pages.Dashboard.Subscription
 
             try
             {
-                _subscriptionService.CreateSubscription(SubscriptionMapper.ToModel(Input));
+                await _subscriptionService.CreateSubscriptionAsync(SubscriptionMapper.ToModel(Input));
             }
             catch (InvalidOperationException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 // Reload categories
-                var categories = _categoryService.GetAllCategories(id);
+                var categories = await _categoryService.GetAllCategoriesAsync(id);
                 CategoryList = new SelectList(categories.Select(c => new { c.CategoryID, c.CategoryName }), "CategoryID", "CategoryName");
                 return Page();
             }

@@ -4,14 +4,14 @@ namespace Service.RepoInterface
 {
     public interface IBankAccountRepo
     {
-        public List<BankAccountModel> GetBankAccounts(Guid id);
+        public Task<List<BankAccountModel>> GetBankAccountsAsync(Guid id);
 
-        public BankAccountModel? GetBankAccountById(Guid id);
+        public Task<BankAccountModel?> GetBankAccountByIdAsync(Guid id);
 
-        public void UpdateBankAccount(BankAccountModel dto);
+        public Task UpdateBankAccountAsync(BankAccountModel dto);
 
-        public void DeleteBankAccount(Guid id);
+        public Task DeleteBankAccountAsync(Guid id);
 
-        public void CreateBankAccount(BankAccountModel newAccount);
+        public Task CreateBankAccountAsync(BankAccountModel newAccount);
     }
 }

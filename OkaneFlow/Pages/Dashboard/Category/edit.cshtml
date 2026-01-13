@@ -1,26 +1,44 @@
 ﻿@page "{id:guid}"
 @model OkaneFlow.Pages.Dashboard.Category.editModel
 
-<h2>Edit Bank Account</h2>
-<button type="button" onclick="goBack()" class="btn btn-secondary">Back</button>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Edit Category</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <input type="hidden" asp-for="CategoryDetails.AccountID" />
 
-<form method="post">
-    <input type="hidden" asp-for="CategoryDetails.AccountID" />
+                        <div class="mb-3">
+                            <label asp-for="CategoryDetails.CategoryName" class="form-label text-secondary small fw-bold text-uppercase">Category Name</label>
+                            <input asp-for="CategoryDetails.CategoryName" class="form-control" />
+                        </div>
 
-    <div>
-        <label>Account Name:</label>
-        <input asp-for="CategoryDetails.CategoryName" />
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold text-uppercase">Amount Used</label>
+                            <div class="form-control bg-light text-muted">
+                                €@Model.CategoryDetails.AmountUsed.ToString("N2")
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="AmountToAllocate" class="form-label text-secondary small fw-bold text-uppercase">Allocated Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">€</span>
+                                <input asp-for="AmountToAllocate" class="form-control border-start-0 ps-0" type="number" step="0.01" />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+<button type="submit" class="btn btn-primary">Update Category</button>
+                            <button type="button" onclick="history.back()" class="btn btn-light text-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div>
-        <label><b>Amount Used:</b></label>
-        <input value="@Model.CategoryDetails.AmountUsed" readonly />
-    </div>
-
-    <div>
-        <label>Amount to Allocate:</label>
-        <input asp-for="AmountToAllocate" />
-    </div>
-
-    <button type="submit">Update</button>
-</form>
+</div>

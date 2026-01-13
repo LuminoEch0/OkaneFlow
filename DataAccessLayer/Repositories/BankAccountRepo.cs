@@ -19,19 +19,19 @@ namespace DataAccessLayer.Repositories
         {
             _dbManager = dbManager;
         }
-        public List<BankAccountModel> GetBankAccounts(Guid id)
+        public async Task<List<BankAccountModel>> GetBankAccountsAsync(Guid id)
         {
             var bankAccounts = new List<BankAccountDTO>();
             string sql = "SELECT [AccountID],[UserID],[AccountName],[CurrentBalance] FROM BankAccount WHERE [UserID] = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (SqlCommand command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             bankAccounts.Add(new BankAccountDTO
                             {
@@ -47,18 +47,18 @@ namespace DataAccessLayer.Repositories
             return BankAccountMapper.ToModelList(bankAccounts);
         }
 
-        public BankAccountModel? GetBankAccountById(Guid id)
+        public async Task<BankAccountModel?> GetBankAccountByIdAsync(Guid id)
         {
             string sql = "SELECT [AccountID],[UserID],[AccountName],[CurrentBalance] FROM BankAccount WHERE AccountID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             return new BankAccountModel
                             (
@@ -68,19 +68,20 @@ namespace DataAccessLayer.Repositories
                                 reader.GetDecimal(reader.GetOrdinal("CurrentBalance"))
                             );
 
-                        };
+                        }
+                        ;
                     }
                 }
             }
             return null;
         }
-        
 
-        public void UpdateBankAccount(BankAccountModel model)
+
+        public async Task UpdateBankAccountAsync(BankAccountModel model)
         {
             string sql = "UPDATE BankAccount SET AccountName = @name, CurrentBalance = @balance WHERE AccountID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
@@ -88,32 +89,31 @@ namespace DataAccessLayer.Repositories
                     cmd.Parameters.AddWithValue("@balance", model.CurrentBalance);
                     cmd.Parameters.AddWithValue("@name", model.AccountName);
 
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void DeleteBankAccount(Guid id)
+        public async Task DeleteBankAccountAsync(Guid id)
         {
             string sql = "DELETE FROM BankAccount WHERE AccountID = @id";
-            
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
-                    // Repository accepts the ID, not the DTO
                     cmd.Parameters.AddWithValue("@id", id);
-                    
-                    cmd.ExecuteNonQuery();
+
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void CreateBankAccount(BankAccountModel newAccount)
+        public async Task CreateBankAccountAsync(BankAccountModel newAccount)
         {
             string sql = "INSERT INTO BankAccount ([AccountID],[UserID],[AccountName],[CurrentBalance]) VALUES (@id, @userId, @name, @balance)";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
@@ -122,7 +122,7 @@ namespace DataAccessLayer.Repositories
                     cmd.Parameters.AddWithValue("@name", newAccount.AccountName);
                     cmd.Parameters.AddWithValue("@balance", newAccount.CurrentBalance);
 
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }

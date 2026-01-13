@@ -1,6 +1,6 @@
 using Service.Interface;
-using Service.RepoInterface;
 using Service.Models;
+using Service.RepoInterface;
 
 namespace Service
 {

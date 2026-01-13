@@ -90,9 +90,10 @@
                             </tr>
                         </thead>
                         <tbody>
+                          
                             @foreach (var category in Model.Categories)
                             {
-                                var isUnassigned = category.CategoryName == "Unassigned";
+                                var isUnassigned = category.CategoryName == "Unallocated";
                                 var percent = category.AllocatedAmount > 0 ? (category.AmountUsed /
                                 category.AllocatedAmount) * 100 : 0;
                                 var progressColor = percent > 100 ? "bg-danger" : "bg-success";
@@ -101,7 +102,8 @@
                                     <td class="ps-4 fw-bold @(isUnassigned ? "text-secondary fst-italic" : "")">
                                         @category.CategoryName
                                     </td>
-                                    <td>@FormatHelper.FormatCurrency(category.AllocatedAmount, currency)</td>
+                                    <td>
+                                        @if(!isUnassigned)@FormatHelper.FormatCurrency(category.AllocatedAmount, currency)</td>
                                     <td>@FormatHelper.FormatCurrency(category.AmountUsed, currency)</td>
                                     <td>
                                         @if (!isUnassigned)
@@ -178,7 +180,7 @@
                                 class="form-label text-secondary small fw-bold text-uppercase">Target Category</label>
                             <select class="form-select" id="assignCategoryModal" name="AssignCategoryId" required>
                                 <option value="">Select a category...</option>
-                                @foreach (var category in Model.Categories.Where(c => c.CategoryName != "Unassigned"))
+                                @foreach (var category in Model.Categories.Where(c => c.CategoryName != "Unallocated"))
                                 {
                                     <option value="@category.CategoryID">@category.CategoryName</option>
                                 }

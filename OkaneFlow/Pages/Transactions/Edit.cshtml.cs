@@ -25,42 +25,42 @@ namespace OkaneFlow.Pages.Transactions
 
         public SelectList CategoryOptions { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var serviceModel = _transactionService.GetTransactionById(id);
+            var serviceModel = await _transactionService.GetTransactionByIdAsync(id);
             if (serviceModel == null)
             {
                 return RedirectToPage("/Transactions/Transactions");
             }
             Transaction = TransactionMapper.ToViewModel(serviceModel);
 
-            var category = _categoryService.GetCategoryById(Transaction.CategoryID);
+            var category = await _categoryService.GetCategoryByIdAsync(Transaction.CategoryID);
             if (category != null)
             {
-                var categories = _categoryService.GetAllCategories(category.AccountID);
+                var categories = await _categoryService.GetAllCategoriesAsync(category.AccountID);
                 CategoryOptions = new SelectList(categories, "CategoryID", "CategoryName");
             }
 
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                var category = _categoryService.GetCategoryById(Transaction.CategoryID);
+                var category = await _categoryService.GetCategoryByIdAsync(Transaction.CategoryID);
                 if (category != null)
                 {
-                    var categories = _categoryService.GetAllCategories(category.AccountID);
+                    var categories = await _categoryService.GetAllCategoriesAsync(category.AccountID);
                     CategoryOptions = new SelectList(categories, "CategoryID", "CategoryName");
                 }
                 return Page();
             }
 
             var model = TransactionMapper.ToModel(Transaction);
-            _transactionService.UpdateTransaction(model);
+            await _transactionService.UpdateTransactionAsync(model);
 
-            var cat = _categoryService.GetCategoryById(model.CategoryID);
+            var cat = await _categoryService.GetCategoryByIdAsync(model.CategoryID);
             return RedirectToPage("/Transactions/Transactions", new { accountId = cat?.AccountID });
         }
     }

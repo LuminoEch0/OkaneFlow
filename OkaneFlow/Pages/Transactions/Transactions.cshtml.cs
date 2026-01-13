@@ -30,26 +30,26 @@ namespace OkaneFlow.Pages.Transactions
         [BindProperty(SupportsGet = true)]
         public Guid AccountId { get; set; }
 
-        public IActionResult OnGet(Guid? accountId)
+        public async Task<IActionResult> OnGetAsync(Guid? accountId)
         {
-            var tempBankAccount = _bankAccountService.GetAllBankAccounts(_currentUser.UserGuid);
+            var tempBankAccount = await _bankAccountService.GetAccountsByUserIdAsync(_currentUser.UserGuid);
             BankAccounts = Mappers.BankAccountMapper.ToViewModelList(tempBankAccount);
 
             if (accountId.HasValue)
             {
                 AccountId = accountId.Value;
-                Transactions = TransactionMapper.ToViewModelList(_transactionService.GetTransactionsByAccountId(AccountId));
+                Transactions = TransactionMapper.ToViewModelList(await _transactionService.GetTransactionsByAccountIdAsync(AccountId));
             }
             else if (BankAccounts.Any())
             {
                 // Default to the first account if none selected
                 AccountId = BankAccounts.First().AccountID;
-                Transactions = TransactionMapper.ToViewModelList(_transactionService.GetTransactionsByAccountId(AccountId));
+                Transactions = TransactionMapper.ToViewModelList(await _transactionService.GetTransactionsByAccountIdAsync(AccountId));
             }
 
             if (AccountId != Guid.Empty)
             {
-                var categories = _categoryService.GetAllCategories(AccountId);
+                var categories = await _categoryService.GetAllCategoriesAsync(AccountId);
                 CategoryNames = categories.ToDictionary(c => c.CategoryID, c => c.CategoryName ?? "Unknown");
             }
 

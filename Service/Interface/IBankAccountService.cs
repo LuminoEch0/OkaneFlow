@@ -4,14 +4,17 @@ namespace Service.Interface
 {
     public interface IBankAccountService
     {
-        public List<BankAccountModel> GetAllBankAccounts(Guid id);
+        [Obsolete("Use GetAccountsByUserId instead. This method will be removed in a future version.")]
+        public Task<List<BankAccountModel>> GetAllBankAccountsAsync(Guid id);
 
-        public BankAccountModel? GetAccountById(Guid accountId);
+        public Task<List<BankAccountModel>> GetAccountsByUserIdAsync(Guid userId);
 
-        public void UpdateAccountDetails(BankAccountModel account);
+        public Task<BankAccountModel?> GetAccountByIdAsync(Guid accountId);
 
-        public void DeleteAccount(Guid accountId);
-        public void CreateAccount(BankAccountModel account);
-        public List<BankAccountModel> GetAccountsByUserId(Guid userId);
+        public Task UpdateAccountDetailsAsync(BankAccountModel account);
+
+        public Task DeleteAccountAsync(Guid accountId);
+
+        public Task CreateAccountAsync(BankAccountModel account);
     }
 }

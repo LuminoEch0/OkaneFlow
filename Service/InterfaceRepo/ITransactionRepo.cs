@@ -4,14 +4,16 @@ namespace Service.RepoInterface
 {
     public interface ITransactionRepo
     {
-        public List<TransactionModel> GetTransactionsByAccountId(Guid accountId);
+        public Task<List<TransactionModel>> GetTransactionsByAccountIdAsync(Guid accountId);
 
-        public void AddTransaction(TransactionModel transaction);
+        public Task AddTransactionAsync(TransactionModel transaction);
 
-        public TransactionModel? GetTransactionById(Guid id);
+        public Task<TransactionModel?> GetTransactionByIdAsync(Guid id);
 
-        public void UpdateTransaction(TransactionModel transaction);
+        public Task UpdateTransactionAsync(TransactionModel transaction);
 
-        public void DeleteTransaction(Guid id);
+        public Task DeleteTransactionAsync(Guid id);
+
+        public Task UpdateCategoryForTransactionsAsync(Guid oldCategoryId, Guid newCategoryId, int expenseTypeId);
     }
 }

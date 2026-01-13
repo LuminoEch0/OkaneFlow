@@ -148,5 +148,20 @@ namespace DataAccessLayer.Repositories
                 }
             }
         }
+
+        public async Task<int> GetSubscriptionCountByCategoryIdAsync(Guid categoryId)
+        {
+            string sql = "SELECT COUNT(*) FROM Subscription WHERE CategoryID = @categoryId";
+
+            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            {
+                using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
+                {
+                    cmd.Parameters.AddWithValue("@categoryId", categoryId);
+                    var result = await cmd.ExecuteScalarAsync();
+                    return Convert.ToInt32(result);
+                }
+            }
+        }
     }
 }

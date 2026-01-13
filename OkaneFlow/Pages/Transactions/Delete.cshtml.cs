@@ -22,9 +22,9 @@ namespace OkaneFlow.Pages.Transactions
         [BindProperty]
         public TransactionVM Transaction { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var model = _transaction_service.GetTransactionById(id);
+            var model = await _transaction_service.GetTransactionByIdAsync(id);
             if (model == null)
             {
                 return RedirectToPage("/Transactions/Transactions");
@@ -33,15 +33,15 @@ namespace OkaneFlow.Pages.Transactions
             return Page();
         }
 
-        public IActionResult OnPost(Guid id)
+        public async Task<IActionResult> OnPostAsync(Guid id)
         {
-            var transaction = _transaction_service.GetTransactionById(id);
+            var transaction = await _transaction_service.GetTransactionByIdAsync(id);
             if (transaction == null) return RedirectToPage("/Transactions/Transactions");
 
-            var category = _category_service.GetCategoryById(transaction.CategoryID);
+            var category = await _category_service.GetCategoryByIdAsync(transaction.CategoryID);
             var accountId = category?.AccountID;
 
-            _transaction_service.DeleteTransaction(id);
+            await _transaction_service.DeleteTransactionAsync(id);
 
             return RedirectToPage("/Transactions/Transactions", new { accountId = accountId });
         }

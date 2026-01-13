@@ -19,7 +19,7 @@ namespace DataAccessLayer.Repositories
             _dbManager = dbManager;
         }
 
-        public List<TransactionModel> GetTransactionsByAccountId(Guid accountId)
+        public async Task<List<TransactionModel>> GetTransactionsByAccountIdAsync(Guid accountId)
         {
             var transactions = new List<TransactionDTO>();
             // Join with Category to filter by AccountID
@@ -31,14 +31,14 @@ namespace DataAccessLayer.Repositories
             ORDER BY [Transaction].[Date] DESC;
         ";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@accountId", accountId);
-                    using (var reader = command.ExecuteReader())
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             transactions.Add(new TransactionDTO
                             {
@@ -56,41 +56,41 @@ namespace DataAccessLayer.Repositories
             return transactions.Select(TransactionMapper.ToModel).ToList();
         }
 
-        public void AddTransaction(TransactionModel transaction)
+        public async Task AddTransactionAsync(TransactionModel transaction)
         {
             var dto = TransactionMapper.ToDTO(transaction);
             string sql = @"
                 INSERT INTO [Transaction] (TransactionID, CategoryID, Amount, Description, Date, Type) 
                 VALUES (@transactionId, @categoryId, @amount, @description, @date, @type)";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@transactionId", dto.TransactionID);
                     command.Parameters.AddWithValue("@categoryId", dto.CategoryID);
                     command.Parameters.AddWithValue("@amount", dto.Amount);
-                    command.Parameters.AddWithValue("@description", (object)dto.Description ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@description", (object?)dto.Description ?? DBNull.Value);
                     command.Parameters.AddWithValue("@date", dto.Date);
                     command.Parameters.AddWithValue("@type", dto.Type);
 
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public TransactionModel? GetTransactionById(Guid id)
+        public async Task<TransactionModel?> GetTransactionByIdAsync(Guid id)
         {
             string sql = "SELECT TransactionID, CategoryID, Amount, Description, Date, Type FROM [Transaction] WHERE TransactionID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    using (var reader = command.ExecuteReader())
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             var dto = new TransactionDTO
                             {
@@ -109,7 +109,7 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public void UpdateTransaction(TransactionModel transaction)
+        public async Task UpdateTransactionAsync(TransactionModel transaction)
         {
             var dto = TransactionMapper.ToDTO(transaction);
             string sql = @"
@@ -117,32 +117,46 @@ namespace DataAccessLayer.Repositories
                 SET CategoryID = @categoryId, Amount = @amount, Description = @description, Date = @date, Type = @type 
                 WHERE TransactionID = @transactionId";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@transactionId", dto.TransactionID);
                     command.Parameters.AddWithValue("@categoryId", dto.CategoryID);
                     command.Parameters.AddWithValue("@amount", dto.Amount);
-                    command.Parameters.AddWithValue("@description", (object)dto.Description ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@description", (object?)dto.Description ?? DBNull.Value);
                     command.Parameters.AddWithValue("@date", dto.Date);
                     command.Parameters.AddWithValue("@type", dto.Type);
 
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void DeleteTransaction(Guid id)
+        public async Task DeleteTransactionAsync(Guid id)
         {
             string sql = "DELETE FROM [Transaction] WHERE TransactionID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task UpdateCategoryForTransactionsAsync(Guid oldCategoryId, Guid newCategoryId, int expenseTypeId)
+        {
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
+            {
+                string moveSql = "UPDATE [Transaction] SET CategoryID = @newCategoryId WHERE CategoryID = @oldCategoryId";
+                using (var moveCmd = new SqlCommand(moveSql, (SqlConnection)connection))
+                {
+                    moveCmd.Parameters.AddWithValue("@oldCategoryId", oldCategoryId);
+                    moveCmd.Parameters.AddWithValue("@newCategoryId", newCategoryId);
+                    await moveCmd.ExecuteNonQueryAsync();
                 }
             }
         }

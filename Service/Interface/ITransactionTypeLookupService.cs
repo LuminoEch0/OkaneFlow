@@ -2,8 +2,7 @@
 {
     public interface ITransactionTypeLookupService
     {
-        public int GetTypeIdFromName(string typeName);
-
-        public string GetTypeNameFromId(int typeId);
+        public Task<int> GetTypeIdFromNameAsync(string typeName);
+        public Task<string> GetTypeNameFromIdAsync(int typeId);
     }
 }

@@ -14,10 +14,12 @@ namespace OkaneFlow.Pages.Dashboard.Category
     {
         private readonly ICategoryService _categoryService;
         private readonly IBankAccountService _accountService;
-        public CategoryPageModel(ICategoryService categoryService, IBankAccountService accountService)
+        private readonly ICurrentUserService _currentUser;
+        public CategoryPageModel(ICategoryService categoryService, IBankAccountService accountService, ICurrentUserService currentUser)
         {
             _categoryService = categoryService;
             _accountService = accountService;
+            _currentUser = currentUser;
         }
         [BindProperty(SupportsGet = true)]
         public Guid id { get; set; }
@@ -34,11 +36,19 @@ namespace OkaneFlow.Pages.Dashboard.Category
             : UnallocatedAmount == 0 ? "black"
             : "green";
 
-        public void OnGet(Guid id)
+        public async Task OnGetAsync(Guid id)
         {
-            Categories = CategoryMapper.ToViewModelList(_categoryService.GetAllCategories(id));
-            UnallocatedAmount = _categoryService.GetUnallocatedAmount(id, _accountService);
-            var accountModel = _accountService.GetAccountById(id);
+            Categories = CategoryMapper.ToViewModelList(await _categoryService.GetAllCategoriesAsync(id));
+            var item = Categories.FirstOrDefault(x => x.CategoryName == "Unallocated");
+            if(item != null)
+            {
+                Categories.Remove(item);
+                Categories.Add(item);
+            }
+
+            UnallocatedAmount = await _categoryService.GetUnallocatedAmountAsync(id, _accountService);
+
+            var accountModel = await _accountService.GetAccountByIdAsync(id);
             if (accountModel == null)
             {
                 Account = new BankAccountVM();
@@ -47,15 +57,15 @@ namespace OkaneFlow.Pages.Dashboard.Category
             {
                 Account = BankAccountMapper.ToViewModel(accountModel);
             }
-            
+
 
         }
 
-        public IActionResult OnPostAssign()
+        public async Task<IActionResult> OnPostAssignAsync()
         {
             if (AmountToAllocate > 0 && AssignCategoryId != Guid.Empty)
             {
-                _categoryService.AssignAmountToAllocate(AssignCategoryId, AmountToAllocate);
+                await _categoryService.AssignAmountToAllocateAsync(AssignCategoryId, AmountToAllocate);
             }
             return RedirectToPage(new { id });
         }

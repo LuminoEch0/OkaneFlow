@@ -22,7 +22,6 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
 }
 
 html {
@@ -49,7 +48,6 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
 }
 
 .form-floating>.form-control-plaintext::placeholder,
@@ -84,6 +82,7 @@ body {
 }
 
 body {
+    margin-bottom: 0 !important;
     background-color: var(--background-color);
     color: var(--text-primary);
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -231,6 +230,31 @@ header h1 {
     color: var(--text-primary);
 }
 
+/* Remove default template margin that creates extra scroll space */
+body {
+    margin-bottom: 0 !important;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Footer enhancements */
+.footer {
+}
+
+.hover-primary {
+    transition: color 0.2s ease;
+}
+
+.hover-primary:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Ensure links in footer don't look like standard blue links until hovered */
+/*.footer .nav-link {
+    text-decoration: none;
+}*/
+
 /* ========================================
    DARK MODE STYLES
    ======================================== */
@@ -283,8 +307,8 @@ body.dark-mode header h1 {
 }
 
 body.dark-mode .footer {
-    background-color: #16213e !important;
-    border-color: #2a2a4a !important;
+    background-color: transparent !important;
+    border: none !important;
     color: #a0a0a0;
 }
 

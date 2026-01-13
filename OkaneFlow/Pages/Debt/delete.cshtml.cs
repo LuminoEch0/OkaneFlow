@@ -20,20 +20,20 @@ namespace OkaneFlow.Pages.Debt
 
         public DebtVM Debt { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var debt = _debtService.GetDebtById(id);
+            var debt = await _debtService.GetDebtByIdAsync(id);
             if (debt == null) return NotFound();
             Debt = DebtMapper.ToViewModel(debt);
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            var debt = _debtService.GetDebtById(id);
+            var debt = await _debtService.GetDebtByIdAsync(id);
             if (debt == null) return NotFound();
 
-            _debtService.DeleteDebt(id);
+            await _debtService.DeleteDebtAsync(id);
 
             return RedirectToPage("/Debt/DebtPage");
         }

@@ -6,11 +6,11 @@ namespace Service.Interface
 {
     public interface ISubscriptionService
     {
-        List<SubscriptionModel> GetSubscriptionsByAccount(Guid accountId);
-        SubscriptionModel? GetSubscriptionById(Guid id);
-        void CreateSubscription(SubscriptionModel subscription); // Logic for Category check here
-        void UpdateSubscription(SubscriptionModel subscription);
-        void DeleteSubscription(Guid id);
-        List<SubscriptionModel> GetUpcomingInsufficientSubscriptions(Guid accountId);
+        Task<List<SubscriptionModel>> GetSubscriptionsByAccountAsync(Guid accountId);
+        Task<SubscriptionModel?> GetSubscriptionByIdAsync(Guid id);
+        Task CreateSubscriptionAsync(SubscriptionModel subscription); // Logic for Category check here
+        Task UpdateSubscriptionAsync(SubscriptionModel subscription);
+        Task DeleteSubscriptionAsync(Guid id);
+        Task<List<SubscriptionModel>> GetUpcomingInsufficientSubscriptionsAsync(Guid accountId);
     }
 }

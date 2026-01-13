@@ -1,0 +1,82 @@
+@page
+@model OkaneFlow.Pages.Admin.DashboardModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_Layout";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-primary fw-bold">Admin Dashboard</h2>
+        <p class="text-muted">Overview of system statistics.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Total Users Card -->
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                        <i class="bi bi-people-fill text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title text-muted mb-0">Total Users</h6>
+                        <h2 class="fw-bold mb-0">@Model.TotalUsers</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Users (24h) Card -->
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
+                        <i class="bi bi-clock-history text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title text-muted mb-0">Active (24h)</h6>
+                        <h2 class="fw-bold mb-0">@Model.UsersLoggedInLast24Hours</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Users (7d) Card -->
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle me-3">
+                        <i class="bi bi-calendar-range text-info fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title text-muted mb-0">Active (7d)</h6>
+                        <h2 class="fw-bold mb-0">@Model.UsersLoggedInLast7Days</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">Quick Actions</h5>
+                <div class="d-flex gap-3 mt-3">
+                    <a asp-page="/Admin/UserManager" class="btn btn-outline-primary">
+                        <i class="bi bi-person-gear me-2"></i> Manage Users
+                    </a>
+                    <!-- Add more admin actions here if needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

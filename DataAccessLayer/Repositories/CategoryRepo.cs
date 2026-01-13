@@ -18,19 +18,19 @@ namespace DataAccessLayer.Repositories
             _dbManager = dbManager;
         }
 
-        public List<CategoryModel> GetCategories(Guid id)
+        public async Task<List<CategoryModel>> GetCategoriesAsync(Guid id)
         {
             var categories = new List<CategoryDTO>();
             string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (SqlCommand command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             categories.Add(new CategoryDTO
                             {
@@ -47,19 +47,19 @@ namespace DataAccessLayer.Repositories
             return CategoryMapper.ToModelList(categories);
         }
 
-        public CategoryModel? GetCategoryById(Guid id)
+        public async Task<CategoryModel?> GetCategoryByIdAsync(Guid id)
         {
             CategoryDTO? dto = null;
             string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE CategoryID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             dto = new CategoryDTO
                             {
@@ -77,14 +77,13 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public void UpdateCategory(CategoryModel model)
+        public async Task UpdateCategoryAsync(CategoryModel model)
         {
-            // Map model to DTO for DB operations
             var dto = CategoryMapper.ToDTO(model);
 
             string sql = "UPDATE Category SET Name = @name, AllocatedAmount = @allocatedAmount, AmountUsed = @amountUsed WHERE CategoryID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
@@ -93,28 +92,27 @@ namespace DataAccessLayer.Repositories
                     cmd.Parameters.AddWithValue("@allocatedAmount", dto.AllocatedAmount);
                     cmd.Parameters.AddWithValue("@amountUsed", dto.AmountUsed);
 
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void DeleteCategory(Guid id)
+        public async Task DeleteCategoryAsync(Guid id)
         {
             string sql = "DELETE FROM Category WHERE CategoryID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void CreateCategory(CategoryModel model)
+        public async Task CreateCategoryAsync(CategoryModel model)
         {
-            // Ensure there is a CategoryID
             if (model.CategoryID == Guid.Empty)
             {
                 model.CategoryID = Guid.NewGuid();
@@ -124,7 +122,7 @@ namespace DataAccessLayer.Repositories
 
             string sql = "INSERT INTO Category ([CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed]) VALUES (@categoryId, @accountId, @name, @allocatedAmount, @amountUsed)";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
@@ -134,37 +132,39 @@ namespace DataAccessLayer.Repositories
                     cmd.Parameters.AddWithValue("@allocatedAmount", dto.AllocatedAmount);
                     cmd.Parameters.AddWithValue("@amountUsed", dto.AmountUsed);
 
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void AssignAmountAllocated(Guid categoryId, decimal amount)
+        public async Task AssignAmountAllocatedAsync(Guid categoryId, decimal amount)
         {
             string sql = "UPDATE Category SET AllocatedAmount = @allocatedamount WHERE CategoryID = @category";
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     cmd.Parameters.AddWithValue("@category", categoryId);
                     cmd.Parameters.AddWithValue("@allocatedamount", amount);
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public CategoryModel GetUnassignedCategory(Guid accountId)
-        {
-            string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @accountId AND Name = 'Unassigned'";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+
+        public async Task<CategoryModel> GetUnallocatedCategoryAsync(Guid accountId)
+        {
+            string sql = "SELECT [CategoryID],[AccountID],[Name],[AllocatedAmount],[AmountUsed] FROM Category WHERE AccountID = @accountId AND Name = 'Unallocated'";
+
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     cmd.Parameters.AddWithValue("@accountId", accountId);
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             var dto = new CategoryDTO
                             {
@@ -180,15 +180,14 @@ namespace DataAccessLayer.Repositories
                 }
             }
 
-            // If not found, create it as a model and persist
             var newModel = new CategoryModel(
                 Guid.NewGuid(),
                 accountId,
-                "Unassigned",
+                "Unallocated",
                 0m,
                 0m);
 
-            CreateCategory(newModel);
+            await CreateCategoryAsync(newModel);
             return newModel;
         }
     }

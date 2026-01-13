@@ -3,6 +3,7 @@
   <Project Path="OkaneFlow/OkaneFlow.csproj">
     <BuildDependency Project="Service/Service.csproj" />
   </Project>
+  <Project Path="OkaneFlow_UnitTests/OkaneFlow_UnitTests.csproj" Id="c92d8e6d-d413-49d6-91b3-2768755f0bf0" />
   <Project Path="Service/Service.csproj" Id="1a0cede9-5306-4291-85ad-99ecc15cf489">
     <BuildDependency Project="DataAccessLayer/DataAccessLayer.csproj" />
   </Project>

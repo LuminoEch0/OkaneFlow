@@ -29,17 +29,17 @@ namespace Service
             _typeLookupService = typeLookupService;
         }
 
-        public List<SubscriptionModel> GetSubscriptionsByAccount(Guid accountId)
+        public async Task<List<SubscriptionModel>> GetSubscriptionsByAccountAsync(Guid accountId)
         {
-            return _subscriptionRepo.GetSubscriptions(accountId);
+            return await Task.Run(() => _subscriptionRepo.GetSubscriptions(accountId));
         }
 
-        public SubscriptionModel? GetSubscriptionById(Guid id)
+        public async Task<SubscriptionModel?> GetSubscriptionByIdAsync(Guid id)
         {
-            return _subscriptionRepo.GetSubscriptionById(id);
+            return await Task.Run(() => _subscriptionRepo.GetSubscriptionById(id));
         }
 
-        public void CreateSubscription(SubscriptionModel subscription)
+        public async Task CreateSubscriptionAsync(SubscriptionModel subscription)
         {
             if (string.IsNullOrWhiteSpace(subscription.Name))
             {
@@ -51,23 +51,20 @@ namespace Service
                 throw new ArgumentException("Amount cannot be negative.");
             }
 
-            // 1. Transaction Logic (Immediate Payment)
             if (subscription.StartDate.Date <= DateTime.Now.Date)
             {
-                var account = _bankAccountService.GetAccountById(subscription.AccountID);
+                var account = await _bankAccountService.GetAccountByIdAsync(subscription.AccountID);
                 if (account == null) throw new InvalidOperationException("Bank account not found.");
 
                 if (account.CurrentBalance < subscription.Amount)
                 {
-                    // Strict Blocking
                     throw new InvalidOperationException($"Insufficient funds. Current balance ({account.CurrentBalance}) is less than subscription amount ({subscription.Amount}).");
                 }
             }
 
-            // 2. Category Logic (Find or Create)
             if (subscription.CategoryID == Guid.Empty)
             {
-                var categories = _categoryService.GetAllCategories(subscription.AccountID);
+                var categories = await _categoryService.GetAllCategoriesAsync(subscription.AccountID);
                 var subCategory = categories.FirstOrDefault(c => c.CategoryName != null && c.CategoryName.Equals("Subscriptions", StringComparison.OrdinalIgnoreCase));
 
                 if (subCategory != null)
@@ -76,36 +73,26 @@ namespace Service
                 }
                 else
                 {
-                    // Create it
                     var newCategory = new CategoryModel(subscription.AccountID, "Subscriptions", 0, 0);
-                    _categoryService.CreateCategory(newCategory);
+                    await _categoryService.CreateCategoryAsync(newCategory);
                     subscription.CategoryID = newCategory.CategoryID;
                 }
             }
 
-            // 3. Auto-Allocation Logic
-            // Increase the Category's allocated amount by the subscription amount
-            var targetCategory = _categoryService.GetCategoryById(subscription.CategoryID);
+            var targetCategory = await _categoryService.GetCategoryByIdAsync(subscription.CategoryID);
             if (targetCategory != null)
             {
                 targetCategory.AllocatedAmount += subscription.Amount;
-                _categoryService.UpdateCategoryDetails(targetCategory);
+                await _categoryService.UpdateCategoryDetailsAsync(targetCategory);
             }
 
-            // 4. Save Subscription
-            _subscriptionRepo.CreateSubscription(subscription);
+            await Task.Run(() => _subscriptionRepo.CreateSubscription(subscription));
 
-            // 5. Create Transaction if due now
             if (subscription.StartDate.Date <= DateTime.Now.Date)
             {
-                int expenseTypeId = _typeLookupService.GetTypeIdFromName("Expense");
+                int expenseTypeId = await _typeLookupService.GetTypeIdFromNameAsync("Expense");
                 var transaction = new TransactionModel
                 {
-                    // AccountID is passed as argument to CreateTransaction, not part of Model apparently based on previous error, checking Service definition... 
-                    // Wait, Service/Models/TransactionModel.cs defined [CategoryID, Amount, Description, Date, Type]. It does NOT have AccountID.
-                    // The TransactionService.CreateTransaction(model, accountId) takes accountId as 2nd arg.
-                    // So we remove AccountID from initializer.
-
                     Amount = subscription.Amount,
                     CategoryID = subscription.CategoryID,
                     Description = $"Subscription: {subscription.Name}",
@@ -113,30 +100,27 @@ namespace Service
                     Type = expenseTypeId
                 };
 
-                _transactionService.CreateTransaction(transaction, subscription.AccountID);
+                await _transactionService.CreateTransactionAsync(transaction, subscription.AccountID);
             }
         }
 
-        // Helper method for Alerts
-        public List<SubscriptionModel> GetUpcomingInsufficientSubscriptions(Guid accountId)
+        public async Task<List<SubscriptionModel>> GetUpcomingInsufficientSubscriptionsAsync(Guid accountId)
         {
-            var account = _bankAccountService.GetAccountById(accountId);
+            var account = await _bankAccountService.GetAccountByIdAsync(accountId);
             if (account == null) return new List<SubscriptionModel>();
 
-            var subscriptions = GetSubscriptionsByAccount(accountId);
+            var subscriptions = await GetSubscriptionsByAccountAsync(accountId);
             var upcoming = new List<SubscriptionModel>();
 
             foreach (var sub in subscriptions)
             {
-                // Simple logic checks next occurrence based on Frequency
-                // This is a naive implementation for "next 7 days"
                 DateTime nextDate = sub.StartDate;
                 while (nextDate < DateTime.Now.Date)
                 {
                     if (sub.Frequency == "Monthly") nextDate = nextDate.AddMonths(1);
                     else if (sub.Frequency == "Yearly") nextDate = nextDate.AddYears(1);
                     else if (sub.Frequency == "Weekly") nextDate = nextDate.AddDays(7);
-                    else break; // Should not happen
+                    else break;
                 }
 
                 if (nextDate <= DateTime.Now.AddDays(7) && account.CurrentBalance < sub.Amount)
@@ -148,7 +132,7 @@ namespace Service
         }
 
 
-        public void UpdateSubscription(SubscriptionModel subscription)
+        public async Task UpdateSubscriptionAsync(SubscriptionModel subscription)
         {
             if (string.IsNullOrWhiteSpace(subscription.Name))
             {
@@ -158,12 +142,12 @@ namespace Service
             {
                 throw new ArgumentException("Amount cannot be negative.");
             }
-            _subscriptionRepo.UpdateSubscription(subscription);
+            await Task.Run(() => _subscriptionRepo.UpdateSubscription(subscription));
         }
 
-        public void DeleteSubscription(Guid id)
+        public async Task DeleteSubscriptionAsync(Guid id)
         {
-            _subscriptionRepo.DeleteSubscription(id);
+            await Task.Run(() => _subscriptionRepo.DeleteSubscription(id));
         }
     }
 }

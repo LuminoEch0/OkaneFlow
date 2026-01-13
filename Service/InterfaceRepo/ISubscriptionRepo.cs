@@ -11,5 +11,6 @@ namespace Service.RepoInterface
         void CreateSubscription(SubscriptionModel model);
         void UpdateSubscription(SubscriptionModel model);
         void DeleteSubscription(Guid id);
+        Task<int> GetSubscriptionCountByCategoryIdAsync(Guid categoryId);
     }
 }

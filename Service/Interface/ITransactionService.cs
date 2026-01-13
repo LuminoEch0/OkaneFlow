@@ -4,13 +4,13 @@ namespace Service.Interface
 {
     public interface ITransactionService
     {
-        public List<TransactionModel> GetTransactionsByAccountId(Guid accountId);
+        public Task<List<TransactionModel>> GetTransactionsByAccountIdAsync(Guid accountId);
 
-        public void CreateTransaction(TransactionModel transaction, Guid accountId);
+        public Task CreateTransactionAsync(TransactionModel transaction, Guid accountId);
 
-        public void DeleteTransaction(Guid id);
+        public Task DeleteTransactionAsync(Guid id);
 
-        public TransactionModel? GetTransactionById(Guid id);
-        public void UpdateTransaction(TransactionModel transaction);
+        public Task<TransactionModel?> GetTransactionByIdAsync(Guid id);
+        public Task UpdateTransactionAsync(TransactionModel transaction);
     }
 }

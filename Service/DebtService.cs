@@ -9,36 +9,28 @@ namespace Service
     public class DebtService : IDebtService
     {
         private readonly IDebtRepo _debtRepo;
+        private readonly Service.Interface.ICurrentUserService _currentUserService;
 
-        public DebtService(IDebtRepo debtRepo)
+        public DebtService(IDebtRepo debtRepo, Service.Interface.ICurrentUserService currentUserService)
         {
             _debtRepo = debtRepo;
+            _currentUserService = currentUserService;
         }
 
-        public List<DebtModel> GetDebtsByUser(Guid userId)
+        public async Task<List<DebtModel>> GetDebtsByUserAsync(Guid userId)
         {
-            return _debtRepo.GetDebts(userId);
+            if (userId != _currentUserService.UserGuid) throw new UnauthorizedAccessException();
+            return await _debtRepo.GetDebtsAsync(userId);
         }
 
-        public DebtModel? GetDebtById(Guid id)
+        public async Task<DebtModel?> GetDebtByIdAsync(Guid id)
         {
-            return _debtRepo.GetDebtById(id);
+            var debt = await _debtRepo.GetDebtByIdAsync(id);
+            if (debt != null && debt.UserID != _currentUserService.UserGuid) return null; // Or throw
+            return debt;
         }
 
-        public void CreateDebt(DebtModel debt)
-        {
-            if (string.IsNullOrWhiteSpace(debt.Name))
-            {
-                throw new ArgumentException("Debt name cannot be empty.");
-            }
-            if (debt.InitialAmount < 0 || debt.RemainingAmount < 0)
-            {
-                throw new ArgumentException("Amounts cannot be negative.");
-            }
-            _debtRepo.CreateDebt(debt);
-        }
-
-        public void UpdateDebt(DebtModel debt)
+        public async Task CreateDebtAsync(DebtModel debt)
         {
             if (string.IsNullOrWhiteSpace(debt.Name))
             {
@@ -48,12 +40,41 @@ namespace Service
             {
                 throw new ArgumentException("Amounts cannot be negative.");
             }
-            _debtRepo.UpdateDebt(debt);
+            if (debt.UserID != _currentUserService.UserGuid)
+            {
+                throw new UnauthorizedAccessException("Cannot create debt for another user.");
+            }
+            await _debtRepo.CreateDebtAsync(debt);
         }
 
-        public void DeleteDebt(Guid id)
+        public async Task UpdateDebtAsync(DebtModel debt)
         {
-            _debtRepo.DeleteDebt(id);
+            if (string.IsNullOrWhiteSpace(debt.Name))
+            {
+                throw new ArgumentException("Debt name cannot be empty.");
+            }
+            if (debt.InitialAmount < 0 || debt.RemainingAmount < 0)
+            {
+                throw new ArgumentException("Amounts cannot be negative.");
+            }
+            var existing = await _debtRepo.GetDebtByIdAsync(debt.DebtID);
+            if (existing == null || existing.UserID != _currentUserService.UserGuid)
+            {
+                throw new UnauthorizedAccessException("Cannot update debt.");
+            }
+            // Ensure ID matches
+            debt.UserID = _currentUserService.UserGuid;
+            await _debtRepo.UpdateDebtAsync(debt);
+        }
+
+        public async Task DeleteDebtAsync(Guid id)
+        {
+            var existing = await _debtRepo.GetDebtByIdAsync(id);
+            if (existing == null || existing.UserID != _currentUserService.UserGuid)
+            {
+                throw new UnauthorizedAccessException("Cannot delete debt.");
+            }
+            await _debtRepo.DeleteDebtAsync(id);
         }
     }
 }

@@ -144,7 +144,7 @@ namespace DataAccessLayer.Repositories
 
         public Task<List<UserModel>> GetAllUsersAsync()
         {
-            string sql = "SELECT [UserID],[Username],[Email],[PasswordHash],[CreationDate],[Role] FROM [User]";
+            string sql = "SELECT [UserID],[Username],[Email],[PasswordHash],[CreationDate],[LastLoginDate],[Role] FROM [User]";
             var users = new List<UserModel>();
 
             using (IDbConnection connection = _dbManager.GetOpenConnection())
@@ -156,6 +156,7 @@ namespace DataAccessLayer.Repositories
                         while (reader.Read())
                         {
                             string role = reader.GetString(reader.GetOrdinal("Role"));
+                            int lastLoginOrdinal = reader.GetOrdinal("LastLoginDate");
                             users.Add(new UserModel
                             {
                                 UserID = reader.GetGuid(reader.GetOrdinal("UserID")),
@@ -163,7 +164,8 @@ namespace DataAccessLayer.Repositories
                                 Email = reader.GetString(reader.GetOrdinal("Email")),
                                 PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
                                 IsAdmin = role == "Admin",
-                                CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate"))
+                                CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate")),
+                                LastLoginDate = reader.IsDBNull(lastLoginOrdinal) ? null : reader.GetDateTime(lastLoginOrdinal)
                             });
                         }
                     }

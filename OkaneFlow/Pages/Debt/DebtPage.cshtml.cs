@@ -13,9 +13,9 @@ namespace OkaneFlow.Pages.Debt
     {
         private readonly IDebtService _debtService;
         private readonly IBankAccountService _accountService;
-        private readonly OkaneFlow.Helpers.ICurrentUserService _currentUser;
+        private readonly ICurrentUserService _currentUser;
 
-        public DebtPageModel(IDebtService debtService, IBankAccountService accountService, OkaneFlow.Helpers.ICurrentUserService currentUser)
+        public DebtPageModel(IDebtService debtService, IBankAccountService accountService, ICurrentUserService currentUser)
         {
             _debtService = debtService;
             _accountService = accountService;
@@ -24,9 +24,9 @@ namespace OkaneFlow.Pages.Debt
 
         public List<DebtVM> Debts { get; set; } = new();
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            Debts = DebtMapper.ToViewModelList(_debtService.GetDebtsByUser(_currentUser.UserGuid));
+            Debts = DebtMapper.ToViewModelList(await _debtService.GetDebtsByUserAsync(_currentUser.UserGuid));
         }
     }
 }

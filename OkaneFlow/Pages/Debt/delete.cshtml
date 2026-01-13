@@ -1,30 +1,54 @@
 @page "{id:guid}"
 @model OkaneFlow.Pages.Debt.deleteModel
 @{
-    ViewData["Title"] = "Delete Debt";
 }
 
-<div class="container py-4" style="max-width: 600px;">
-    <div class="card shadow-sm border-danger">
-        <div class="card-header bg-danger text-white py-3">
-            <h5 class="mb-0 fw-bold">Delete Debt</h5>
-        </div>
-        <div class="card-body p-4">
-            <p class="lead">Are you sure you want to delete the debt <strong>@Model.Debt.Name</strong>?</p>
-            <p class="text-secondary">This action cannot be undone.</p>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6" style="max-width: 600px;">
+            <h2 class="text-danger fw-bold mb-4">Delete Debt</h2>
+            <div class="card border-0 shadow-sm border-top border-5 border-danger">
+                <div class="card-body p-4">
+                    @if (Model.Debt != null)
+                    {
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+                            <div>
+                                Are you sure you want to delete this debt? This action cannot be undone.
+                            </div>
+                        </div>
 
-            <dl class="row">
-                <dt class="col-sm-4">Initial Amount</dt>
-                <dd class="col-sm-8">@Model.Debt.InitialAmount.ToString("C").Replace("$", "€")</dd>
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Debt Details</h6>
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4 text-secondary">Title</dt>
+                                <dd class="col-sm-8 fw-bold">@Model.Debt.Name</dd>
 
-                <dt class="col-sm-4">Remaining</dt>
-                <dd class="col-sm-8">@Model.Debt.RemainingAmount.ToString("C").Replace("$", "€")</dd>
-            </dl>
+                                <dt class="col-sm-4 text-secondary">Initial Amount</dt>
+                                <dd class="col-sm-8 fw-bold">@Model.Debt.InitialAmount.ToString("C")</dd>
 
-            <form method="post" class="mt-4 d-flex justify-content-between">
-                <a asp-page="/Debt/DebtPage" class="btn btn-outline-secondary">Cancel</a>
-                <button type="submit" class="btn btn-danger">Confirm Delete</button>
-            </form>
+                                <dt class="col-sm-4 text-secondary">Remaining</dt>
+                                <dd class="col-sm-8">@Model.Debt.RemainingAmount.ToString("C")</dd>
+                            </dl>
+                        </div>
+
+                        <form method="post">
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-danger btn-lg">Delete Debt</button>
+                                <button type="button" onclick="history.back()"
+                                    class="btn btn-light text-secondary">Cancel</button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">Debt not found.</div>
+                        <div class="d-grid">
+                            <button type="button" onclick="history.back()" class="btn btn-secondary">Back</button>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>

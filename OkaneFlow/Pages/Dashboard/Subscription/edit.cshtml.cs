@@ -28,32 +28,32 @@ namespace OkaneFlow.Pages.Dashboard.Subscription
 
         public SelectList CategoryList { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var sub = _subscriptionService.GetSubscriptionById(id);
+            var sub = await _subscriptionService.GetSubscriptionByIdAsync(id);
             if (sub == null) return NotFound();
 
             Input = SubscriptionMapper.ToViewModel(sub);
 
-            var categories = _categoryService.GetAllCategories(Input.AccountID);
+            var categories = await _categoryService.GetAllCategoriesAsync(Input.AccountID);
             CategoryList = new SelectList(categories.Select(c => new { c.CategoryID, c.CategoryName }), "CategoryID", "CategoryName", Input.CategoryID);
 
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                 var categories = _categoryService.GetAllCategories(Input.AccountID);
-                 CategoryList = new SelectList(categories.Select(c => new { c.CategoryID, c.CategoryName }), "CategoryID", "CategoryName", Input.CategoryID);
-                 return Page();
+                var categories = await _categoryService.GetAllCategoriesAsync(Input.AccountID);
+                CategoryList = new SelectList(categories.Select(c => new { c.CategoryID, c.CategoryName }), "CategoryID", "CategoryName", Input.CategoryID);
+                return Page();
             }
 
             Input.SubscriptionID = id;
             var model = SubscriptionMapper.ToModel(Input);
-            
-            _subscriptionService.UpdateSubscription(model);
+
+            await _subscriptionService.UpdateSubscriptionAsync(model);
 
             return RedirectToPage("/Dashboard/Subscription/SubscriptionPage", new { id = Input.AccountID });
         }

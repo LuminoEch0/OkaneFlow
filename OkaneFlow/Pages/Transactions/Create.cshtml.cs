@@ -21,7 +21,7 @@ namespace OkaneFlow.Pages.Transactions
         public CreateModel(ITransactionService transactionService, ICategoryService categoryService)
         {
             _transactionService = transactionService;
-            _categoryService = categoryService; // small temporary to satisfy tool; will be applied correctly by smart editor
+            _categoryService = categoryService;
         }
 
         [BindProperty]
@@ -32,25 +32,25 @@ namespace OkaneFlow.Pages.Transactions
 
         public SelectList CategoryOptions { get; set; }
 
-        public IActionResult OnGet(Guid accountId)
+        public async Task<IActionResult> OnGetAsync(Guid accountId)
         {
             AccountId = accountId;
-            var categories = _categoryService.GetAllCategories(accountId);
+            var categories = await _categoryService.GetAllCategoriesAsync(accountId);
             CategoryOptions = new SelectList(categories, "CategoryID", "CategoryName");
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                var categories = _categoryService.GetAllCategories(AccountId);
+                var categories = await _categoryService.GetAllCategoriesAsync(AccountId);
                 CategoryOptions = new SelectList(categories, "CategoryID", "CategoryName");
                 return Page();
             }
 
             var serviceModel = TransactionMapper.ToModel(Transaction);
-            _transactionService.CreateTransaction(serviceModel, AccountId);
+            await _transactionService.CreateTransactionAsync(serviceModel, AccountId);
 
             return RedirectToPage("/Transactions/Transactions", new { accountId = AccountId });
         }

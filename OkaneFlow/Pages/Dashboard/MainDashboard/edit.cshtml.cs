@@ -25,9 +25,9 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         [BindProperty]
         public decimal AmountToAdd { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var account = _accountService.GetAccountById(id);
+            var account = await _accountService.GetAccountByIdAsync(id);
             if (account == null)
             {
                 return NotFound();
@@ -36,9 +36,9 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
             return Page();
         }
 
-        public IActionResult OnPost(Guid id)
+        public async Task<IActionResult> OnPostAsync(Guid id)
         {
-            var account = _accountService.GetAccountById(id);
+            var account = await _accountService.GetAccountByIdAsync(id);
             if (account == null)
             {
                 return NotFound();
@@ -51,7 +51,7 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
             {
                 account.UpdateBalance(AmountToAdd);
             }
-            _accountService.UpdateAccountDetails(account);
+            await _accountService.UpdateAccountDetailsAsync(account);
             return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
 
         }

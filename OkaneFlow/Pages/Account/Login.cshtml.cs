@@ -49,15 +49,7 @@ namespace OkaneFlow.Pages.Account
             }
 
             // 2. Create Claims (The user identity data)
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User") // Storing the role is crucial for authorization
-            };
-
-            var claimsIdentity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = _userService.CreateUserPrincipal(user);
 
             var authProperties = new AuthenticationProperties
             {
@@ -69,14 +61,14 @@ namespace OkaneFlow.Pages.Account
             // 3. Sign In (Securely creates the authentication cookie)
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
+                principal,
                 authProperties);
 
             // 4. Update last login date
             await _userService.UpdateLastLoginAsync(user.UserID);
 
             // Redirect user to the requested page or the home page
-            return LocalRedirect(returnUrl ?? "/");
+            return LocalRedirect(returnUrl ?? "/Redirect");
         }
 
         public async Task<IActionResult> OnPostLogoutAsync()

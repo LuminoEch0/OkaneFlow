@@ -14,10 +14,10 @@ namespace Service
             _lookupRepo = lookupRepo;
         }
 
-        public int GetTypeIdFromName(string typeName)
+        public async Task<int> GetTypeIdFromNameAsync(string typeName)
         {
             // 1. Get all types from the DAL (if not cached)
-            var allTypes = _lookupRepo.GetAllTransactionTypesAsync();
+            var allTypes = await Task.Run(() => _lookupRepo.GetAllTransactionTypesAsync());
 
             // 2. Find the ID matching the name
             var lookup = allTypes.FirstOrDefault(t => t.TypeName.Equals(typeName, StringComparison.OrdinalIgnoreCase));
@@ -29,10 +29,10 @@ namespace Service
             return lookup.TypeID;
         }
 
-        public string GetTypeNameFromId(int typeId)
+        public async Task<string> GetTypeNameFromIdAsync(int typeId)
         {
             // 1. Get all types from the DAL (if not cached)
-            var allTypes = _lookupRepo.GetAllTransactionTypesAsync();
+            var allTypes = await Task.Run(() => _lookupRepo.GetAllTransactionTypesAsync());
             // 2. Find the name matching the ID
             var lookup = allTypes.FirstOrDefault(t => t.TypeID == typeId);
             if (lookup == null)

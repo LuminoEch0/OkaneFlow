@@ -3,9 +3,6 @@ using System.Globalization;
 
 namespace OkaneFlow.Helpers
 {
-    /// <summary>
-    /// Helper for formatting currency and dates based on user preferences.
-    /// </summary>
     public static class FormatHelper
     {
         private static readonly Dictionary<string, CultureInfo> CurrencyCultures = new()
@@ -30,9 +27,6 @@ namespace OkaneFlow.Helpers
             { "AUD", "$" },
         };
 
-        /// <summary>
-        /// Formats a decimal amount as currency based on user preference.
-        /// </summary>
         public static string FormatCurrency(decimal amount, string currencyCode)
         {
             var symbol = CurrencySymbols.GetValueOrDefault(currencyCode, "€");
@@ -41,9 +35,6 @@ namespace OkaneFlow.Helpers
             return $"{symbol}{amount:N2}";
         }
 
-        /// <summary>
-        /// Formats a DateTime based on user's preferred date format.
-        /// </summary>
         public static string FormatDate(DateTime date, string dateFormat)
         {
             try
@@ -56,9 +47,6 @@ namespace OkaneFlow.Helpers
             }
         }
 
-        /// <summary>
-        /// Formats a nullable DateTime based on user's preferred date format.
-        /// </summary>
         public static string FormatDate(DateTime? date, string dateFormat, string defaultValue = "N/A")
         {
             if (!date.HasValue)
@@ -67,9 +55,6 @@ namespace OkaneFlow.Helpers
             return FormatDate(date.Value, dateFormat);
         }
 
-        /// <summary>
-        /// Formats a DateTime with time based on user's preferred date format.
-        /// </summary>
         public static string FormatDateTime(DateTime date, string dateFormat)
         {
             try

@@ -1,6 +1,7 @@
 using Service.RepoInterface;
 using Service.Interface;
 using Service.Models;
+using System.Transactions;
 
 namespace Service
 {
@@ -10,50 +11,78 @@ namespace Service
         private readonly IBankAccountRepo _bankAccountRepository;
         private readonly ICategoryRepo _categoryRepository;
         private readonly ITransactionTypeLookupService _transactionTypeLookupService;
+        private readonly ICurrentUserService _currentUserService;
 
-        private readonly int _expenseTypeId;
-        private readonly int _incomeTypeId;
 
-        public TransactionService(ITransactionRepo transactionRepository, IBankAccountRepo bankAccountRepository, ICategoryRepo categoryRepository, ITransactionTypeLookupService transactionTypeLookupService)
+        public TransactionService(
+            ITransactionRepo transactionRepository,
+            IBankAccountRepo bankAccountRepository,
+            ICategoryRepo categoryRepository,
+            ITransactionTypeLookupService transactionTypeLookupService,
+            ICurrentUserService currentUserService)
         {
             _transactionRepository = transactionRepository;
             _bankAccountRepository = bankAccountRepository;
-            _categoryRepository = categoryRepository; // temporary to satisfy compiler
+            _categoryRepository = categoryRepository;
             _transactionTypeLookupService = transactionTypeLookupService;
-
-            _expenseTypeId = _transactionTypeLookupService.GetTypeIdFromName("Expense");
-            _incomeTypeId = _transactionTypeLookupService.GetTypeIdFromName("Income");
+            _currentUserService = currentUserService;
         }
 
-        public List<TransactionModel> GetTransactionsByAccountId(Guid accountId)
+        public async Task<List<TransactionModel>> GetTransactionsByAccountIdAsync(Guid accountId)
         {
-            return _transactionRepository.GetTransactionsByAccountId(accountId);
-        }
-
-        public void CreateTransaction(TransactionModel transaction, Guid accountId)
-        {
-            if (transaction.TransactionID == Guid.Empty)
+            var account = await _bankAccountRepository.GetBankAccountByIdAsync(accountId);
+            if (account == null)
             {
-                transaction.TransactionID = Guid.NewGuid();
+                throw new KeyNotFoundException("Account not found.");
             }
-            if (transaction.Type == _incomeTypeId)
+
+            if (account.UserID != _currentUserService.UserGuid)
             {
-                var category = _categoryRepository.GetCategoryById(transaction.CategoryID);
-                if (category == null)
+                throw new UnauthorizedAccessException("You are not authorized to view transactions for this account.");
+            }
+
+            return await _transactionRepository.GetTransactionsByAccountIdAsync(accountId);
+        }
+
+        public async Task CreateTransactionAsync(TransactionModel transaction, Guid accountId)
+        {
+            var account = await _bankAccountRepository.GetBankAccountByIdAsync(accountId);
+            if (account == null) throw new KeyNotFoundException("Account not found.");
+            if (account.UserID != _currentUserService.UserGuid)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to add transactions to this account.");
+            }
+
+            int incomeTypeId = await _transactionTypeLookupService.GetTypeIdFromNameAsync("Income");
+            int expenseTypeId = await _transactionTypeLookupService.GetTypeIdFromNameAsync("Expense");
+
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                if (transaction.TransactionID == Guid.Empty)
                 {
-                    var unassigned = _categoryRepository.GetUnassignedCategory(accountId);
-                    transaction.CategoryID = unassigned.CategoryID;
+                    transaction.TransactionID = Guid.NewGuid();
                 }
-            }
 
-            // 2. Save Transaction
-            _transactionRepository.AddTransaction(transaction);
+                // If no category selected, auto-assign to "Unallocated" category
+                if (transaction.CategoryID == Guid.Empty)
+                {
+                    var unallocated = await _categoryRepository.GetUnallocatedCategoryAsync(accountId);
+                    transaction.CategoryID = unallocated.CategoryID;
+                }
+                else
+                {
+                    // Verify category exists
+                    var category = await _categoryRepository.GetCategoryByIdAsync(transaction.CategoryID);
+                    if (category == null)
+                    {
+                        var unallocated = await _categoryRepository.GetUnallocatedCategoryAsync(accountId);
+                        transaction.CategoryID = unallocated.CategoryID;
+                    }
+                }
 
-            // 3. Update Bank Account Balance
-            var account = _bankAccountRepository.GetBankAccountById(accountId);
-            if (account != null)
-            {
-                if (transaction.Type == _incomeTypeId)
+                await _transactionRepository.AddTransactionAsync(transaction);
+
+                if (transaction.Type == incomeTypeId)
                 {
                     account.CurrentBalance += transaction.Amount;
                 }
@@ -61,127 +90,179 @@ namespace Service
                 {
                     account.CurrentBalance -= transaction.Amount;
                 }
-                _bankAccountRepository.UpdateBankAccount(account);
-            }
+                await _bankAccountRepository.UpdateBankAccountAsync(account);
 
-            // 4. Update Category AmountUsed
-            if (transaction.Type == _expenseTypeId)
-            {
-                var category = _categoryRepository.GetCategoryById(transaction.CategoryID);
-                if (category != null)
+                if (transaction.Type == expenseTypeId)
                 {
-                    category.AmountUsed += transaction.Amount;
-                    _categoryRepository.UpdateCategory(category);
+                    var category = await _categoryRepository.GetCategoryByIdAsync(transaction.CategoryID);
+                    if (category != null)
+                    {
+                        category.AmountUsed += transaction.Amount;
+                        await _categoryRepository.UpdateCategoryAsync(category);
+                    }
                 }
+
+                scope.Complete();
             }
         }
 
-        public void DeleteTransaction(Guid id)
+        public async Task DeleteTransactionAsync(Guid id)
         {
-            var transaction = _transactionRepository.GetTransactionById(id);
+            var transaction = await _transactionRepository.GetTransactionByIdAsync(id);
             if (transaction == null) return;
 
-            // Reverse effects
-            var category = _categoryRepository.GetCategoryById(transaction.CategoryID);
+            int incomeTypeId = await _transactionTypeLookupService.GetTypeIdFromNameAsync("Income");
+            int expenseTypeId = await _transactionTypeLookupService.GetTypeIdFromNameAsync("Expense");
+
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var category = await _categoryRepository.GetCategoryByIdAsync(transaction.CategoryID);
+                if (category != null)
+                {
+                    var account = await _bankAccountRepository.GetBankAccountByIdAsync(category.AccountID);
+                    if (account != null)
+                    {
+                        if (account.UserID != _currentUserService.UserGuid)
+                        {
+                            throw new UnauthorizedAccessException("You are not authorized to delete this transaction.");
+                        }
+
+                        // Reverse effects on Balance
+                        if (transaction.Type == incomeTypeId)
+                        {
+                            account.CurrentBalance -= transaction.Amount;
+                        }
+                        else
+                        {
+                            account.CurrentBalance += transaction.Amount;
+                        }
+                        await _bankAccountRepository.UpdateBankAccountAsync(account);
+                    }
+
+                    // Reverse effects on Category
+                    if (transaction.Type == expenseTypeId)
+                    {
+                        category.AmountUsed -= transaction.Amount;
+                        await _categoryRepository.UpdateCategoryAsync(category);
+                    }
+                }
+
+                await _transactionRepository.DeleteTransactionAsync(id);
+                scope.Complete();
+            }
+        }
+
+        public async Task<TransactionModel?> GetTransactionByIdAsync(Guid id)
+        {
+            var transaction = await _transactionRepository.GetTransactionByIdAsync(id);
+            if (transaction == null) return null;
+
+            var category = await _categoryRepository.GetCategoryByIdAsync(transaction.CategoryID);
             if (category != null)
             {
-                var account = _bankAccountRepository.GetBankAccountById(category.AccountID);
-                if (account != null)
+                var account = await _bankAccountRepository.GetBankAccountByIdAsync(category.AccountID);
+                if (account != null && account.UserID != _currentUserService.UserGuid)
                 {
-                    if (transaction.Type == _incomeTypeId)
-                    {
-                        account.CurrentBalance -= transaction.Amount;
-                    }
-                    else
-                    {
-                        account.CurrentBalance += transaction.Amount;
-                    }
-                    _bankAccountRepository.UpdateBankAccount(account);
-                }
-
-                if (transaction.Type == _expenseTypeId)
-                {
-                    category.AmountUsed -= transaction.Amount;
-                    _categoryRepository.UpdateCategory(category);
+                    throw new UnauthorizedAccessException("You are not authorized to view this transaction.");
                 }
             }
-
-            _transactionRepository.DeleteTransaction(id);
+            return transaction;
         }
 
-        public TransactionModel? GetTransactionById(Guid id)
+        public async Task UpdateTransactionAsync(TransactionModel transaction)
         {
-            return _transactionRepository.GetTransactionById(id);
-        }
-
-        public void UpdateTransaction(TransactionModel transaction)
-        {
-            var oldTransaction = _transactionRepository.GetTransactionById(transaction.TransactionID);
+            var oldTransaction = await _transactionRepository.GetTransactionByIdAsync(transaction.TransactionID);
             if (oldTransaction == null) return;
 
-            // 1. Revert Old
-            var oldCategory = _categoryRepository.GetCategoryById(oldTransaction.CategoryID);
-            if (oldCategory != null)
+            int incomeTypeId = await _transactionTypeLookupService.GetTypeIdFromNameAsync("Income");
+            int expenseTypeId = await _transactionTypeLookupService.GetTypeIdFromNameAsync("Expense");
+
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var account = _bankAccountRepository.GetBankAccountById(oldCategory.AccountID);
-                if (account != null)
+                var oldCategory = await _categoryRepository.GetCategoryByIdAsync(oldTransaction.CategoryID);
+                Guid accountId = Guid.Empty;
+
+                if (oldCategory != null)
                 {
-                    if (oldTransaction.Type == _incomeTypeId)
+                    var account = await _bankAccountRepository.GetBankAccountByIdAsync(oldCategory.AccountID);
+                    if (account != null)
                     {
-                        account.CurrentBalance -= oldTransaction.Amount;
+                        if (account.UserID != _currentUserService.UserGuid)
+                        {
+                            throw new UnauthorizedAccessException("You are not authorized to update this transaction.");
+                        }
+
+                        accountId = account.AccountID;
+
+                        if (oldTransaction.Type == incomeTypeId)
+                        {
+                            account.CurrentBalance -= oldTransaction.Amount;
+                        }
+                        else
+                        {
+                            account.CurrentBalance += oldTransaction.Amount;
+                        }
+                        await _bankAccountRepository.UpdateBankAccountAsync(account);
                     }
-                    else
+
+                    if (oldTransaction.Type == expenseTypeId)
                     {
-                        account.CurrentBalance += oldTransaction.Amount;
+                        oldCategory.AmountUsed -= oldTransaction.Amount;
+                        await _categoryRepository.UpdateCategoryAsync(oldCategory);
                     }
-                    _bankAccountRepository.UpdateBankAccount(account);
                 }
 
-                if (oldTransaction.Type == _expenseTypeId)
+                if (accountId == Guid.Empty) accountId = oldCategory?.AccountID ?? Guid.Empty;
+
+                var newCheckingCategory = await _categoryRepository.GetCategoryByIdAsync(transaction.CategoryID);
+                if (newCheckingCategory != null)
                 {
-                    oldCategory.AmountUsed -= oldTransaction.Amount;
-                    _categoryRepository.UpdateCategory(oldCategory);
-                }
-            }
-
-            // 2. Apply New
-            Guid accountId = oldCategory?.AccountID ?? Guid.Empty;
-
-            if (transaction.Type == _incomeTypeId)
-            {
-                var category = _categoryRepository.GetCategoryById(transaction.CategoryID);
-                if (category == null && accountId != Guid.Empty)
-                {
-                    var unassigned = _categoryRepository.GetUnassignedCategory(accountId);
-                    transaction.CategoryID = unassigned.CategoryID;
-                }
-            }
-
-            _transactionRepository.UpdateTransaction(transaction);
-
-            // Update Balance/Category for NEW transaction
-            var newCategory = _categoryRepository.GetCategoryById(transaction.CategoryID);
-            if (newCategory != null)
-            {
-                var account = _bankAccountRepository.GetBankAccountById(newCategory.AccountID);
-                if (account != null)
-                {
-                    if (transaction.Type == _incomeTypeId)
+                    var newAccount = await _bankAccountRepository.GetBankAccountByIdAsync(newCheckingCategory.AccountID);
+                    if (newAccount != null && newAccount.UserID != _currentUserService.UserGuid)
                     {
-                        account.CurrentBalance += transaction.Amount;
+                        throw new UnauthorizedAccessException("You cannot move transaction to a category you do not own.");
                     }
-                    else
-                    {
-                        account.CurrentBalance -= transaction.Amount;
-                    }
-                    _bankAccountRepository.UpdateBankAccount(account);
                 }
 
-                if (transaction.Type == _expenseTypeId)
+
+                if (transaction.Type == incomeTypeId)
                 {
-                    newCategory.AmountUsed += transaction.Amount;
-                    _categoryRepository.UpdateCategory(newCategory);
+                    var category = await _categoryRepository.GetCategoryByIdAsync(transaction.CategoryID);
+                    if (category == null && accountId != Guid.Empty)
+                    {
+                        var unallocated = await _categoryRepository.GetUnallocatedCategoryAsync(accountId);
+                        transaction.CategoryID = unallocated.CategoryID;
+                    }
                 }
+
+                await _transactionRepository.UpdateTransactionAsync(transaction);
+
+                // Update Balance/Category for NEW transaction
+                var newCategory = await _categoryRepository.GetCategoryByIdAsync(transaction.CategoryID);
+                if (newCategory != null)
+                {
+                    var account = await _bankAccountRepository.GetBankAccountByIdAsync(newCategory.AccountID);
+                    if (account != null)
+                    {
+                        if (transaction.Type == incomeTypeId)
+                        {
+                            account.CurrentBalance += transaction.Amount;
+                        }
+                        else
+                        {
+                            account.CurrentBalance -= transaction.Amount;
+                        }
+                        await _bankAccountRepository.UpdateBankAccountAsync(account);
+                    }
+
+                    if (transaction.Type == expenseTypeId)
+                    {
+                        newCategory.AmountUsed += transaction.Amount;
+                        await _categoryRepository.UpdateCategoryAsync(newCategory);
+                    }
+                }
+
+                scope.Complete();
             }
         }
     }

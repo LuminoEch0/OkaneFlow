@@ -23,5 +23,12 @@ namespace DataAccessLayer
             conn.Open();
             return conn;
         }
+
+        public async Task<IDbConnection> GetOpenConnectionAsync()
+        {
+            var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            return conn;
+        }
     }
 }

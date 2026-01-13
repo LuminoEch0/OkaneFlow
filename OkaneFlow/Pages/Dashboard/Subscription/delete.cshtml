@@ -1,32 +1,53 @@
 @page "{id:guid}"
 @model OkaneFlow.Pages.Dashboard.Subscription.deleteModel
 @{
-    ViewData["Title"] = "Delete Subscription";
 }
 
-<div class="container py-4" style="max-width: 600px;">
-    <div class="card shadow-sm border-danger">
-        <div class="card-header bg-danger text-white py-3">
-            <h5 class="mb-0 fw-bold">Delete Subscription</h5>
-        </div>
-        <div class="card-body p-4">
-            <p class="lead">Are you sure you want to delete the subscription for
-                <strong>@Model.Subscription.Name</strong>?</p>
-            <p class="text-secondary">This action cannot be undone.</p>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6" style="max-width: 600px;">
+            <h2 class="text-danger fw-bold mb-4">Delete Subscription</h2>
+            <div class="card border-0 shadow-sm border-top border-5 border-danger">
+                <div class="card-body p-4">
+                    @if (Model.Subscription != null)
+                    {
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+                            <div>
+                                Are you sure you want to delete this subscription? This action cannot be undone.
+                            </div>
+                        </div>
 
-            <dl class="row">
-                <dt class="col-sm-4">Amount</dt>
-                <dd class="col-sm-8">@Model.Subscription.Amount.ToString("C").Replace("$", "€")</dd>
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Subscription Details</h6>
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4 text-secondary">Name</dt>
+                                <dd class="col-sm-8 fw-bold">@Model.Subscription.Name</dd>
 
-                <dt class="col-sm-4">Frequency</dt>
-                <dd class="col-sm-8">@Model.Subscription.Frequency</dd>
-            </dl>
+                                <dt class="col-sm-4 text-secondary">Amount</dt>
+                                <dd class="col-sm-8 fw-bold">@Model.Subscription.Amount.ToString("C")</dd>
 
-            <form method="post" class="mt-4 d-flex justify-content-between">
-                <a asp-page="/Dashboard/Subscription/SubscriptionPage" asp-route-id="@Model.Subscription.AccountID"
-                    class="btn btn-outline-secondary">Cancel</a>
-                <button type="submit" class="btn btn-danger">Confirm Delete</button>
-            </form>
+                                <dt class="col-sm-4 text-secondary">Frequency</dt>
+                                <dd class="col-sm-8">@Model.Subscription.Frequency</dd>
+                            </dl>
+                        </div>
+
+                        <form method="post">
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-danger btn-lg">Delete Subscription</button>
+                                <button type="button" onclick="history.back()" class="btn btn-light text-secondary">Cancel</button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">Subscription not found.</div>
+                        <div class="d-grid">
+                            <button type="button" onclick="history.back()" class="btn btn-secondary">Back</button>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>

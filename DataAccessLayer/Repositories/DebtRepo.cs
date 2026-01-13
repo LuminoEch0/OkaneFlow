@@ -18,19 +18,19 @@ namespace DataAccessLayer.Repositories
             _dbManager = dbManager;
         }
 
-        public List<DebtModel> GetDebts(Guid userId)
+        public async Task<List<DebtModel>> GetDebtsAsync(Guid userId)
         {
             var debts = new List<DebtDTO>();
             string sql = "SELECT [DebtID],[UserID],[AccountID],[Name],[AssociatedEntity],[InitialAmount],[RemainingAmount],[IsInterestEnabled],[InterestRate],[DueDate],[Type] FROM Debt WHERE UserID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (SqlCommand command = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     command.Parameters.AddWithValue("@id", userId);
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             debts.Add(MapReaderToDTO(reader));
                         }
@@ -40,18 +40,18 @@ namespace DataAccessLayer.Repositories
             return DebtMapper.ToModelList(debts);
         }
 
-        public DebtModel? GetDebtById(Guid id)
+        public async Task<DebtModel?> GetDebtByIdAsync(Guid id)
         {
             string sql = "SELECT [DebtID],[UserID],[AccountID],[Name],[AssociatedEntity],[InitialAmount],[RemainingAmount],[IsInterestEnabled],[InterestRate],[DueDate],[Type] FROM Debt WHERE DebtID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             return DebtMapper.ToModel(MapReaderToDTO(reader));
                         }
@@ -61,7 +61,7 @@ namespace DataAccessLayer.Repositories
             return null;
         }
 
-        public void CreateDebt(DebtModel model)
+        public async Task CreateDebtAsync(DebtModel model)
         {
             if (model.DebtID == Guid.Empty)
             {
@@ -72,42 +72,42 @@ namespace DataAccessLayer.Repositories
 
             string sql = "INSERT INTO Debt ([DebtID],[UserID],[AccountID],[Name],[AssociatedEntity],[InitialAmount],[RemainingAmount],[IsInterestEnabled],[InterestRate],[DueDate],[Type]) VALUES (@debtId, @userId, @accountId, @name, @associatedEntity, @initialAmount, @remainingAmount, @isInterestEnabled, @interestRate, @dueDate, @type)";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     AddParameters(cmd, dto);
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void UpdateDebt(DebtModel model)
+        public async Task UpdateDebtAsync(DebtModel model)
         {
             var dto = DebtMapper.ToDTO(model);
 
             string sql = "UPDATE Debt SET UserID = @userId, AccountID = @accountId, Name = @name, AssociatedEntity = @associatedEntity, InitialAmount = @initialAmount, RemainingAmount = @remainingAmount, IsInterestEnabled = @isInterestEnabled, InterestRate = @interestRate, DueDate = @dueDate, Type = @type WHERE DebtID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     AddParameters(cmd, dto);
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        public void DeleteDebt(Guid id)
+        public async Task DeleteDebtAsync(Guid id)
         {
             string sql = "DELETE FROM Debt WHERE DebtID = @id";
 
-            using (IDbConnection connection = _dbManager.GetOpenConnection())
+            using (IDbConnection connection = await _dbManager.GetOpenConnectionAsync())
             {
                 using (var cmd = new SqlCommand(sql, (SqlConnection)connection))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -144,8 +144,6 @@ namespace DataAccessLayer.Repositories
             cmd.Parameters.AddWithValue("@dueDate", dto.DueDate);
             cmd.Parameters.AddWithValue("@type", dto.Type);
 
-            // For Update where ID is needed separately, it's covered by @debtId if used, but Update query uses @id. 
-            // My Update SQL uses @id, so I should ensure @id is added if not present in AddParameters or add it manually.
             if (!cmd.Parameters.Contains("@id"))
             {
                 cmd.Parameters.AddWithValue("@id", dto.DebtID);

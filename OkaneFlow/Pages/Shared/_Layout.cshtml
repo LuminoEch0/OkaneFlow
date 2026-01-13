@@ -16,14 +16,13 @@
     <link rel="stylesheet" href="~/OkaneFlow.styles.css" asp-append-version="true" />
 </head>
 
-<body class="@(isDarkMode ? "dark-mode" : "")">
+<body class="@(isDarkMode ? "dark-mode" : "") overflow-x-hidden">
     <div class="d-flex min-vh-100">
-        <nav class="sidebar bg-white border-end shadow-sm" style="width: 240px;">
+        <!-- Sticky Sidebar -->
+        <nav class="sidebar bg-white border-end shadow-sm sticky-top flex-shrink-0" style="width: 240px; height: 100vh; overflow-y: auto;">
             <div class="sidebar-header p-4 border-bottom">
                 <a class="navbar-brand fw-bold fs-4 text-primary" asp-area=""
                     asp-page="/Dashboard/MainDashboard/Dashboard">
-                    @* <img src="~/images/logo.png" alt="OkaneFlow Logo"
-                    style="height:32px;vertical-align:middle;margin-right:8px;" /> *@
                     OkaneFlow
                 </a>
             </div>
@@ -33,28 +32,45 @@
                         <span class="me-2"><i class="bi bi-person-circle"></i></span> Account
                     </a>
                 </li>
-                <li class="nav-item mb-2">
-                    <a class="nav-link d-flex align-items-center text-dark" asp-area=""
-                        asp-page="/Dashboard/MainDashboard/Dashboard">
-                        <span class="me-2"><i class="bi bi-speedometer2"></i></span> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a class="nav-link d-flex align-items-center text-dark" asp-area=""
-                        asp-page="/Transactions/Transactions">
-                        <span class="me-2"><i class="bi bi-cash-stack"></i></span> Transactions
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Debt/DebtPage">
-                        <span class="me-2"><i class="bi bi-credit-card-2-front"></i></span> Debts
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/People/ChatPage">
-                        <span class="me-2"><i class="bi bi-people"></i></span> People
-                    </a>
-                </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Admin/Dashboard">
+                            <span class="me-2"><i class="bi bi-speedometer2"></i></span> Admin Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Admin/UserManager">
+                            <span class="me-2"><i class="bi bi-person-gear"></i></span> User Manager
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center text-dark" asp-area=""
+                            asp-page="/Dashboard/MainDashboard/Dashboard">
+                            <span class="me-2"><i class="bi bi-speedometer2"></i></span> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center text-dark" asp-area=""
+                            asp-page="/Transactions/Transactions">
+                            <span class="me-2"><i class="bi bi-cash-stack"></i></span> Transactions
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Debt/DebtPage">
+                            <span class="me-2"><i class="bi bi-credit-card-2-front"></i></span> Debts
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/People/ChatPage">
+                            <span class="me-2"><i class="bi bi-people"></i></span> People
+                        </a>
+                    </li>
+                }
                 <li class="nav-item mb-2">
                     <a class="nav-link d-flex align-items-center text-dark" asp-area="" asp-page="/Account/Logout">
                         <span class="me-2"><i class="bi bi-box-arrow-right"></i></span> Logout
@@ -62,16 +78,19 @@
                 </li>
             </ul>
         </nav>
-        <div class="flex-grow-1 d-flex flex-column">
-            <header class="bg-light border-bottom py-3 px-4 mb-3">
-                <h1 class="h4 mb-0">@ViewData["Title"]</h1>
-            </header>
+
+        <!-- Main Content Area -->
+        <div class="flex-grow-1 d-flex flex-column min-vw-0">
             <main role="main" class="flex-grow-1 px-4 pb-4">
                 @RenderBody()
             </main>
-            <footer class="border-top footer text-muted py-3 px-4 bg-white shadow-sm">
-                <div class="container-fluid text-center">
-                    &copy; 2025 - OkaneFlow - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            <footer class="footer text-muted py-4 px-4 mt-auto">
+                <div class="container-fluid">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                        <div class="mb-1 mb-md-0">
+                            <span class="small opacity-75">&copy; @DateTime.Now.Year <span class="fw-bold text-primary">OkaneFlow</span>. Simple wealth management.</span>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>

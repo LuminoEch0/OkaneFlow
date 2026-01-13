@@ -9,5 +9,11 @@ namespace Service.Interface
         Task<bool> CreateUserAsync(string username, string email, string password, string role = "User");
 
         Task<bool> UpdateLastLoginAsync(Guid userId);
+
+        Task<List<UserModel>> GetAllUsersAsync();
+
+        Task<bool> DeleteUserAsync(Guid userId);
+
+        System.Security.Claims.ClaimsPrincipal CreateUserPrincipal(UserModel user);
     }
 }

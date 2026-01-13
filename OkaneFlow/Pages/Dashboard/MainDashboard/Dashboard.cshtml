@@ -68,31 +68,20 @@
         <div class="col">
             <a asp-page="/Dashboard/MainDashboard/create" class="text-decoration-none h-100 d-block">
                 <div
-                    class="card h-100 border-dashed border-secondary border-opacity-25 add-account-card d-flex align-items-center justify-content-center p-4">
+                    class="card h-100 border-dashed border-secondary border-opacity-25 add-account-card d-flex align-items-center justify-content-center p-4" style="min-height: 318px">
                     <div class="text-center text-secondary">
                         <div class="mb-3">
                             <i class="bi bi-plus-circle-dotted fs-1"></i>
                         </div>
-                        <h5 class="fw-bold mb-0">Add New Account</h5>
+                        @if(!Model.BankAccounts.Any())
+                            {
+                            <h4 class="fw-bold">No accounts yet</h4>
+                            <p class="text-secondary mb-4">Add your first bank account to start tracking your finances.</p>
+                            }
+                            <h5 class="fw-bold mb-0">Add New Account</h5>
                     </div>
                 </div>
             </a>
         </div>
-
-        @if (!Model.BankAccounts.Any())
-        {
-            <div class="col-12 text-center py-5">
-                <div class="card border-0 shadow-sm p-5">
-                    <i class="bi bi-bank fs-1 text-secondary mb-3"></i>
-                    <h4 class="fw-bold">No accounts yet</h4>
-                    <p class="text-secondary mb-4">Add your first bank account to start tracking your finances.</p>
-                    <div class="d-flex justify-content-center">
-                        <a asp-page="/Dashboard/MainDashboard/create" class="btn btn-primary px-4">
-                            <i class="bi bi-plus-lg me-1"></i> Add Account
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 </div>

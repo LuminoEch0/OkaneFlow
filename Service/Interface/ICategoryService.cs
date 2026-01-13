@@ -5,16 +5,16 @@ namespace Service.Interface
 
     public interface ICategoryService
     {
-        public List<CategoryModel> GetAllCategories(Guid id);
+        public Task<List<CategoryModel>> GetAllCategoriesAsync(Guid id);
 
-        public CategoryModel? GetCategoryById(Guid categoryId);
+        public Task<CategoryModel?> GetCategoryByIdAsync(Guid categoryId);
 
-        public void UpdateCategoryDetails(CategoryModel category);
+        public Task UpdateCategoryDetailsAsync(CategoryModel category);
 
-        public void DeleteCategory(Guid categoryId);
-        public void CreateCategory(CategoryModel category);
+        public Task DeleteCategoryAsync(Guid categoryId);
+        public Task CreateCategoryAsync(CategoryModel category);
 
-        public void AssignAmountToAllocate(Guid categoryId, decimal amount);
-        public decimal GetUnallocatedAmount(Guid accountId, IBankAccountService bankAccountService);
+        public Task AssignAmountToAllocateAsync(Guid categoryId, decimal amount);
+        public Task<decimal> GetUnallocatedAmountAsync(Guid accountId, IBankAccountService bankAccountService);
     }
 }

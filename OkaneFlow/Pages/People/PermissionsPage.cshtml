@@ -1,14 +1,20 @@
 ﻿@page
 @model OkaneFlow.Pages.People.PermissionsPageModel
 @{
+    ViewData["Title"] = "Permissions";
+
 }
 <div class="container py-4">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Permissions</h1>
+        <p class="text-secondary mb-0">Manage user roles and control access levels across your organization.</p>
+    </div>
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
-            <a asp-area="" asp-page="/People/ChatPage" class="nav-link active">Chats</a>
+            <a asp-area="" asp-page="/People/ChatPage" class="nav-link">Chats</a>
         </li>
         <li class="nav-item">
-            <a asp-area="" asp-page="/People/PermissionsPage" class="nav-link">Permissions</a>
+            <a asp-area="" asp-page="/People/PermissionsPage" class="nav-link active">Permissions</a>
         </li>
         <li class="nav-item">
             <a asp-area="" asp-page="/People/OtherDashboardPage" class="nav-link">Other Dashboard</a>

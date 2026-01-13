@@ -8,18 +8,18 @@ namespace Service.RepoInterface
 {
     public interface ICategoryRepo
     {
-        public List<CategoryModel> GetCategories(Guid id);
+        public Task<List<CategoryModel>> GetCategoriesAsync(Guid id);
 
-        public CategoryModel? GetCategoryById(Guid id);
+        public Task<CategoryModel?> GetCategoryByIdAsync(Guid id);
 
-        public void UpdateCategory(CategoryModel dto);
+        public Task UpdateCategoryAsync(CategoryModel dto);
 
-        public void DeleteCategory(Guid id);
+        public Task DeleteCategoryAsync(Guid id);
 
-        public void CreateCategory(CategoryModel dto);
+        public Task CreateCategoryAsync(CategoryModel dto);
 
-        public void AssignAmountAllocated(Guid categoryId, decimal amount);
+        public Task AssignAmountAllocatedAsync(Guid categoryId, decimal amount);
 
-        public CategoryModel GetUnassignedCategory(Guid accountId);
+        public Task<CategoryModel> GetUnallocatedCategoryAsync(Guid accountId);
     }
 }

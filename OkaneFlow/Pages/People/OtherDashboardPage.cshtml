@@ -1,21 +1,27 @@
 ﻿@page
 @model OkaneFlow.Pages.People.OtherDashboardPageModel
 @{
+    ViewData["Title"] = "Community Dashboards";
+
 }
 <div class="container py-4">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1">Other Dashboards</h1>
+        <p class="text-secondary mb-0">Access shared insights and explore community-driven financial data.</p>
+    </div>
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
-            <a asp-area="" asp-page="/People/ChatPage" class="nav-link active">Chats</a>
+            <a asp-area="" asp-page="/People/ChatPage" class="nav-link">Chats</a>
         </li>
         <li class="nav-item">
             <a asp-area="" asp-page="/People/PermissionsPage" class="nav-link">Permissions</a>
         </li>
         <li class="nav-item">
-            <a asp-area="" asp-page="/People/OtherDashboardPage" class="nav-link">Other Dashboard</a>
+            <a asp-area="" asp-page="/People/OtherDashboardPage" class="nav-link active">Other Dashboard</a>
         </li>
     </ul>
 
-    <div id="dashboards-tab" class="tab-content" style="display: none;">
+    <div id="dashboards-tab" class="tab-content">
         <div class="text-center py-5">
             <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-secondary">
                 <i class="bi bi-grid-1x2 fs-1"></i>
@@ -25,5 +31,4 @@
             <button class="btn btn-primary mt-2" disabled>View Dashboards (Coming Soon)</button>
         </div>
     </div>
-
 </div>

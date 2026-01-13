@@ -31,12 +31,12 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         {
             return Page();
         }
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             var newAccount = new BankAccountVM(_currentUser.UserGuid, InputName, InitialBalance);
 
             var dto = BankAccountMapper.ToModel(newAccount);
-            _accountService.CreateAccount(dto);
+            await _accountService.CreateAccountAsync(dto);
 
             return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
         }

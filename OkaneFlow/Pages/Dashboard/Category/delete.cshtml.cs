@@ -16,27 +16,36 @@ namespace OkaneFlow.Pages.Dashboard.Category
             _accountService = accountService;
         }
         public CategoryVM? AccountDetails { get; set; }
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var account = _accountService.GetCategoryById(id);
+            var account = await _accountService.GetCategoryByIdAsync(id);
             if (account == null)
 
             {
                 return NotFound();
             }
-            
+
             AccountDetails = CategoryMapper.ToViewModel(account);
             return Page();
         }
-        public IActionResult OnPost(Guid id)
+        public async Task<IActionResult> OnPostAsync(Guid id)
         {
-            var account = _accountService.GetCategoryById(id);
+            var account = await _accountService.GetCategoryByIdAsync(id);
             if (account == null)
             {
                 return NotFound();
             }
             var identity = account.AccountID;
-            _accountService.DeleteCategory(id);
+            try
+            {
+                await _accountService.DeleteCategoryAsync(id);
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                AccountDetails = CategoryMapper.ToViewModel(account);
+                return Page();
+            }
             return RedirectToPage($"/Dashboard/Category/CategoryPage", new { id = identity });
         }
     }

@@ -3,10 +3,6 @@ using System.Text.RegularExpressions;
 
 namespace OkaneFlow.Helpers
 {
-    /// <summary>
-    /// Custom validation attribute for strong passwords.
-    /// Requires: 8+ characters, uppercase, lowercase, digit, and special character.
-    /// </summary>
     public class StrongPasswordAttribute : ValidationAttribute
     {
         public StrongPasswordAttribute()

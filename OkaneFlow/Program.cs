@@ -19,11 +19,25 @@ namespace OkaneFlow
             builder.Services.AddRazorPages(options =>
             {
                 // MANDATORY VALIDATION: Apply authorization to all pages by default
-                options.Conventions.AuthorizeFolder("/");
+                options.Conventions.AuthorizeFolder("/Transactions", "RequireUser");
+                options.Conventions.AuthorizeFolder("/Dashboard", "RequireUser");
+                options.Conventions.AuthorizeFolder("/Debt", "RequireUser");
+                options.Conventions.AuthorizeFolder("/People", "RequireUser");
                 // Exclude the Login, Register and Logout pages
                 options.Conventions.AllowAnonymousToPage("/Account/Login");
                 options.Conventions.AllowAnonymousToPage("/Account/Register");
                 options.Conventions.AllowAnonymousToPage("/Account/Logout");
+                // Secure Admin folder
+                options.Conventions.AuthorizeFolder("/Admin", "RequireAdmin");
+                options.Conventions.AuthorizePage("/Redirect", "AllUsers");
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireUser", policy => policy.RequireRole("User"));
+                options.AddPolicy("AllUsers", policy => policy.RequireRole("User", "Admin"));
+
             });
 
             // 2. Configure Cookie Authentication (The secure session management system)
@@ -48,6 +62,7 @@ namespace OkaneFlow
             builder.Services.AddScoped<ISubscriptionRepo, SubscriptionRepo>();
             builder.Services.AddScoped<IDebtRepo, DebtRepo>();
             builder.Services.AddScoped<IUserPreferenceRepo, UserPreferenceRepo>();
+            builder.Services.AddScoped<IChatRepo, ChatRepo>();
 
             builder.Services.AddScoped<IBankAccountService, BankAccountService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -57,10 +72,12 @@ namespace OkaneFlow
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             builder.Services.AddScoped<IDebtService, DebtService>();
             builder.Services.AddScoped<IUserPreferenceService, UserPreferenceService>();
+            builder.Services.AddScoped<IPasswordManager, PasswordManager>();
+            builder.Services.AddScoped<IChatService, ChatService>();
 
             // HttpContext accessor and current user helper (web project)
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddScoped<ICurrentUserService>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             var cultureInfo = new CultureInfo("en-NL");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -93,7 +110,7 @@ namespace OkaneFlow
             app.MapRazorPages()
                .WithStaticAssets();//Maps Razor Pages endpoints and ensures static assets are available to them.
 
-            app.MapFallbackToPage("/Dashboard/MainDashboard/Dashboard");
+            app.MapFallbackToPage("/Account/Profile");
 
             app.Run();
         }

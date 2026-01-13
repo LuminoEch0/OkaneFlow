@@ -13,7 +13,7 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
     {
         private readonly IBankAccountService _accountService;
         private readonly ICurrentUserService _currentUser;
-        
+
         public DashboardModel(IBankAccountService accountService, ICurrentUserService currentUser)
         {
             _accountService = accountService;
@@ -22,11 +22,12 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
         public Guid AccountGuid { get; private set; }
         public List<BankAccountVM> BankAccounts { get; set; } = new List<BankAccountVM>();
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
             AccountGuid = _currentUser.UserGuid;
-            var accountModels = _accountService.GetAllBankAccounts(_currentUser.UserGuid);
+            var accountModels = await _accountService.GetAccountsByUserIdAsync(_currentUser.UserGuid);
             BankAccounts = BankAccountMapper.ToViewModelList(accountModels);
+
         }
     }
 }

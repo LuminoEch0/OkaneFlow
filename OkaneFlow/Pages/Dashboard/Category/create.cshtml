@@ -2,21 +2,38 @@
 @model OkaneFlow.Pages.Dashboard.Category.createModel
 @{
 }
-<h2>Create New Category</h2>
-<button type="button" onclick="goBack()" class="btn btn-secondary">Back</button>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6" style="max-width: 600px;">
+            <h2 class="text-primary fw-bold mb-4">Create New Category</h2>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="InputName"
+                                class="form-label text-secondary small fw-bold text-uppercase">Category Name</label>
+                            <input asp-for="InputName" class="form-control" placeholder="e.g. Groceries" />
+                            <span asp-validation-for="InputName" class="text-danger small"></span>
+                        </div>
 
-<form method="post">
-    <div>
-        <label>Category Name:</label>
-        <input asp-for="InputName" class="form-control"/>
-        <span asp-validation-for="InputName" class="text-danger"></span>
+                        <div class="mb-4">
+                            <label asp-for="AmountToAllocate"
+                                class="form-label text-secondary small fw-bold text-uppercase">Allocated Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">€</span>
+                                <input asp-for="AmountToAllocate" class="form-control border-start-0 ps-0" type="number"
+                                    step="0.01" />
+                            </div>
+                        </div>
 
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Create Category</button>
+                            <button type="button" onclick="history.back()"
+                                class="btn btn-light text-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div>
-        <label>Amount to Allocate:</label>
-        <input asp-for="AmountToAllocate" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create</button>
-</form>
+</div>

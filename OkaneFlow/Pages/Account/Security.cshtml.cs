@@ -15,12 +15,14 @@ namespace OkaneFlow.Pages.Account
         private readonly ICurrentUserService _currentUser;
         private readonly IUserRepo _userRepo;
         private readonly IUserService _userService;
+        private readonly IPasswordManager _passwordManager;
 
-        public SecurityModel(ICurrentUserService currentUser, IUserRepo userRepo, IUserService userService)
+        public SecurityModel(ICurrentUserService currentUser, IUserRepo userRepo, IUserService userService, IPasswordManager passwordManager)
         {
             _currentUser = currentUser;
             _userRepo = userRepo;
             _userService = userService;
+            _passwordManager = passwordManager;
         }
 
         // Display properties
@@ -94,7 +96,7 @@ namespace OkaneFlow.Pages.Account
             }
 
             // Hash new password and save
-            user.PasswordHash = PassswordManager.HashPassword(PasswordChange.NewPassword);
+            user.PasswordHash = _passwordManager.HashPassword(PasswordChange.NewPassword);
             var ok = await _userRepo.UpdateUserAsync(user);
             if (!ok)
             {

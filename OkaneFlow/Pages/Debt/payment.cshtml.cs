@@ -36,16 +36,16 @@ namespace OkaneFlow.Pages.Debt
         public DebtVM Debt { get; set; }
         public string AccountName { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var debt = _debtService.GetDebtById(id);
+            var debt = await _debtService.GetDebtByIdAsync(id);
             if (debt == null) return NotFound();
 
             Debt = DebtMapper.ToViewModel(debt);
 
             if (Debt.AccountID.HasValue)
             {
-                var account = _accountService.GetAccountById(Debt.AccountID.Value);
+                var account = await _accountService.GetAccountByIdAsync(Debt.AccountID.Value);
                 AccountName = account?.AccountName ?? "Unknown Account";
                 CreateTransaction = true;
             }
@@ -57,9 +57,9 @@ namespace OkaneFlow.Pages.Debt
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            var debt = _debtService.GetDebtById(id);
+            var debt = await _debtService.GetDebtByIdAsync(id);
             if (debt == null) return NotFound();
 
             if (PaymentAmount <= 0)
@@ -72,12 +72,12 @@ namespace OkaneFlow.Pages.Debt
             debt.RemainingAmount -= PaymentAmount;
             if (debt.RemainingAmount < 0) debt.RemainingAmount = 0;
 
-            _debtService.UpdateDebt(debt);
+            await _debtService.UpdateDebtAsync(debt);
 
             if (CreateTransaction && debt.AccountID.HasValue)
             {
-                var categories = _categoryService.GetAllCategories(debt.AccountID.Value);
-                var category = categories.FirstOrDefault(c => c.CategoryName == "Unassigned") ?? categories.FirstOrDefault();
+                var categories = await _categoryService.GetAllCategoriesAsync(debt.AccountID.Value);
+                var category = categories.FirstOrDefault(c => c.CategoryName == "Unallocated") ?? categories.FirstOrDefault();
 
                 var transaction = new TransactionModel
                 {
@@ -89,7 +89,7 @@ namespace OkaneFlow.Pages.Debt
                     Type = (int)debt.Type
                 };
 
-                _transactionService.CreateTransaction(transaction, debt.AccountID.Value);
+                await _transactionService.CreateTransactionAsync(transaction, debt.AccountID.Value);
             }
 
             return RedirectToPage("/Debt/DebtPage");

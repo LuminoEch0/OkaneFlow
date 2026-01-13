@@ -11,9 +11,9 @@ namespace OkaneFlow.Pages.Debt
     {
         private readonly IDebtService _debtService;
         private readonly IBankAccountService _accountService;
-        private readonly OkaneFlow.Helpers.ICurrentUserService _currentUser;
+        private readonly ICurrentUserService _currentUser;
 
-        public editModel(IDebtService debtService, IBankAccountService accountService, OkaneFlow.Helpers.ICurrentUserService currentUser)
+        public editModel(IDebtService debtService, IBankAccountService accountService, ICurrentUserService currentUser)
         {
             _debtService = debtService;
             _accountService = accountService;
@@ -28,9 +28,9 @@ namespace OkaneFlow.Pages.Debt
 
         public List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> Accounts { get; set; } = new();
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var debt = _debtService.GetDebtById(id);
+            var debt = await _debtService.GetDebtByIdAsync(id);
             if (debt == null) return NotFound();
 
             // Basic ownership check
@@ -42,16 +42,16 @@ namespace OkaneFlow.Pages.Debt
             }
 
             Input = DebtMapper.ToViewModel(debt);
-            LoadAccounts();
+            await LoadAccountsAsync();
 
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                LoadAccounts();
+                await LoadAccountsAsync();
                 return Page();
             }
 
@@ -59,14 +59,14 @@ namespace OkaneFlow.Pages.Debt
             Input.UserID = _currentUser.UserGuid;
             Input.DebtID = id;
 
-            _debtService.UpdateDebt(DebtMapper.ToModel(Input));
+            await _debtService.UpdateDebtAsync(DebtMapper.ToModel(Input));
 
             return RedirectToPage("/Debt/DebtPage");
         }
 
-        private void LoadAccounts()
+        private async Task LoadAccountsAsync()
         {
-            var userAccounts = _accountService.GetAccountsByUserId(_currentUser.UserGuid);
+            var userAccounts = await _accountService.GetAccountsByUserIdAsync(_currentUser.UserGuid);
             Accounts = userAccounts.Select(a => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
             {
                 Value = a.AccountID.ToString(),

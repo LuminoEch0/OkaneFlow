@@ -6,10 +6,10 @@ namespace Service.RepoInterface
 {
     public interface IDebtRepo
     {
-        List<DebtModel> GetDebts(Guid userId);
-        DebtModel? GetDebtById(Guid id);
-        void CreateDebt(DebtModel model);
-        void UpdateDebt(DebtModel model);
-        void DeleteDebt(Guid id);
+        Task<List<DebtModel>> GetDebtsAsync(Guid userId);
+        Task<DebtModel?> GetDebtByIdAsync(Guid id);
+        Task CreateDebtAsync(DebtModel model);
+        Task UpdateDebtAsync(DebtModel model);
+        Task DeleteDebtAsync(Guid id);
     }
 }

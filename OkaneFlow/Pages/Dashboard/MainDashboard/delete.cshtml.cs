@@ -18,9 +18,9 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
             _accountService = accountService;
         }
         public BankAccountVM? AccountDetails { get; set; }
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var account = _accountService.GetAccountById(id);
+            var account = await _accountService.GetAccountByIdAsync(id);
             if (account == null)
 
             {
@@ -29,15 +29,15 @@ namespace OkaneFlow.Pages.Dashboard.MainDashboard
             AccountDetails = BankAccountMapper.ToViewModel(account);
             return Page();
         }
-        public IActionResult OnPost(Guid id)
+        public async Task<IActionResult> OnPostAsync(Guid id)
         {
-            var account = _accountService.GetAccountById(id);
+            var account = await _accountService.GetAccountByIdAsync(id);
             if (account == null)
             {
                 return NotFound();
             }
             AccountDetails = BankAccountMapper.ToViewModel(account);
-            _accountService.DeleteAccount(id);
+            await _accountService.DeleteAccountAsync(id);
             return RedirectToPage("/Dashboard/MainDashboard/Dashboard");
         }
     }

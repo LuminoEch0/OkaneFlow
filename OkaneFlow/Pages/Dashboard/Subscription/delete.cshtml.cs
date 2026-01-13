@@ -21,20 +21,20 @@ namespace OkaneFlow.Pages.Dashboard.Subscription
 
         public SubscriptionVM Subscription { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var sub = _subscriptionService.GetSubscriptionById(id);
+            var sub = await _subscriptionService.GetSubscriptionByIdAsync(id);
             if (sub == null) return NotFound();
             Subscription = SubscriptionMapper.ToViewModel(sub);
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            var sub = _subscriptionService.GetSubscriptionById(id);
+            var sub = await _subscriptionService.GetSubscriptionByIdAsync(id);
             if (sub == null) return NotFound();
-            
-            _subscriptionService.DeleteSubscription(id);
+
+            await _subscriptionService.DeleteSubscriptionAsync(id);
 
             return RedirectToPage("/Dashboard/Subscription/SubscriptionPage", new { id = sub.AccountID });
         }

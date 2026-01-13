@@ -29,9 +29,9 @@ namespace OkaneFlow.Pages.Dashboard.Category
         [BindProperty(SupportsGet = true)]
         public Guid id { get; set; }
 
-        public IActionResult OnGet(Guid id)
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            var account = _accountService.GetCategoryById(id);
+            var account = await _accountService.GetCategoryByIdAsync(id);
             if (account == null)
             {
                 return NotFound();
@@ -40,9 +40,9 @@ namespace OkaneFlow.Pages.Dashboard.Category
             return Page();
         }
 
-        public IActionResult OnPost(Guid id)
+        public async Task<IActionResult> OnPostAsync(Guid id)
         {
-            var account = _accountService.GetCategoryById(id);
+            var account = await _accountService.GetCategoryByIdAsync(id);
             if (account == null)
             {
                 return NotFound();
@@ -56,7 +56,7 @@ namespace OkaneFlow.Pages.Dashboard.Category
                 account.UpdateAllocatedAmount(AmountToAllocate);
             }
             var identity = account.AccountID;
-            _accountService.UpdateCategoryDetails(account);
+            await _accountService.UpdateCategoryDetailsAsync(account);
             return RedirectToPage("/Dashboard/Category/CategoryPage", new { id = identity });
 
         }
