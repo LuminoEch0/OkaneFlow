@@ -13,7 +13,8 @@ namespace DataAccessLayer.Mappers
                 Content = dto.MessageContent,
                 SenderID = dto.SenderID,
                 SentAt = dto.SentAt,
-                IsFromMe = dto.SenderID == currentUserId
+                IsFromMe = dto.SenderID == currentUserId,
+                IsRead = dto.IsRead
             };
         }
 
@@ -25,7 +26,8 @@ namespace DataAccessLayer.Mappers
                 SenderID = model.SenderID,
                 ReceiverID = receiverId,
                 MessageContent = model.Content,
-                SentAt = model.SentAt
+                SentAt = model.SentAt,
+                IsRead = model.IsRead
             };
         }
 

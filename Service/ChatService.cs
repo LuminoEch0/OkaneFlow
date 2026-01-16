@@ -74,9 +74,28 @@ namespace Service
             await _chatRepo.AddContactAsync(_currentUser.UserGuid, targetUser.UserID);
         }
 
+        public async Task MarkConversationAsReadAsync(Guid targetUserId)
+        {
+            await _chatRepo.MarkConversationAsReadAsync(_currentUser.UserGuid, targetUserId);
+        }
+
         public async Task BlockUserAsync(Guid userId)
         {
-            await _chatRepo.CreateBlockAsync(_currentUser.UserGuid, userId);
+            bool alreadyBlocked = await _chatRepo.IsBlockedByMeAsync(_currentUser.UserGuid, userId);
+            if (!alreadyBlocked)
+            {
+                await _chatRepo.CreateBlockAsync(_currentUser.UserGuid, userId);
+            }
+        }
+
+        public async Task UnblockUserAsync(Guid userId)
+        {
+            await _chatRepo.DeleteBlockAsync(_currentUser.UserGuid, userId);
+        }
+
+        public async Task<bool> IsUserBlockedByMeAsync(Guid userId)
+        {
+            return await _chatRepo.IsBlockedByMeAsync(_currentUser.UserGuid, userId);
         }
 
         public async Task<bool> IsUserBlockedAsync(Guid userId)

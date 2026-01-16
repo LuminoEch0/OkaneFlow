@@ -10,10 +10,13 @@ public interface IChatService
 
     // Context / Sidebar
     Task<List<ContactModel>> GetMyContactsAsync();
-    
+
     // Privacy & Search
     Task<UserModel?> SearchUserByExactNameAsync(string username);
     Task AddContactAsync(string username);
+    Task MarkConversationAsReadAsync(Guid targetUserId);
     Task BlockUserAsync(Guid userId);
+    Task UnblockUserAsync(Guid userId);
+    Task<bool> IsUserBlockedByMeAsync(Guid userId);
     Task<bool> IsUserBlockedAsync(Guid userId);
 }

@@ -9,6 +9,7 @@ public static class ChatUIMapper
     {
         Content = model.Content,
         TimeLabel = model.SentAt.ToString("HH:mm"),
-        IsFromMe = model.IsFromMe
+        IsFromMe = model.IsFromMe,
+        IsRead = model.IsRead
     };
 }

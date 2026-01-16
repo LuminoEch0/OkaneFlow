@@ -15,8 +15,8 @@ namespace DataAccessLayer.Repositories
 
         public async Task<List<MessageModel>> GetMessagesAsync(Guid user1, Guid user2)
         {
-            // Table: ChatMessages, Column: MessageContent
-            string sql = @"SELECT MessageID, SenderID, ReceiverID, MessageContent, SentAt 
+            // Table: ChatMessage, Column: MessageContent
+            string sql = @"SELECT MessageID, SenderID, ReceiverID, MessageContent, SentAt, IsRead 
                            FROM [ChatMessages] 
                            WHERE (SenderID = @u1 AND ReceiverID = @u2) 
                            OR (SenderID = @u2 AND ReceiverID = @u1) 
@@ -40,7 +40,8 @@ namespace DataAccessLayer.Repositories
                             SenderID = reader.GetGuid(1),
                             ReceiverID = reader.GetGuid(2),
                             MessageContent = reader.GetString(3),
-                            SentAt = reader.GetDateTime(4)
+                            SentAt = reader.GetDateTime(4),
+                            IsRead = reader.GetBoolean(5)
                         };
                         messages.Add(ChatMapper.ToModel(dto, user1));
                     }
@@ -51,15 +52,17 @@ namespace DataAccessLayer.Repositories
 
         public async Task SendMessageAsync(Guid receiverId, MessageModel message)
         {
-            // Table: ChatMessages, Column: MessageContent
-            string sql = "INSERT INTO [ChatMessages] (SenderID, ReceiverID, MessageContent) VALUES (@s, @r, @c)";
+            // Table: ChatMessage, Column: MessageContent
+            string sql = "INSERT INTO [ChatMessages] (MessageID, SenderID, ReceiverID, MessageContent, SentAt, IsRead) VALUES (@id, @s, @r, @c, @t, 0)";
 
             using (var conn = (SqlConnection)_dbManager.GetOpenConnection())
             using (var cmd = new SqlCommand(sql, conn))
             {
+                cmd.Parameters.AddWithValue("@id", Guid.NewGuid());
                 cmd.Parameters.AddWithValue("@s", message.SenderID);
                 cmd.Parameters.AddWithValue("@r", receiverId);
                 cmd.Parameters.AddWithValue("@c", message.Content);
+                cmd.Parameters.AddWithValue("@t", DateTime.UtcNow);
 
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -68,10 +71,11 @@ namespace DataAccessLayer.Repositories
         public async Task<List<ContactModel>> GetContactsByOwnerAsync(Guid ownerId)
         {
             // Table: UserContact, Columns: OwnerID, ContactID
-            string sql = @"SELECT c.OwnerID, c.ContactID, u.Username, c.AddedAt 
-                           FROM [UserContact] c
-                           INNER JOIN [User] u ON c.ContactID = u.UserID
-                           WHERE c.OwnerID = @ownerId
+            string sql = @"SELECT DISTINCT u.UserID, u.Username, c.AddedAt 
+                           FROM [User] u
+                           INNER JOIN [UserContact] c ON (u.UserID = c.ContactID AND c.OwnerID = @ownerId)
+                                                      OR (u.UserID = c.OwnerID AND c.ContactID = @ownerId)
+                           WHERE u.UserID <> @ownerId
                            ORDER BY u.Username ASC";
 
             var contacts = new List<ContactModel>();
@@ -87,10 +91,9 @@ namespace DataAccessLayer.Repositories
                     {
                         contacts.Add(new ContactModel
                         {
-                            // ContactID in your DB represents the Target/Friend UserID
-                            TargetUserID = reader.GetGuid(1),
-                            Username = reader.GetString(2),
-                            AddedAt = reader.GetDateTime(3)
+                            TargetUserID = reader.GetGuid(0),
+                            Username = reader.GetString(1),
+                            AddedAt = reader.IsDBNull(2) ? DateTime.MinValue : reader.GetDateTime(2)
                         });
                     }
                 }
@@ -100,14 +103,30 @@ namespace DataAccessLayer.Repositories
 
         public async Task AddContactAsync(Guid ownerId, Guid targetId)
         {
-            // Table: UserContact, Columns: OwnerID, ContactID
-            string sql = "INSERT INTO [UserContact] (OwnerID, ContactID) VALUES (@o, @t)";
+            // Table: UserContact, Columns: UserContactID, OwnerID, ContactID, AddedAt
+            string sql = "INSERT INTO [UserContact] (UserContactID, OwnerID, ContactID, AddedAt) VALUES (@id, @o, @t, @ts)";
 
             using (var conn = (SqlConnection)_dbManager.GetOpenConnection())
             using (var cmd = new SqlCommand(sql, conn))
             {
+                cmd.Parameters.AddWithValue("@id", Guid.NewGuid());
                 cmd.Parameters.AddWithValue("@o", ownerId);
                 cmd.Parameters.AddWithValue("@t", targetId);
+                cmd.Parameters.AddWithValue("@ts", DateTime.UtcNow);
+
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task MarkConversationAsReadAsync(Guid ownerId, Guid contactId)
+        {
+            string sql = "UPDATE [ChatMessages] SET IsRead = 1 WHERE SenderID = @contactId AND ReceiverID = @ownerId AND IsRead = 0";
+
+            using (var conn = (SqlConnection)_dbManager.GetOpenConnection())
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@ownerId", ownerId);
+                cmd.Parameters.AddWithValue("@contactId", contactId);
 
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -116,7 +135,23 @@ namespace DataAccessLayer.Repositories
         public async Task CreateBlockAsync(Guid blockerId, Guid blockedId)
         {
             // Table: BlockedUsers (plural)
-            string sql = "INSERT INTO [BlockedUsers] (BlockerID, BlockedID) VALUES (@br, @bd)";
+            string sql = "INSERT INTO [BlockedUsers] (BlockedUserID, BlockerID, BlockedID, BlockedAt) VALUES (@id, @br, @bd, @at)";
+
+            using (var conn = (SqlConnection)_dbManager.GetOpenConnection())
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", Guid.NewGuid());
+                cmd.Parameters.AddWithValue("@br", blockerId);
+                cmd.Parameters.AddWithValue("@bd", blockedId);
+                cmd.Parameters.AddWithValue("@at", DateTime.UtcNow);
+
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteBlockAsync(Guid blockerId, Guid blockedId)
+        {
+            string sql = "DELETE FROM [BlockedUsers] WHERE BlockerID = @br AND BlockedID = @bd";
 
             using (var conn = (SqlConnection)_dbManager.GetOpenConnection())
             using (var cmd = new SqlCommand(sql, conn))
@@ -125,6 +160,21 @@ namespace DataAccessLayer.Repositories
                 cmd.Parameters.AddWithValue("@bd", blockedId);
 
                 await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<bool> IsBlockedByMeAsync(Guid blockerId, Guid blockedId)
+        {
+            string sql = "SELECT COUNT(1) FROM [BlockedUsers] WHERE BlockerID = @br AND BlockedID = @bd";
+
+            using (var conn = (SqlConnection)_dbManager.GetOpenConnection())
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@br", blockerId);
+                cmd.Parameters.AddWithValue("@bd", blockedId);
+
+                var result = await cmd.ExecuteScalarAsync();
+                return result != null && (int)result > 0;
             }
         }
 

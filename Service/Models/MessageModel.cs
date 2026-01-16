@@ -7,4 +7,5 @@ public class MessageModel
     public DateTime SentAt { get; set; }
     public bool IsFromMe { get; set; } // Business logic flag
     public Guid SenderID { get; set; }
+    public bool IsRead { get; set; }
 }

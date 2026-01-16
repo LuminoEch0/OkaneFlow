@@ -14,6 +14,9 @@ namespace Service.RepoInterface
 
         // Blocks
         Task CreateBlockAsync(Guid blockerId, Guid blockedId);
+        Task DeleteBlockAsync(Guid blockerId, Guid blockedId);
+        Task<bool> IsBlockedByMeAsync(Guid blockerId, Guid blockedId);
         Task<bool> HasBlockRelationshipAsync(Guid userA, Guid userB);
+        Task MarkConversationAsReadAsync(Guid ownerId, Guid contactId);
     }
 }

@@ -22,19 +22,34 @@
         </li>
     </ul>
 
-    <div class="row g-0 flex-grow-1 overflow-hidden border rounded shadow-sm bg-white" style="min-height: 500px; height: calc(100vh - 280px);">
+    <div class="row g-0 flex-grow-1 overflow-hidden border rounded shadow-sm bg-white"
+        style="min-height: 500px; height: calc(100vh - 280px);">
         <!-- Sidebar: Contacts -->
         <div class="col-md-4 border-end d-flex flex-column h-100 bg-light">
-            <div class="p-3 border-bottom bg-white d-flex align-items-center">
-                <h6 class="mb-0 fw-bold">Contacts</h6>
+            <div class="p-3 border-bottom bg-white">
+                <h6 class="mb-3 fw-bold">Contacts</h6>
+                <form method="post" asp-page-handler="Search" class="input-group input-group-sm mb-2">
+                    <input type="text" asp-for="SearchUsername" class="form-control"
+                        placeholder="Search exact username..." required>
+                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+                @if (TempData["SearchError"] != null)
+                {
+                    <div class="alert alert-danger py-1 px-2 small mb-0">@TempData["SearchError"]</div>
+                }
+                @if (TempData["SearchSuccess"] != null)
+                {
+                    <div class="alert alert-success py-1 px-2 small mb-0">@TempData["SearchSuccess"]</div>
+                }
             </div>
             <div class="list-group list-group-flush overflow-auto flex-grow-1">
                 @foreach (var contact in Model.Contacts)
                 {
-                    <a asp-page="/People/ChatPage" asp-route-SelectedUserId="@contact.UserId" 
-                       class="list-group-item list-group-item-action p-3 @(contact.IsActive ? "active" : "")">
+                    <a asp-page="/People/ChatPage" asp-route-SelectedUserId="@contact.UserId"
+                        class="list-group-item list-group-item-action p-3 @(contact.IsActive ? "active" : "")">
                         <div class="d-flex align-items-center">
-                            <div class="bg-secondary text-white rounded-circle p-2 me-3" style="width:40px; text-align:center;">
+                            <div class="bg-secondary text-white rounded-circle p-2 me-3"
+                                style="width:40px; text-align:center;">
                                 @contact.Initials
                             </div>
                             <span class="fw-bold">@contact.Username</span>
@@ -48,13 +63,72 @@
         <div class="col-md-8 d-flex flex-column h-100 bg-white">
             @if (Model.SelectedUserId.HasValue)
             {
+                var selectedContact = Model.Contacts.FirstOrDefault(c => c.UserId == Model.SelectedUserId);
+                <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center flex-shrink-0">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary text-white rounded-circle p-2 me-2"
+                            style="width:35px; height:35px; display:flex; align-items:center; justify-content:center; font-size: small;">
+                            @(selectedContact?.Initials ?? "??")
+                        </div>
+                        <h6 class="mb-0 fw-bold">@(selectedContact?.Username ?? "Chat")</h6>
+                    </div>
+                    @if (Model.IsBlockedByMe)
+                    {
+                        <form method="post" asp-page-handler="Unblock" asp-route-userId="@Model.SelectedUserId">
+                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-person-check-fill me-1"></i>Unblock
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#blockModal">
+                            <i class="bi bi-slash-circle me-1"></i>Block
+                        </button>
+
+                        <!-- Block Member Modal -->
+                        <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow-lg">
+                                    <div class="modal-header bg-danger text-white border-0">
+                                        <h5 class="modal-title fw-bold" id="blockModalLabel">Block Member?</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-4 text-center">
+                                        <div class="mb-3">
+                                            <i class="bi bi-slash-circle text-danger" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h5 class="fw-bold mb-2">Block @(selectedContact?.Username)?</h5>
+                                        <p class="text-secondary mb-0">
+                                            This will prevent both of you from sending messages to each other until you unblock them.
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer border-0 p-3">
+                                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                                        <form method="post" asp-page-handler="Block" asp-route-userId="@Model.SelectedUserId">
+                                            <button type="submit" class="btn btn-danger px-4">Confirm Block</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
                 <div class="flex-grow-1 p-4 overflow-auto" id="messageContainer">
                     @foreach (var msg in Model.Messages)
                     {
                         <div class="d-flex mb-3 @msg.AlignmentClass">
                             <div class="p-3 rounded-4 shadow-sm @msg.BubbleColor" style="max-width: 75%;">
                                 <p class="mb-1">@msg.Content</p>
-                                <small class="opacity-75 d-block text-end" style="font-size: 0.7rem;">@msg.TimeLabel</small>
+                                <div class="d-flex justify-content-end align-items-center opacity-75"
+                                    style="font-size: 0.7rem;">
+                                    <span class="me-1">@msg.TimeLabel</span>
+                                    @if (msg.IsFromMe)
+                                    {
+                                        <i class="bi @(msg.IsRead ? "bi-check2-all text-info" : "bi-check2")"></i>
+                                    }
+                                </div>
                             </div>
                         </div>
                     }
@@ -62,8 +136,10 @@
 
                 <div class="p-3 border-top bg-light flex-shrink-0">
                     <form method="post" class="input-group">
-                        <input type="text" asp-for="NewMessage" class="form-control rounded-pill me-2" placeholder="Write a message..." autocomplete="off">
-                        <button class="btn btn-primary rounded-circle" style="width:45px; height:45px;"><i class="bi bi-send-fill"></i></button>
+                        <input type="text" asp-for="NewMessage" class="form-control rounded-pill me-2"
+                            placeholder="Write a message..." autocomplete="off">
+                        <button class="btn btn-primary rounded-circle" style="width:45px; height:45px;"><i
+                                class="bi bi-send-fill"></i></button>
                     </form>
                 </div>
             }
@@ -82,6 +158,55 @@
     <script>
         // Auto-scroll to bottom of chat
         const container = document.getElementById('messageContainer');
-        if (container) container.scrollTop = container.scrollHeight;
+        function scrollToBottom() {
+            if (container) container.scrollTop = container.scrollHeight;
+        }
+        scrollToBottom();
+
+        // Polling logic
+        const selectedUserId = "@Model.SelectedUserId";
+        if (selectedUserId) {
+            setInterval(async () => {
+                try {
+                    const response = await fetch(`?handler=Messages&targetUserId=${selectedUserId}`);
+                    if (response.ok) {
+                        const messages = await response.json();
+                        updateChatUI(messages);
+                    }
+                } catch (err) {
+                    console.error("Polling error:", err);
+                }
+            }, 15000); // 15 seconds
+        }
+
+        function updateChatUI(messages) {
+            const container = document.getElementById('messageContainer');
+            if (!container) return;
+
+            // Simple refresh if count changed (or you can do a partial append)
+            // For simplicity and "database refresh method" feel, let's rebuild if count differs
+            // Or just always rebuild to show read status updates
+            let html = "";
+            messages.forEach(msg => {
+                const readIcon = msg.isFromMe ? `<i class="bi ${msg.isRead ? 'bi-check2-all text-info' : 'bi-check2'}"></i>` : "";
+                html += `
+                            <div class="d-flex mb-3 ${msg.alignmentClass}">
+                                <div class="p-3 rounded-4 shadow-sm ${msg.bubbleColor}" style="max-width: 75%;">
+                                    <p class="mb-1">${msg.content}</p>
+                                    <div class="d-flex justify-content-end align-items-center opacity-75" style="font-size: 0.7rem;">
+                                        <span class="me-1">${msg.timeLabel}</span>
+                                        ${readIcon}
+                                    </div>
+                                </div>
+                            </div>`;
+            });
+
+            const currentScroll = container.scrollTop + container.clientHeight;
+            const isAtBottom = currentScroll >= container.scrollHeight - 50;
+
+            container.innerHTML = html;
+
+            if (isAtBottom) scrollToBottom();
+        }
     </script>
 }
