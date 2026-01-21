@@ -89,7 +89,6 @@ namespace OkaneFlow
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -110,7 +109,7 @@ namespace OkaneFlow
             app.MapRazorPages()
                .WithStaticAssets();//Maps Razor Pages endpoints and ensures static assets are available to them.
 
-            app.MapFallbackToPage("/Account/Profile");
+            app.MapFallbackToPage("/Redirect");
 
             app.Run();
         }

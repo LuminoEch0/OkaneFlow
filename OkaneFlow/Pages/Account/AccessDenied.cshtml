@@ -1,0 +1,24 @@
+@page
+@model OkaneFlow.Pages.Account.AccessDeniedModel
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container text-center mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow">
+                <div class="card-body">
+                    <h1 class="display-4 text-danger"><i class="bi bi-shield-lock"></i></h1>
+                    <h2 class="text-danger">Access Denied</h2>
+                    <p class="lead">You do not have the necessary permissions to access this page.</p>
+                    <hr />
+                    <button onclick="history.back()" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Go Back
+                    </button>
+                    <a asp-page="/Redirect" class="btn btn-primary">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
